@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %> | E-Commerce Admin</title>
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+  <nav class="admin-nav">
+    <div class="nav-brand">
+      <a href="/admin">Admin Panel</a>
+    </div>
+    <ul class="nav-links">
+      <li><a href="/admin/categories">Categories</a></li>
+      <li><a href="/admin/products">Products</a></li>
+      <li><a href="/" target="_blank">View Shop</a></li>
+    </ul>
+  </nav>
+  
+  <main class="admin-content">
+    <% if (typeof error !== 'undefined' && error) { %>
+      <div class="alert alert-error">
+        <%= error %>
+      </div>
+    <% } %>
+    
+    <div class="page-header">
+      <h1>Create Product</h1>
+      <a href="/admin/products" class="btn btn-secondary">Back</a>
+    </div>
+    
+    <div class="card">
+      <form action="/admin/products" method="POST" id="product-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="name">Product Name *</label>
+            <input type="text" id="name" name="name" required class="form-control" 
+                   value="<%= product ? product.name : '' %>">
+          </div>
+          
+          <div class="form-group">
+            <label for="slug">Slug (auto-generated if empty)</label>
+            <input type="text" id="slug" name="slug" class="form-control"
+                   value="<%= product ? product.slug : '' %>">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="description">Description</label>
+          <textarea id="description" name="description" class="form-control" rows="4"><%= product ? product.description : '' %></textarea>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="price">Price *</label>
+            <input type="number" id="price" name="price" required class="form-control" 
+                   step="0.01" min="0" value="<%= product ? product.price : '' %>">
+          </div>
+          
+          <div class="form-group">
+            <label for="stock">Stock</label>
+            <input type="number" id="stock" name="stock" class="form-control" 
+                   min="0" value="<%= product ? product.stock : '0' %>">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="category">Category *</label>
+          <select id="category" name="category" required class="form-control">
+            <option value="">-- Select Category --</option>
+            <% categories.forEach(cat => { %>
+              <option value="<%= cat._id %>" <%= (product && product.category == cat._id) ? 'selected' : '' %>>
+                <%= cat.displayName %>
+              </option>
+            <% }) %>
+          </select>
+        </div>
+        
+        <!-- Dynamic Metadata Fields Container -->
+        <div id="metadata-container" class="metadata-section" style="display: none;">
+          <h3>Category Attributes</h3>
+          <p class="help-text">Fill in the attributes for this category</p>
+          <div id="metadata-fields">
+            <!-- Dynamic fields will be injected here via JavaScript -->
+          </div>
+        </div>
+        
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Create Product</button>
+        </div>
+      </form>
+    </div>
+  </main>
+  
+  <script src="/js/admin.js"></script>
+  <script>
+    // Initialize product form with dynamic attribute fetching
+    document.addEventListener('DOMContentLoaded', function() {
+      initProductForm();
+    });
+  </script>
+</body>
+</html>

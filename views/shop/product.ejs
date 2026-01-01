@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %> | E-Commerce Store</title>
+  <link rel="stylesheet" href="/css/shop.css">
+</head>
+<body>
+  <header class="shop-header">
+    <div class="container">
+      <a href="/" class="logo">E-Commerce Store</a>
+      <nav class="shop-nav">
+        <a href="/">All Products</a>
+        <a href="/admin">Admin</a>
+      </nav>
+    </div>
+  </header>
+  
+  <main class="shop-content">
+    <div class="container">
+      <nav class="breadcrumb">
+        <a href="/">Home</a>
+        <% if (product.category) { %>
+          <span>/</span>
+          <a href="/category/<%= product.category.slug %>"><%= product.category.name %></a>
+        <% } %>
+        <span>/</span>
+        <span><%= product.name %></span>
+      </nav>
+      
+      <div class="product-detail">
+        <div class="product-detail-image">
+          <img src="/images/placeholder.png" alt="<%= product.name %>">
+        </div>
+        
+        <div class="product-detail-info">
+          <h1><%= product.name %></h1>
+          
+          <% if (product.category) { %>
+            <a href="/category/<%= product.category.slug %>" class="product-category-link">
+              <%= product.category.name %>
+            </a>
+          <% } %>
+          
+          <div class="product-price-large">$<%= product.price.toFixed(2) %></div>
+          
+          <div class="stock-info">
+            <% if (product.stock > 0) { %>
+              <span class="stock-badge in-stock">In Stock (<%= product.stock %> available)</span>
+            <% } else { %>
+              <span class="stock-badge out-of-stock">Out of Stock</span>
+            <% } %>
+          </div>
+          
+          <% if (product.description) { %>
+            <div class="product-description">
+              <h3>Description</h3>
+              <p><%= product.description %></p>
+            </div>
+          <% } %>
+          
+          <!-- Dynamic Metadata Display -->
+          <% 
+            const metadataObj = product.metadata ? 
+              (product.metadata instanceof Map ? 
+                Object.fromEntries(product.metadata) : 
+                (typeof product.metadata.toObject === 'function' ? product.metadata.toObject() : product.metadata)) 
+              : {};
+            const hasMetadata = Object.keys(metadataObj).length > 0;
+          %>
+          
+          <% if (hasMetadata && attributes && attributes.length > 0) { %>
+            <div class="product-attributes">
+              <h3>Specifications</h3>
+              <table class="attributes-table">
+                <tbody>
+                  <% attributes.forEach(attr => { %>
+                    <% if (metadataObj[attr.key]) { %>
+                      <tr>
+                        <th><%= attr.label %></th>
+                        <td><%= metadataObj[attr.key] %></td>
+                      </tr>
+                    <% } %>
+                  <% }) %>
+                </tbody>
+              </table>
+            </div>
+          <% } %>
+          
+          <div class="product-actions">
+            <button class="btn btn-primary btn-large" <%= product.stock <= 0 ? 'disabled' : '' %>>
+              Add to Cart
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  
+  <footer class="shop-footer">
+    <div class="container">
+      <p>&copy; 2025 E-Commerce Store. All rights reserved.</p>
+    </div>
+  </footer>
+</body>
+</html>

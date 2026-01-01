@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %> | E-Commerce Store</title>
+  <link rel="stylesheet" href="/css/shop.css">
+</head>
+<body>
+  <header class="shop-header">
+    <div class="container">
+      <a href="/" class="logo">E-Commerce Store</a>
+      <nav class="shop-nav">
+        <a href="/">All Products</a>
+        <a href="/admin">Admin</a>
+      </nav>
+    </div>
+  </header>
+  
+  <main class="shop-content">
+    <div class="container">
+      <div class="shop-layout">
+        <!-- Sidebar with Categories -->
+        <aside class="shop-sidebar">
+          <h3>Categories</h3>
+          <ul class="category-list">
+            <li>
+              <a href="/" class="<%= !currentCategory ? 'active' : '' %>">All Products</a>
+            </li>
+            <% categories.forEach(cat => { %>
+              <li style="margin-left: <%= cat.level * 15 %>px;">
+                <a href="/category/<%= cat.slug %>" 
+                   class="<%= currentCategory && currentCategory.slug === cat.slug ? 'active' : '' %>">
+                  <%= cat.name %>
+                </a>
+              </li>
+            <% }) %>
+          </ul>
+        </aside>
+        
+        <!-- Product Grid -->
+        <div class="shop-main">
+          <div class="page-header">
+            <h1><%= currentCategory ? currentCategory.name : 'All Products' %></h1>
+            <p><%= products.length %> product<%= products.length !== 1 ? 's' : '' %> found</p>
+          </div>
+          
+          <% if (products.length === 0) { %>
+            <div class="empty-state">
+              <p>No products found in this category.</p>
+              <a href="/" class="btn btn-primary">View All Products</a>
+            </div>
+          <% } else { %>
+            <div class="product-grid">
+              <% products.forEach(product => { %>
+                <div class="product-card">
+                  <div class="product-image">
+                    <img src="/images/placeholder.png" alt="<%= product.name %>">
+                  </div>
+                  <div class="product-info">
+                    <h3 class="product-name">
+                      <a href="/product/<%= product.slug %>"><%= product.name %></a>
+                    </h3>
+                    <% if (product.category) { %>
+                      <span class="product-category"><%= product.category.name %></span>
+                    <% } %>
+                    <div class="product-price">$<%= product.price.toFixed(2) %></div>
+                    <% if (product.stock > 0) { %>
+                      <span class="stock-badge in-stock">In Stock</span>
+                    <% } else { %>
+                      <span class="stock-badge out-of-stock">Out of Stock</span>
+                    <% } %>
+                  </div>
+                  <a href="/product/<%= product.slug %>" class="btn btn-primary btn-block">View Details</a>
+                </div>
+              <% }) %>
+            </div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </main>
+  
+  <footer class="shop-footer">
+    <div class="container">
+      <p>&copy; 2025 E-Commerce Store. All rights reserved.</p>
+    </div>
+  </footer>
+</body>
+</html>
