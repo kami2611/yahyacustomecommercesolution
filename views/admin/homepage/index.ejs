@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %> | E-Commerce Admin</title>
+  <link rel="stylesheet" href="/css/admin.css">
+  <style>
+    .section-manager { margin-bottom: 40px; }
+    .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+    .section-items { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px; }
+    .section-item { border: 1px solid #ddd; padding: 10px; border-radius: 4px; background: #f9f9f9; }
+    .section-item img { width: 100%; height: 100px; object-fit: cover; margin-bottom: 10px; }
+    .section-item h4 { font-size: 14px; margin-bottom: 5px; }
+    .section-item p { font-size: 12px; color: #666; margin-bottom: 10px; }
+    .add-form { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; padding: 15px; background: #f5f5f5; border-radius: 4px; }
+    .add-form .form-group { margin-bottom: 0; flex: 1; min-width: 200px; }
+    .add-form label { display: block; font-size: 12px; margin-bottom: 5px; }
+    .add-form select, .add-form input { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
+    .empty-section { padding: 20px; text-align: center; background: #f9f9f9; border-radius: 4px; color: #666; }
+  </style>
+</head>
+<body>
+  <nav class="admin-nav">
+    <div class="nav-brand">
+      <a href="/admin">Admin Panel</a>
+    </div>
+    <ul class="nav-links">
+      <li><a href="/admin/homepage">Homepage</a></li>
+      <li><a href="/admin/categories">Categories</a></li>
+      <li><a href="/admin/products">Products</a></li>
+      <li><a href="/" target="_blank">View Shop</a></li>
+    </ul>
+  </nav>
+  
+  <main class="admin-content">
+    <div class="page-header">
+      <h1>Homepage Sections</h1>
+    </div>
+    
+    <!-- Carousel Section -->
+    <div class="card section-manager">
+      <div class="section-header">
+        <h2>Hero Carousel</h2>
+      </div>
+      
+      <% if (carouselProducts.length > 0) { %>
+        <div class="section-items">
+          <% carouselProducts.forEach(product => { %>
+            <div class="section-item">
+              <img src="<%= product.carouselImage %>" alt="<%= product.name %>" onerror="this.src='/images/placeholder.png'">
+              <h4><%= product.name %></h4>
+              <form action="/admin/homepage/carousel/<%= product._id %>/remove" method="POST">
+                <button type="submit" class="btn btn-sm btn-danger">Remove</button>
+              </form>
+            </div>
+          <% }) %>
+        </div>
+      <% } else { %>
+        <div class="empty-section">No products in carousel</div>
+      <% } %>
+      
+      <form action="/admin/homepage/carousel/add" method="POST" class="add-form">
+        <div class="form-group">
+          <label>Select Product</label>
+          <select name="productId" required>
+            <option value="">-- Select Product --</option>
+            <% allProducts.forEach(p => { %>
+              <option value="<%= p._id %>"><%= p.name %></option>
+            <% }) %>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Carousel Image URL</label>
+          <input type="url" name="carouselImage" placeholder="https://example.com/banner.jpg" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Add to Carousel</button>
+      </form>
+    </div>
+    
+    <!-- New Offers Section -->
+    <div class="card section-manager">
+      <div class="section-header">
+        <h2>New Offers Section</h2>
+      </div>
+      
+      <% if (newOffers.length > 0) { %>
+        <div class="section-items">
+          <% newOffers.forEach(product => { %>
+            <div class="section-item">
+              <h4><%= product.name %></h4>
+              <p>$<%= product.price.toFixed(2) %></p>
+              <form action="/admin/homepage/section/<%= product._id %>/remove" method="POST">
+                <input type="hidden" name="section" value="newOffers">
+                <button type="submit" class="btn btn-sm btn-danger">Remove</button>
+              </form>
+            </div>
+          <% }) %>
+        </div>
+      <% } else { %>
+        <div class="empty-section">No products in New Offers</div>
+      <% } %>
+      
+      <form action="/admin/homepage/section/toggle" method="POST" class="add-form">
+        <input type="hidden" name="section" value="newOffers">
+        <input type="hidden" name="action" value="add">
+        <div class="form-group">
+          <label>Select Product to Add</label>
+          <select name="productId" required>
+            <option value="">-- Select Product --</option>
+            <% allProducts.forEach(p => { %>
+              <option value="<%= p._id %>"><%= p.name %> - $<%= p.price.toFixed(2) %></option>
+            <% }) %>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Add to New Offers</button>
+      </form>
+    </div>
+    
+    <!-- Best Offers Section -->
+    <div class="card section-manager">
+      <div class="section-header">
+        <h2>Our Best Offers Section</h2>
+      </div>
+      
+      <% if (bestOffers.length > 0) { %>
+        <div class="section-items">
+          <% bestOffers.forEach(product => { %>
+            <div class="section-item">
+              <h4><%= product.name %></h4>
+              <p>$<%= product.price.toFixed(2) %></p>
+              <form action="/admin/homepage/section/<%= product._id %>/remove" method="POST">
+                <input type="hidden" name="section" value="bestOffers">
+                <button type="submit" class="btn btn-sm btn-danger">Remove</button>
+              </form>
+            </div>
+          <% }) %>
+        </div>
+      <% } else { %>
+        <div class="empty-section">No products in Best Offers</div>
+      <% } %>
+      
+      <form action="/admin/homepage/section/toggle" method="POST" class="add-form">
+        <input type="hidden" name="section" value="bestOffers">
+        <input type="hidden" name="action" value="add">
+        <div class="form-group">
+          <label>Select Product to Add</label>
+          <select name="productId" required>
+            <option value="">-- Select Product --</option>
+            <% allProducts.forEach(p => { %>
+              <option value="<%= p._id %>"><%= p.name %> - $<%= p.price.toFixed(2) %></option>
+            <% }) %>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Add to Best Offers</button>
+      </form>
+    </div>
+    
+    <!-- Featured Products Section -->
+    <div class="card section-manager">
+      <div class="section-header">
+        <h2>Products You'll Love Section</h2>
+      </div>
+      
+      <% if (featuredProducts.length > 0) { %>
+        <div class="section-items">
+          <% featuredProducts.forEach(product => { %>
+            <div class="section-item">
+              <h4><%= product.name %></h4>
+              <p>$<%= product.price.toFixed(2) %></p>
+              <form action="/admin/homepage/section/<%= product._id %>/remove" method="POST">
+                <input type="hidden" name="section" value="featured">
+                <button type="submit" class="btn btn-sm btn-danger">Remove</button>
+              </form>
+            </div>
+          <% }) %>
+        </div>
+      <% } else { %>
+        <div class="empty-section">No products in Featured</div>
+      <% } %>
+      
+      <form action="/admin/homepage/section/toggle" method="POST" class="add-form">
+        <input type="hidden" name="section" value="featured">
+        <input type="hidden" name="action" value="add">
+        <div class="form-group">
+          <label>Select Product to Add</label>
+          <select name="productId" required>
+            <option value="">-- Select Product --</option>
+            <% allProducts.forEach(p => { %>
+              <option value="<%= p._id %>"><%= p.name %> - $<%= p.price.toFixed(2) %></option>
+            <% }) %>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Add to Featured</button>
+      </form>
+    </div>
+  </main>
+</body>
+</html>

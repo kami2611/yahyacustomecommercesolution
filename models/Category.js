@@ -31,6 +31,10 @@ const categorySchema = new mongoose.Schema({
     unique: true,
     lowercase: true
   },
+  description: {
+    type: String,
+    default: ''
+  },
   parent: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Category',

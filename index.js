@@ -28,16 +28,18 @@ const shopRoutes = require('./routes/shop');
 const apiRoutes = require('./routes/api');
 const adminCategoryRoutes = require('./routes/admin/categories');
 const adminProductRoutes = require('./routes/admin/products');
+const adminHomepageRoutes = require('./routes/admin/homepage');
 
 // Use Routes
 app.use('/', shopRoutes);
 app.use('/api', apiRoutes);
 app.use('/admin/categories', adminCategoryRoutes);
 app.use('/admin/products', adminProductRoutes);
+app.use('/admin/homepage', adminHomepageRoutes);
 
 // Admin Dashboard
 app.get('/admin', (req, res) => {
-  res.redirect('/admin/products');
+  res.redirect('/admin/homepage');
 });
 
 // 404 Handler

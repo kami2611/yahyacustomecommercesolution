@@ -32,7 +32,7 @@ exports.create = async (req, res) => {
 // Handle category creation
 exports.store = async (req, res) => {
   try {
-    const { name, slug, parent, attributes } = req.body;
+    const { name, slug, parent, description, attributes } = req.body;
     
     // Parse attributes from form data
     let parsedAttributes = [];
@@ -50,6 +50,7 @@ exports.store = async (req, res) => {
     const category = new Category({
       name,
       slug: slug || name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+      description: description || '',
       parent: parent || null,
       attributes: parsedAttributes
     });
@@ -91,7 +92,7 @@ exports.edit = async (req, res) => {
 // Handle category update
 exports.update = async (req, res) => {
   try {
-    const { name, slug, parent, attributes } = req.body;
+    const { name, slug, parent, description, attributes } = req.body;
     
     // Parse attributes from form data
     let parsedAttributes = [];
@@ -109,6 +110,7 @@ exports.update = async (req, res) => {
     await Category.findByIdAndUpdate(req.params.id, {
       name,
       slug: slug || name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+      description: description || '',
       parent: parent || null,
       attributes: parsedAttributes
     });

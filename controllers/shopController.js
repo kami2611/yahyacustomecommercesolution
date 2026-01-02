@@ -112,32 +112,106 @@ exports.show = async (req, res) => {
   }
 };
 
-// Category page
+// Category page with filters, sorting, pagination
 exports.category = async (req, res) => {
   try {
-    const category = await Category.findOne({ slug: req.params.slug });
+    const category = await Category.findOne({ slug: req.params.slug }).populate('parent');
     
     if (!category) {
       return res.status(404).render('error', { message: 'Category not found' });
     }
     
-    // Get all subcategory IDs (for including products from subcategories)
-    const categoryIds = [category._id];
+    // Get query parameters
+    const { sort = 'newest', minPrice, maxPrice, page = 1 } = req.query;
+    const limit = 12;
+    const skip = (parseInt(page) - 1) * limit;
     
-    const products = await Product.find({ 
-      category: { $in: categoryIds },
-      isActive: true 
-    })
-    .populate('category', 'name slug')
-    .sort('-createdAt');
+    // Build filter
+    const filter = {
+      category: category._id,
+      isActive: true
+    };
     
+    // Price filter
+    if (minPrice || maxPrice) {
+      filter.price = {};
+      if (minPrice) filter.price.$gte = parseFloat(minPrice);
+      if (maxPrice) filter.price.$lte = parseFloat(maxPrice);
+    }
+    
+    // Sort options
+    let sortOption = { createdAt: -1 }; // default newest
+    switch (sort) {
+      case 'price-low':
+        sortOption = { price: 1 };
+        break;
+      case 'price-high':
+        sortOption = { price: -1 };
+        break;
+      case 'name-az':
+        sortOption = { name: 1 };
+        break;
+      case 'name-za':
+        sortOption = { name: -1 };
+        break;
+      case 'newest':
+      default:
+        sortOption = { createdAt: -1 };
+    }
+    
+    // Get total count for pagination
+    const totalProducts = await Product.countDocuments(filter);
+    const totalPages = Math.ceil(totalProducts / limit);
+    
+    // Get products with pagination
+    const products = await Product.find(filter)
+      .populate('category', 'name slug')
+      .sort(sortOption)
+      .skip(skip)
+      .limit(limit);
+    
+    // Get all subcategories
+    const subcategories = await Category.find({ parent: category._id });
+    
+    // Build breadcrumbs
+    const breadcrumbs = [{ name: 'Home', url: '/' }];
+    
+    // Get ancestors for breadcrumbs
+    const ancestors = await Category.getAncestors(category._id);
+    ancestors.forEach(ancestor => {
+      breadcrumbs.push({ name: ancestor.name, url: `/category/${ancestor.slug}` });
+    });
+    breadcrumbs.push({ name: category.name, url: null });
+    
+    // Get all categories for navigation
     const categories = await Category.getCategoryTree();
     
-    res.render('shop/index', { 
+    // Get price range for filters
+    const priceRange = await Product.aggregate([
+      { $match: { category: category._id, isActive: true } },
+      { $group: { _id: null, minPrice: { $min: '$price' }, maxPrice: { $max: '$price' } } }
+    ]);
+    
+    res.render('shop/category', { 
       title: category.name,
+      category,
       products,
+      subcategories,
       categories,
-      currentCategory: category
+      breadcrumbs,
+      pagination: {
+        currentPage: parseInt(page),
+        totalPages,
+        totalProducts,
+        hasNext: parseInt(page) < totalPages,
+        hasPrev: parseInt(page) > 1
+      },
+      filters: {
+        sort,
+        minPrice: minPrice || '',
+        maxPrice: maxPrice || '',
+        priceRange: priceRange[0] || { minPrice: 0, maxPrice: 1000 }
+      }
     });
   } catch (error) {
     console.error('Error fetching category products:', error);

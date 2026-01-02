@@ -36,7 +36,7 @@ exports.create = async (req, res) => {
 // Handle product creation with dynamic metadata
 exports.store = async (req, res) => {
   try {
-    const { name, slug, description, price, stock, category, metadata, 
+    const { name, slug, description, price, originalPrice, stock, category, metadata, 
             isNewOffer, isBestOffer, isFeatured, carouselImage } = req.body;
     
     // Convert metadata object to Map
@@ -54,6 +54,7 @@ exports.store = async (req, res) => {
       slug: slug || undefined, // Let pre-save hook generate if empty
       description,
       price: parseFloat(price),
+      originalPrice: originalPrice ? parseFloat(originalPrice) : null,
       stock: parseInt(stock) || 0,
       category,
       metadata: metadataMap,
@@ -108,7 +109,7 @@ exports.edit = async (req, res) => {
 // Handle product update
 exports.update = async (req, res) => {
   try {
-    const { name, slug, description, price, stock, category, metadata,
+    const { name, slug, description, price, originalPrice, stock, category, metadata,
             isNewOffer, isBestOffer, isFeatured, carouselImage } = req.body;
     
     // Convert metadata object to Map
@@ -126,6 +127,7 @@ exports.update = async (req, res) => {
       slug: slug || name.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-' + Date.now(),
       description,
       price: parseFloat(price),
+      originalPrice: originalPrice ? parseFloat(originalPrice) : null,
       stock: parseInt(stock) || 0,
       category,
       metadata: metadataMap,
