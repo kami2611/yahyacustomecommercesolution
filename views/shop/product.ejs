@@ -89,7 +89,9 @@
             </div>
             
             <!-- Add to Cart Button -->
-            <button class="btn-add-to-cart" data-product-id="<%= product._id %>">
+            <button class="btn-add-to-cart" 
+                    data-product-id="<%= product._id %>"
+                    onclick="addToCart(this, '<%= product._id %>', '<%= product.name.replace(/'/g, "\\'") %>', <%= product.price %>, '<%= product.images && product.images.length > 0 ? product.images[0] : '/images/placeholder.png' %>')">
               <span class="cart-icon">🛒</span>
               Add to Basket
             </button>
@@ -193,7 +195,9 @@
                         <span class="original-price">Rs <%= item.originalPrice.toLocaleString() %></span>
                       <% } %>
                     </div>
-                    <button class="btn-add-to-cart-small" data-product-id="<%= item._id %>">
+                    <button class="btn-add-to-cart-small" 
+                            data-product-id="<%= item._id %>"
+                            onclick="addToCart(this, '<%= item._id %>', '<%= item.name.replace(/'/g, "\\'") %>', <%= item.price %>, '<%= item.images && item.images.length > 0 ? item.images[0] : '/images/placeholder.png' %>')">
                       <span class="cart-icon">🛒</span>
                       Add to Basket
                     </button>
@@ -239,7 +243,9 @@
                         <span class="original-price">Rs <%= item.originalPrice.toLocaleString() %></span>
                       <% } %>
                     </div>
-                    <button class="btn-add-to-cart-small" data-product-id="<%= item._id %>">
+                    <button class="btn-add-to-cart-small" 
+                            data-product-id="<%= item._id %>"
+                            onclick="addToCart(this, '<%= item._id %>', '<%= item.name.replace(/'/g, "\\'") %>', <%= item.price %>, '<%= item.images && item.images.length > 0 ? item.images[0] : '/images/placeholder.png' %>')">
                       <span class="cart-icon">🛒</span>
                       Add to Basket
                     </button>
