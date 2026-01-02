@@ -42,6 +42,23 @@ const productSchema = new mongoose.Schema({
   isActive: {
     type: Boolean,
     default: true
+  },
+  // Featured product flags
+  isNewOffer: {
+    type: Boolean,
+    default: false
+  },
+  isBestOffer: {
+    type: Boolean,
+    default: false
+  },
+  isFeatured: {
+    type: Boolean,
+    default: false
+  },
+  carouselImage: {
+    type: String,
+    default: ''
   }
 }, {
   timestamps: true

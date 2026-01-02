@@ -1,0 +1,98 @@
+<header class="site-header">
+  <div class="header-mobile">
+    <button class="menu-toggle" id="mobile-menu-toggle">
+      <span class="menu-icon">☰</span>
+    </button>
+    <a href="/" class="logo-mobile">
+      <img src="/images/logo.png" alt="Logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <span class="logo-text">E-Commerce Store</span>
+    </a>
+    <div class="header-actions-mobile">
+      <a href="/cart" class="icon-btn">
+        <span class="cart-icon">🛒</span>
+      </a>
+      <a href="/signin" class="icon-btn">
+        <span class="user-icon">👤</span>
+      </a>
+    </div>
+  </div>
+  
+  <div class="header-desktop">
+    <div class="container header-container">
+      <a href="/" class="logo">
+        <img src="/images/logo.png" alt="Logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+        <span class="logo-text">E-Commerce Store</span>
+      </a>
+      
+      <div class="search-bar-wrapper">
+        <form action="/search" method="GET" class="search-form">
+          <input type="text" name="q" placeholder="Search products or projects" class="search-input">
+          <button type="submit" class="search-btn">🔍</button>
+        </form>
+      </div>
+      
+      <div class="header-actions">
+        <a href="/signin" class="btn-signin">Sign in</a>
+        <a href="/cart" class="btn-cart">
+          <span class="cart-icon">🛒</span>
+          <span>Basket</span>
+        </a>
+      </div>
+    </div>
+  </div>
+  
+  <div class="search-bar-mobile">
+    <div class="container">
+      <form action="/search" method="GET" class="search-form">
+        <input type="text" name="q" placeholder="Search products or projects" class="search-input">
+        <button type="submit" class="search-btn">🔍</button>
+      </form>
+    </div>
+  </div>
+</header>
+
+<!-- Mobile Menu Overlay -->
+<div class="mobile-menu-overlay" id="mobile-menu-overlay">
+  <div class="mobile-menu">
+    <button class="mobile-menu-close" id="mobile-menu-close">✕</button>
+    <nav class="mobile-nav">
+      <% if (typeof categories !== 'undefined' && categories) { %>
+        <% categories.forEach(category => { %>
+          <a href="/category/<%= category.slug %>" class="mobile-nav-item">
+            <%= category.name %>
+          </a>
+        <% }) %>
+      <% } %>
+    </nav>
+  </div>
+</div>
+
+<script>
+// Mobile menu toggle
+document.addEventListener('DOMContentLoaded', function() {
+  const menuToggle = document.getElementById('mobile-menu-toggle');
+  const menuClose = document.getElementById('mobile-menu-close');
+  const menuOverlay = document.getElementById('mobile-menu-overlay');
+  
+  if (menuToggle) {
+    menuToggle.addEventListener('click', function() {
+      menuOverlay.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    });
+  }
+  
+  if (menuClose) {
+    menuClose.addEventListener('click', function() {
+      menuOverlay.classList.remove('active');
+      document.body.style.overflow = '';
+    });
+  }
+  
+  menuOverlay.addEventListener('click', function(e) {
+    if (e.target === menuOverlay) {
+      menuOverlay.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+  });
+});
+</script>

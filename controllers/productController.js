@@ -36,7 +36,8 @@ exports.create = async (req, res) => {
 // Handle product creation with dynamic metadata
 exports.store = async (req, res) => {
   try {
-    const { name, slug, description, price, stock, category, metadata } = req.body;
+    const { name, slug, description, price, stock, category, metadata, 
+            isNewOffer, isBestOffer, isFeatured, carouselImage } = req.body;
     
     // Convert metadata object to Map
     const metadataMap = new Map();
@@ -55,7 +56,11 @@ exports.store = async (req, res) => {
       price: parseFloat(price),
       stock: parseInt(stock) || 0,
       category,
-      metadata: metadataMap
+      metadata: metadataMap,
+      isNewOffer: isNewOffer === 'true',
+      isBestOffer: isBestOffer === 'true',
+      isFeatured: isFeatured === 'true',
+      carouselImage: carouselImage || ''
     });
     
     await product.save();
@@ -103,7 +108,8 @@ exports.edit = async (req, res) => {
 // Handle product update
 exports.update = async (req, res) => {
   try {
-    const { name, slug, description, price, stock, category, metadata } = req.body;
+    const { name, slug, description, price, stock, category, metadata,
+            isNewOffer, isBestOffer, isFeatured, carouselImage } = req.body;
     
     // Convert metadata object to Map
     const metadataMap = new Map();
@@ -122,7 +128,11 @@ exports.update = async (req, res) => {
       price: parseFloat(price),
       stock: parseInt(stock) || 0,
       category,
-      metadata: metadataMap
+      metadata: metadataMap,
+      isNewOffer: isNewOffer === 'true',
+      isBestOffer: isBestOffer === 'true',
+      isFeatured: isFeatured === 'true',
+      carouselImage: carouselImage || ''
     });
     
     res.redirect('/admin/products');

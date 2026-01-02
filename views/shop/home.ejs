@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %> | E-Commerce Store</title>
+  <link rel="stylesheet" href="/css/home.css">
+</head>
+<body>
+  <%- include('../partials/header') %>
+  
+  <%- include('../partials/mega-nav') %>
+  
+  <!-- Hero Carousel Section -->
+  <section class="hero-carousel">
+    <div class="carousel-container">
+      <% if (carouselProducts && carouselProducts.length > 0) { %>
+        <div class="carousel-slides">
+          <% carouselProducts.forEach((product, index) => { %>
+            <div class="carousel-slide <%= index === 0 ? 'active' : '' %>">
+              <a href="/product/<%= product.slug %>">
+                <img src="<%= product.carouselImage %>" alt="<%= product.name %>" 
+                     onerror="this.src='/images/placeholder.png'">
+              </a>
+            </div>
+          <% }) %>
+        </div>
+        
+        <div class="carousel-controls">
+          <button class="carousel-btn carousel-prev">‹</button>
+          <div class="carousel-indicators">
+            <% carouselProducts.forEach((_, index) => { %>
+              <button class="carousel-indicator <%= index === 0 ? 'active' : '' %>" 
+                      data-slide="<%= index %>"></button>
+            <% }) %>
+          </div>
+          <button class="carousel-btn carousel-next">›</button>
+        </div>
+      <% } else { %>
+        <div class="carousel-placeholder">
+          <img src="/images/placeholder.png" alt="Carousel placeholder">
+        </div>
+      <% } %>
+    </div>
+  </section>
+  
+  <!-- New Offers Section -->
+  <% if (newOffers && newOffers.length > 0) { %>
+    <section class="product-section">
+      <div class="container">
+        <h2 class="section-title">New Offers</h2>
+        <div class="product-grid">
+          <% newOffers.forEach(product => { %>
+            <div class="product-card">
+              <div class="product-image">
+                <a href="/product/<%= product.slug %>">
+                  <img src="/images/placeholder.png" alt="<%= product.name %>">
+                </a>
+              </div>
+              <div class="product-details">
+                <h3 class="product-name">
+                  <a href="/product/<%= product.slug %>"><%= product.name %></a>
+                </h3>
+                <% if (product.category) { %>
+                  <span class="product-category"><%= product.category.name %></span>
+                <% } %>
+                <div class="product-price">$<%= product.price.toFixed(2) %></div>
+                <% if (product.stock > 0) { %>
+                  <span class="stock-status in-stock">In Stock</span>
+                <% } else { %>
+                  <span class="stock-status out-of-stock">Out of Stock</span>
+                <% } %>
+                <button class="btn-add-to-cart" data-product-id="<%= product._id %>">
+                  Add to Basket
+                </button>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+    </section>
+  <% } %>
+  
+  <!-- Best Offers Section -->
+  <% if (bestOffers && bestOffers.length > 0) { %>
+    <section class="product-section best-offers">
+      <div class="container">
+        <h2 class="section-title">Our Best Offers</h2>
+        <div class="product-grid">
+          <% bestOffers.forEach(product => { %>
+            <div class="product-card">
+              <div class="product-image">
+                <a href="/product/<%= product.slug %>">
+                  <img src="/images/placeholder.png" alt="<%= product.name %>">
+                </a>
+              </div>
+              <div class="product-details">
+                <h3 class="product-name">
+                  <a href="/product/<%= product.slug %>"><%= product.name %></a>
+                </h3>
+                <% if (product.category) { %>
+                  <span class="product-category"><%= product.category.name %></span>
+                <% } %>
+                <div class="product-price">$<%= product.price.toFixed(2) %></div>
+                <% if (product.stock > 0) { %>
+                  <span class="stock-status in-stock">In Stock</span>
+                <% } else { %>
+                  <span class="stock-status out-of-stock">Out of Stock</span>
+                <% } %>
+                <button class="btn-add-to-cart" data-product-id="<%= product._id %>">
+                  Add to Basket
+                </button>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+    </section>
+  <% } %>
+  
+  <!-- Products You'll Love Section -->
+  <% if (featuredProducts && featuredProducts.length > 0) { %>
+    <section class="product-section featured-products">
+      <div class="container">
+        <h2 class="section-title">Products You'll Love</h2>
+        <div class="product-grid">
+          <% featuredProducts.forEach(product => { %>
+            <div class="product-card">
+              <div class="product-image">
+                <a href="/product/<%= product.slug %>">
+                  <img src="/images/placeholder.png" alt="<%= product.name %>">
+                </a>
+              </div>
+              <div class="product-details">
+                <h3 class="product-name">
+                  <a href="/product/<%= product.slug %>"><%= product.name %></a>
+                </h3>
+                <% if (product.category) { %>
+                  <span class="product-category"><%= product.category.name %></span>
+                <% } %>
+                <div class="product-price">$<%= product.price.toFixed(2) %></div>
+                <% if (product.stock > 0) { %>
+                  <span class="stock-status in-stock">In Stock</span>
+                <% } else { %>
+                  <span class="stock-status out-of-stock">Out of Stock</span>
+                <% } %>
+                <button class="btn-add-to-cart" data-product-id="<%= product._id %>">
+                  Add to Basket
+                </button>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+    </section>
+  <% } %>
+  
+  <!-- Trust Pilot Section -->
+  <section class="trustpilot-section">
+    <div class="container">
+      <h2 class="section-title">Customer Reviews</h2>
+      <div class="trustpilot-widget">
+        <div class="trustpilot-placeholder">
+          <div class="trustpilot-stars">★★★★★</div>
+          <p class="trustpilot-score">4.8 out of 5</p>
+          <p class="trustpilot-reviews">Based on 1,234 reviews</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <%- include('../partials/footer') %>
+  
+  <script>
+    // Carousel functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      const slides = document.querySelectorAll('.carousel-slide');
+      const indicators = document.querySelectorAll('.carousel-indicator');
+      const prevBtn = document.querySelector('.carousel-prev');
+      const nextBtn = document.querySelector('.carousel-next');
+      let currentSlide = 0;
+      let autoPlayInterval;
+      
+      function showSlide(index) {
+        slides.forEach((slide, i) => {
+          slide.classList.toggle('active', i === index);
+        });
+        indicators.forEach((indicator, i) => {
+          indicator.classList.toggle('active', i === index);
+        });
+        currentSlide = index;
+      }
+      
+      function nextSlide() {
+        const next = (currentSlide + 1) % slides.length;
+        showSlide(next);
+      }
+      
+      function prevSlide() {
+        const prev = (currentSlide - 1 + slides.length) % slides.length;
+        showSlide(prev);
+      }
+      
+      // Auto play
+      function startAutoPlay() {
+        autoPlayInterval = setInterval(nextSlide, 5000);
+      }
+      
+      function stopAutoPlay() {
+        clearInterval(autoPlayInterval);
+      }
+      
+      if (slides.length > 1) {
+        if (prevBtn) prevBtn.addEventListener('click', () => { stopAutoPlay(); prevSlide(); startAutoPlay(); });
+        if (nextBtn) nextBtn.addEventListener('click', () => { stopAutoPlay(); nextSlide(); startAutoPlay(); });
+        
+        indicators.forEach((indicator, index) => {
+          indicator.addEventListener('click', () => {
+            stopAutoPlay();
+            showSlide(index);
+            startAutoPlay();
+          });
+        });
+        
+        startAutoPlay();
+      }
+    });
+  </script>
+</body>
+</html>

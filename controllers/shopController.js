@@ -35,6 +35,54 @@ exports.index = async (req, res) => {
   }
 };
 
+// Home page with featured sections
+exports.home = async (req, res) => {
+  try {
+    // Fetch all featured products for different sections
+    const carouselProducts = await Product.find({ 
+      isActive: true,
+      carouselImage: { $exists: true, $ne: '' }
+    })
+    .limit(5)
+    .select('name slug carouselImage');
+    
+    const newOffers = await Product.find({ 
+      isActive: true,
+      isNewOffer: true 
+    })
+    .populate('category', 'name slug')
+    .limit(8);
+    
+    const bestOffers = await Product.find({ 
+      isActive: true,
+      isBestOffer: true 
+    })
+    .populate('category', 'name slug')
+    .limit(8);
+    
+    const featuredProducts = await Product.find({ 
+      isActive: true,
+      isFeatured: true 
+    })
+    .populate('category', 'name slug')
+    .limit(8);
+    
+    const categories = await Category.getCategoryTree();
+    
+    res.render('shop/home', { 
+      title: 'Home',
+      carouselProducts,
+      newOffers,
+      bestOffers,
+      featuredProducts,
+      categories
+    });
+  } catch (error) {
+    console.error('Error fetching home page data:', error);
+    res.status(500).render('error', { message: 'Error loading home page' });
+  }
+};
+
 // Single product page
 exports.show = async (req, res) => {
   try {

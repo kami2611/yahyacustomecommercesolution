@@ -77,6 +77,32 @@
           </select>
         </div>
         
+        <!-- Featured Product Options -->
+        <div class="form-group">
+          <label>Featured Product Options</label>
+          <div class="checkbox-group">
+            <label class="checkbox-label">
+              <input type="checkbox" name="isNewOffer" value="true" <%= (product && product.isNewOffer) ? 'checked' : '' %>>
+              Show in "New Offers" section
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" name="isBestOffer" value="true" <%= (product && product.isBestOffer) ? 'checked' : '' %>>
+              Show in "Best Offers" section
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" name="isFeatured" value="true" <%= (product && product.isFeatured) ? 'checked' : '' %>>
+              Show in "Products You'll Love" section
+            </label>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="carouselImage">Carousel Image URL</label>
+          <input type="text" id="carouselImage" name="carouselImage" class="form-control"
+                 placeholder="https://example.com/image.jpg" value="<%= product ? product.carouselImage : '' %>">
+          <small class="help-text">Add image URL to show this product in the homepage carousel</small>
+        </div>
+        
         <!-- Dynamic Metadata Fields Container -->
         <div id="metadata-container" class="metadata-section" style="display: none;">
           <h3>Category Attributes</h3>
