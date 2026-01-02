@@ -1,5 +1,6 @@
 const Product = require('../models/Product');
 const Category = require('../models/Category');
+const Announcement = require('../models/Announcement');
 
 // Shop homepage - list all products
 exports.index = async (req, res) => {
@@ -22,12 +23,14 @@ exports.index = async (req, res) => {
       .limit(50);
     
     const categories = await Category.getCategoryTree();
+    const announcements = await Announcement.getActiveAnnouncements();
     
     res.render('shop/index', { 
       title: 'Shop',
       products,
       categories,
-      currentCategory
+      currentCategory,
+      announcements
     });
   } catch (error) {
     console.error('Error fetching shop products:', error);
@@ -38,6 +41,9 @@ exports.index = async (req, res) => {
 // Home page with featured sections
 exports.home = async (req, res) => {
   try {
+    // Fetch announcements
+    const announcements = await Announcement.getActiveAnnouncements();
+    
     // Fetch all featured products for different sections
     const carouselProducts = await Product.find({ 
       isActive: true,
@@ -51,21 +57,21 @@ exports.home = async (req, res) => {
       isNewOffer: true 
     })
     .populate('category', 'name slug')
-    .limit(8);
+    .limit(12);
     
     const bestOffers = await Product.find({ 
       isActive: true,
       isBestOffer: true 
     })
     .populate('category', 'name slug')
-    .limit(8);
+    .limit(12);
     
     const featuredProducts = await Product.find({ 
       isActive: true,
       isFeatured: true 
     })
     .populate('category', 'name slug')
-    .limit(8);
+    .limit(12);
     
     const categories = await Category.getCategoryTree();
     
@@ -75,7 +81,8 @@ exports.home = async (req, res) => {
       newOffers,
       bestOffers,
       featuredProducts,
-      categories
+      categories,
+      announcements
     });
   } catch (error) {
     console.error('Error fetching home page data:', error);
@@ -137,6 +144,7 @@ exports.show = async (req, res) => {
     
     // Get all categories for mega nav
     const categories = await Category.getCategoryTree();
+    const announcements = await Announcement.getActiveAnnouncements();
     
     res.render('shop/product', { 
       title: product.name,
@@ -145,7 +153,8 @@ exports.show = async (req, res) => {
       breadcrumbs,
       similarProducts,
       youMayAlsoLike,
-      categories
+      categories,
+      announcements
     });
   } catch (error) {
     console.error('Error fetching product:', error);
@@ -226,6 +235,7 @@ exports.category = async (req, res) => {
     
     // Get all categories for navigation
     const categories = await Category.getCategoryTree();
+    const announcements = await Announcement.getActiveAnnouncements();
     
     // Get price range for filters
     const priceRange = await Product.aggregate([
@@ -240,6 +250,7 @@ exports.category = async (req, res) => {
       subcategories,
       categories,
       breadcrumbs,
+      announcements,
       pagination: {
         currentPage: parseInt(page),
         totalPages,
@@ -330,9 +341,12 @@ exports.search = async (req, res) => {
 exports.cart = async (req, res) => {
   try {
     const categories = await Category.getCategoryTree();
+    const announcements = await Announcement.getActiveAnnouncements();
+    
     res.render('shop/cart', {
       title: 'Your Basket',
-      categories
+      categories,
+      announcements
     });
   } catch (error) {
     console.error('Error loading cart:', error);
@@ -357,5 +371,158 @@ exports.newsletterSubscribe = async (req, res) => {
   } catch (error) {
     console.error('Error subscribing to newsletter:', error);
     res.status(500).json({ success: false, message: 'Error subscribing. Please try again.' });
+  }
+};
+
+// Offers page (new, best, featured)
+exports.offers = async (req, res) => {
+  try {
+    const { type } = req.params;
+    const { page = 1 } = req.query;
+    const limit = 20;
+    const skip = (parseInt(page) - 1) * limit;
+    
+    let filter = { isActive: true };
+    let title = 'Offers';
+    
+    switch (type) {
+      case 'new':
+        filter.isNewOffer = true;
+        title = 'New Offers';
+        break;
+      case 'best':
+        filter.isBestOffer = true;
+        title = 'Best Offers';
+        break;
+      case 'featured':
+        filter.isFeatured = true;
+        title = 'Featured Products';
+        break;
+      default:
+        return res.status(404).render('error', { message: 'Offers page not found' });
+    }
+    
+    const totalProducts = await Product.countDocuments(filter);
+    const totalPages = Math.ceil(totalProducts / limit);
+    
+    const products = await Product.find(filter)
+      .populate('category', 'name slug')
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+    
+    const categories = await Category.getCategoryTree();
+    const announcements = await Announcement.getActiveAnnouncements();
+    
+    res.render('shop/offers', {
+      title,
+      type,
+      products,
+      categories,
+      announcements,
+      pagination: {
+        currentPage: parseInt(page),
+        totalPages,
+        totalProducts,
+        hasNext: parseInt(page) < totalPages,
+        hasPrev: parseInt(page) > 1
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching offers:', error);
+    res.status(500).render('error', { message: 'Error loading offers' });
+  }
+};
+
+// Checkout page
+exports.checkout = async (req, res) => {
+  try {
+    const categories = await Category.getCategoryTree();
+    const announcements = await Announcement.getActiveAnnouncements();
+    
+    res.render('shop/checkout', {
+      title: 'Checkout',
+      categories,
+      announcements
+    });
+  } catch (error) {
+    console.error('Error loading checkout:', error);
+    res.status(500).render('error', { message: 'Error loading checkout' });
+  }
+};
+
+// Place order
+exports.placeOrder = async (req, res) => {
+  try {
+    const { 
+      fullName, 
+      email, 
+      phone, 
+      address, 
+      city, 
+      postalCode, 
+      notes,
+      cart 
+    } = req.body;
+    
+    // Validate required fields
+    if (!fullName || !email || !phone || !address || !city) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Please fill all required fields' 
+      });
+    }
+    
+    if (!cart || cart.length === 0) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Your cart is empty' 
+      });
+    }
+    
+    // Fetch product details and calculate total
+    const productIds = cart.map(item => item.productId);
+    const products = await Product.find({ _id: { $in: productIds } });
+    
+    let orderTotal = 0;
+    const orderItems = [];
+    
+    for (const cartItem of cart) {
+      const product = products.find(p => p._id.toString() === cartItem.productId);
+      if (product) {
+        const itemTotal = product.price * cartItem.quantity;
+        orderTotal += itemTotal;
+        orderItems.push({
+          productId: product._id,
+          name: product.name,
+          price: product.price,
+          quantity: cartItem.quantity,
+          total: itemTotal
+        });
+      }
+    }
+    
+    // Generate order number
+    const orderNumber = 'ORD-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5).toUpperCase();
+    
+    // In a real app, save to database
+    console.log('New Order:', {
+      orderNumber,
+      customer: { fullName, email, phone, address, city, postalCode },
+      items: orderItems,
+      total: orderTotal,
+      paymentMethod: 'Cash on Delivery',
+      notes
+    });
+    
+    res.json({ 
+      success: true, 
+      message: 'Order placed successfully!',
+      orderNumber,
+      total: orderTotal
+    });
+  } catch (error) {
+    console.error('Error placing order:', error);
+    res.status(500).json({ success: false, message: 'Error placing order. Please try again.' });
   }
 };

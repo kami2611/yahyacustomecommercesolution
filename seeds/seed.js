@@ -6,8 +6,94 @@
 const mongoose = require('mongoose');
 const Category = require('../models/Category');
 const Product = require('../models/Product');
+const Announcement = require('../models/Announcement');
 
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/ecommerce';
+
+// Default announcements
+const announcementsData = [
+  { text: '🚚 FREE DELIVERY on orders over Rs 5,000!', order: 0, isActive: true },
+  { text: '🎉 NEW YEAR SALE - Up to 50% OFF on selected items!', order: 1, isActive: true },
+  { text: '💳 Cash on Delivery available nationwide', order: 2, isActive: true },
+  { text: '⭐ Trusted by 10,000+ happy customers', order: 3, isActive: true },
+  { text: '🔄 Easy 7-day returns & exchanges', order: 4, isActive: true }
+];
+
+// Real product images from various sources
+const productImages = {
+  phones: [
+    'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=500',
+    'https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?w=500',
+    'https://images.unsplash.com/photo-1565849904461-04a58ad377e0?w=500',
+    'https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=500',
+    'https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?w=500'
+  ],
+  laptops: [
+    'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=500',
+    'https://images.unsplash.com/photo-1525547719571-a2d4ac8945e2?w=500',
+    'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=500',
+    'https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=500',
+    'https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=500'
+  ],
+  accessories: [
+    'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500',
+    'https://images.unsplash.com/photo-1583394838336-acd977736f90?w=500',
+    'https://images.unsplash.com/photo-1625723044792-44de16ccb4e9?w=500',
+    'https://images.unsplash.com/photo-1609091839311-d5365f9ff1c5?w=500',
+    'https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?w=500'
+  ],
+  mens: [
+    'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=500',
+    'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=500',
+    'https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=500',
+    'https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?w=500',
+    'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=500'
+  ],
+  womens: [
+    'https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=500',
+    'https://images.unsplash.com/photo-1525507119028-ed4c629a60a3?w=500',
+    'https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?w=500',
+    'https://images.unsplash.com/photo-1558171813-4c088753af8f?w=500',
+    'https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=500'
+  ],
+  kids: [
+    'https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=500',
+    'https://images.unsplash.com/photo-1518831959646-742c3a14ebf7?w=500',
+    'https://images.unsplash.com/photo-1543512214-318c7553f230?w=500'
+  ],
+  furniture: [
+    'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=500',
+    'https://images.unsplash.com/photo-1519947486511-46149fa0a254?w=500',
+    'https://images.unsplash.com/photo-1592078615290-033ee584e267?w=500',
+    'https://images.unsplash.com/photo-1506439773649-6e0eb8cfb237?w=500'
+  ],
+  kitchen: [
+    'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=500',
+    'https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=500',
+    'https://images.unsplash.com/photo-1593618998160-e34014e67f23?w=500',
+    'https://images.unsplash.com/photo-1600369672770-985fd30004eb?w=500'
+  ],
+  garden: [
+    'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=500',
+    'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=500'
+  ],
+  fitness: [
+    'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=500',
+    'https://images.unsplash.com/photo-1593079831268-3381b0db4a77?w=500',
+    'https://images.unsplash.com/photo-1598289431512-b97b0917affc?w=500',
+    'https://images.unsplash.com/photo-1510017803434-a899398421b3?w=500'
+  ],
+  outdoor: [
+    'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=500',
+    'https://images.unsplash.com/photo-1501555088652-021faa106b9b?w=500',
+    'https://images.unsplash.com/photo-1536746803623-cef87080bfc8?w=500'
+  ],
+  crafts: [
+    'https://images.unsplash.com/photo-1452860606245-08befc0ff44b?w=500',
+    'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=500',
+    'https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?w=500'
+  ]
+};
 
 // Sample categories with hierarchy
 const categoriesData = [
@@ -153,7 +239,8 @@ async function seed() {
     console.log('Clearing existing data...');
     await Category.deleteMany({});
     await Product.deleteMany({});
-    console.log('✓ Cleared existing categories and products');
+    await Announcement.deleteMany({});
+    console.log('✓ Cleared existing categories, products, and announcements');
     
     // Create categories
     console.log('Creating categories...');
@@ -190,6 +277,26 @@ async function seed() {
     console.log('Creating products...');
     let productCount = 0;
     
+    // Map category slugs to image arrays
+    const categoryImageMap = {
+      'phones': productImages.phones,
+      'laptops': productImages.laptops,
+      'electronics-accessories': productImages.accessories,
+      'mens-clothing': productImages.mens,
+      'womens-clothing': productImages.womens,
+      'kids-clothing': productImages.kids,
+      'furniture': productImages.furniture,
+      'kitchen': productImages.kitchen,
+      'garden-tools': productImages.garden,
+      'fitness': productImages.fitness,
+      'outdoor-gear': productImages.outdoor,
+      'adhesives-tapes': productImages.crafts,
+      'paints-brushes': productImages.crafts
+    };
+    
+    // Track image usage per category to cycle through images
+    const imageIndex = {};
+    
     for (const prod of productsData) {
       const categoryId = categoryMap[prod.category];
       if (!categoryId) {
@@ -205,6 +312,14 @@ async function seed() {
         });
       }
       
+      // Get appropriate image for this category
+      const categoryImages = categoryImageMap[prod.category] || productImages.accessories;
+      if (!imageIndex[prod.category]) {
+        imageIndex[prod.category] = 0;
+      }
+      const image = categoryImages[imageIndex[prod.category] % categoryImages.length];
+      imageIndex[prod.category]++;
+      
       await Product.create({
         name: prod.name,
         slug: prod.name.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-' + Date.now() + Math.random().toString(36).substr(2, 5),
@@ -218,7 +333,7 @@ async function seed() {
         isNewOffer: prod.isNewOffer || false,
         isBestOffer: prod.isBestOffer || false,
         isFeatured: prod.isFeatured || false,
-        images: ['/images/placeholder.png']
+        images: [image]
       });
       
       productCount++;
@@ -226,12 +341,20 @@ async function seed() {
     
     console.log(`✓ Created ${productCount} products`);
     
+    // Create announcements
+    console.log('Creating announcements...');
+    for (const announcement of announcementsData) {
+      await Announcement.create(announcement);
+    }
+    console.log(`✓ Created ${announcementsData.length} announcements`);
+    
     console.log('\n========================================');
     console.log('✓ Seed completed successfully!');
     console.log('========================================');
     console.log('\nSummary:');
     console.log(`  - Categories: ${Object.keys(categoryMap).length}`);
     console.log(`  - Products: ${productCount}`);
+    console.log(`  - Announcements: ${announcementsData.length}`);
     console.log('\nYou can now start the server with: npm run dev');
     
   } catch (error) {

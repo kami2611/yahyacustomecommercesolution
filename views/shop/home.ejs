@@ -7,6 +7,8 @@
   <link rel="stylesheet" href="/css/home.css">
 </head>
 <body>
+  <%- include('../partials/announcement-bar') %>
+  
   <%- include('../partials/header') %>
   
   <%- include('../partials/mega-nav') %>
@@ -48,37 +50,58 @@
   <% if (newOffers && newOffers.length > 0) { %>
     <section class="product-section">
       <div class="container">
-        <h2 class="section-title">New Offers</h2>
-        <div class="product-grid">
-          <% newOffers.forEach(product => { %>
-            <div class="product-card">
-              <div class="product-image">
-                <a href="/product/<%= product.slug %>">
-                  <img src="/images/placeholder.png" alt="<%= product.name %>">
-                </a>
-              </div>
-              <div class="product-details">
-                <h3 class="product-name">
-                  <a href="/product/<%= product.slug %>"><%= product.name %></a>
-                </h3>
-                <% if (product.category) { %>
-                  <span class="product-category"><%= product.category.name %></span>
-                <% } %>
-                <div class="product-price">$<%= product.price.toFixed(2) %></div>
-                <% if (product.stock > 0) { %>
-                  <span class="stock-status in-stock">In Stock</span>
-                <% } else { %>
-                  <span class="stock-status out-of-stock">Out of Stock</span>
-                <% } %>
-                <button class="btn-add-to-cart" 
-                        data-product-id="<%= product._id %>"
-                        onclick="addToCart(this, '<%= product._id %>', '<%= product.name.replace(/'/g, "\\'") %>', <%= product.price %>, '<%= product.images && product.images.length > 0 ? product.images[0] : '/images/placeholder.png' %>')">
-                  Add to Basket
-                </button>
-              </div>
-            </div>
-          <% }) %>
+        <div class="section-header">
+          <h2 class="section-title">New Offers</h2>
+          <% if (newOffers.length > 8) { %>
+            <a href="/offers/new" class="show-more-link">Show More →</a>
+          <% } %>
         </div>
+        <div class="product-carousel-wrapper">
+          <button class="carousel-nav-btn prev-btn" data-carousel="new-offers">‹</button>
+          <div class="product-carousel" id="new-offers-carousel">
+            <% newOffers.slice(0, 8).forEach(product => { %>
+              <div class="product-card">
+                <div class="product-image">
+                  <a href="/product/<%= product.slug %>">
+                    <img src="<%= product.images && product.images.length > 0 ? product.images[0] : '/images/placeholder.png' %>" 
+                         alt="<%= product.name %>"
+                         onerror="this.src='/images/placeholder.png'">
+                  </a>
+                  <% if (product.originalPrice && product.originalPrice > product.price) { %>
+                    <span class="discount-badge">
+                      -<%= Math.round((1 - product.price / product.originalPrice) * 100) %>%
+                    </span>
+                  <% } %>
+                </div>
+                <div class="product-details">
+                  <h3 class="product-name">
+                    <a href="/product/<%= product.slug %>"><%= product.name %></a>
+                  </h3>
+                  <% if (product.category) { %>
+                    <span class="product-category"><%= product.category.name %></span>
+                  <% } %>
+                  <div class="product-price-row">
+                    <span class="product-price">Rs <%= product.price.toLocaleString() %></span>
+                    <% if (product.originalPrice && product.originalPrice > product.price) { %>
+                      <span class="product-original-price">Rs <%= product.originalPrice.toLocaleString() %></span>
+                    <% } %>
+                  </div>
+                  <button class="btn-add-to-cart" 
+                          data-product-id="<%= product._id %>"
+                          onclick="addToCart(this, '<%= product._id %>', '<%= product.name.replace(/'/g, "\\'") %>', <%= product.price %>, '<%= product.images && product.images.length > 0 ? product.images[0] : '/images/placeholder.png' %>')">
+                    Add to Basket
+                  </button>
+                </div>
+              </div>
+            <% }) %>
+          </div>
+          <button class="carousel-nav-btn next-btn" data-carousel="new-offers">›</button>
+        </div>
+        <% if (newOffers.length > 8) { %>
+          <div class="show-more-container">
+            <a href="/offers/new" class="btn-show-more">Show More New Offers</a>
+          </div>
+        <% } %>
       </div>
     </section>
   <% } %>
@@ -87,37 +110,58 @@
   <% if (bestOffers && bestOffers.length > 0) { %>
     <section class="product-section best-offers">
       <div class="container">
-        <h2 class="section-title">Our Best Offers</h2>
-        <div class="product-grid">
-          <% bestOffers.forEach(product => { %>
-            <div class="product-card">
-              <div class="product-image">
-                <a href="/product/<%= product.slug %>">
-                  <img src="/images/placeholder.png" alt="<%= product.name %>">
-                </a>
-              </div>
-              <div class="product-details">
-                <h3 class="product-name">
-                  <a href="/product/<%= product.slug %>"><%= product.name %></a>
-                </h3>
-                <% if (product.category) { %>
-                  <span class="product-category"><%= product.category.name %></span>
-                <% } %>
-                <div class="product-price">$<%= product.price.toFixed(2) %></div>
-                <% if (product.stock > 0) { %>
-                  <span class="stock-status in-stock">In Stock</span>
-                <% } else { %>
-                  <span class="stock-status out-of-stock">Out of Stock</span>
-                <% } %>
-                <button class="btn-add-to-cart" 
-                        data-product-id="<%= product._id %>"
-                        onclick="addToCart(this, '<%= product._id %>', '<%= product.name.replace(/'/g, "\\'") %>', <%= product.price %>, '<%= product.images && product.images.length > 0 ? product.images[0] : '/images/placeholder.png' %>')">
-                  Add to Basket
-                </button>
-              </div>
-            </div>
-          <% }) %>
+        <div class="section-header">
+          <h2 class="section-title">Our Best Offers</h2>
+          <% if (bestOffers.length > 8) { %>
+            <a href="/offers/best" class="show-more-link">Show More →</a>
+          <% } %>
         </div>
+        <div class="product-carousel-wrapper">
+          <button class="carousel-nav-btn prev-btn" data-carousel="best-offers">‹</button>
+          <div class="product-carousel" id="best-offers-carousel">
+            <% bestOffers.slice(0, 8).forEach(product => { %>
+              <div class="product-card">
+                <div class="product-image">
+                  <a href="/product/<%= product.slug %>">
+                    <img src="<%= product.images && product.images.length > 0 ? product.images[0] : '/images/placeholder.png' %>" 
+                         alt="<%= product.name %>"
+                         onerror="this.src='/images/placeholder.png'">
+                  </a>
+                  <% if (product.originalPrice && product.originalPrice > product.price) { %>
+                    <span class="discount-badge">
+                      -<%= Math.round((1 - product.price / product.originalPrice) * 100) %>%
+                    </span>
+                  <% } %>
+                </div>
+                <div class="product-details">
+                  <h3 class="product-name">
+                    <a href="/product/<%= product.slug %>"><%= product.name %></a>
+                  </h3>
+                  <% if (product.category) { %>
+                    <span class="product-category"><%= product.category.name %></span>
+                  <% } %>
+                  <div class="product-price-row">
+                    <span class="product-price">Rs <%= product.price.toLocaleString() %></span>
+                    <% if (product.originalPrice && product.originalPrice > product.price) { %>
+                      <span class="product-original-price">Rs <%= product.originalPrice.toLocaleString() %></span>
+                    <% } %>
+                  </div>
+                  <button class="btn-add-to-cart" 
+                          data-product-id="<%= product._id %>"
+                          onclick="addToCart(this, '<%= product._id %>', '<%= product.name.replace(/'/g, "\\'") %>', <%= product.price %>, '<%= product.images && product.images.length > 0 ? product.images[0] : '/images/placeholder.png' %>')">
+                    Add to Basket
+                  </button>
+                </div>
+              </div>
+            <% }) %>
+          </div>
+          <button class="carousel-nav-btn next-btn" data-carousel="best-offers">›</button>
+        </div>
+        <% if (bestOffers.length > 8) { %>
+          <div class="show-more-container">
+            <a href="/offers/best" class="btn-show-more">Show More Best Offers</a>
+          </div>
+        <% } %>
       </div>
     </section>
   <% } %>
@@ -126,37 +170,58 @@
   <% if (featuredProducts && featuredProducts.length > 0) { %>
     <section class="product-section featured-products">
       <div class="container">
-        <h2 class="section-title">Products You'll Love</h2>
-        <div class="product-grid">
-          <% featuredProducts.forEach(product => { %>
-            <div class="product-card">
-              <div class="product-image">
-                <a href="/product/<%= product.slug %>">
-                  <img src="/images/placeholder.png" alt="<%= product.name %>">
-                </a>
-              </div>
-              <div class="product-details">
-                <h3 class="product-name">
-                  <a href="/product/<%= product.slug %>"><%= product.name %></a>
-                </h3>
-                <% if (product.category) { %>
-                  <span class="product-category"><%= product.category.name %></span>
-                <% } %>
-                <div class="product-price">$<%= product.price.toFixed(2) %></div>
-                <% if (product.stock > 0) { %>
-                  <span class="stock-status in-stock">In Stock</span>
-                <% } else { %>
-                  <span class="stock-status out-of-stock">Out of Stock</span>
-                <% } %>
-                <button class="btn-add-to-cart" 
-                        data-product-id="<%= product._id %>"
-                        onclick="addToCart(this, '<%= product._id %>', '<%= product.name.replace(/'/g, "\\'") %>', <%= product.price %>, '<%= product.images && product.images.length > 0 ? product.images[0] : '/images/placeholder.png' %>')">
-                  Add to Basket
-                </button>
-              </div>
-            </div>
-          <% }) %>
+        <div class="section-header">
+          <h2 class="section-title">Products You'll Love</h2>
+          <% if (featuredProducts.length > 8) { %>
+            <a href="/offers/featured" class="show-more-link">Show More →</a>
+          <% } %>
         </div>
+        <div class="product-carousel-wrapper">
+          <button class="carousel-nav-btn prev-btn" data-carousel="featured">‹</button>
+          <div class="product-carousel" id="featured-carousel">
+            <% featuredProducts.slice(0, 8).forEach(product => { %>
+              <div class="product-card">
+                <div class="product-image">
+                  <a href="/product/<%= product.slug %>">
+                    <img src="<%= product.images && product.images.length > 0 ? product.images[0] : '/images/placeholder.png' %>" 
+                         alt="<%= product.name %>"
+                         onerror="this.src='/images/placeholder.png'">
+                  </a>
+                  <% if (product.originalPrice && product.originalPrice > product.price) { %>
+                    <span class="discount-badge">
+                      -<%= Math.round((1 - product.price / product.originalPrice) * 100) %>%
+                    </span>
+                  <% } %>
+                </div>
+                <div class="product-details">
+                  <h3 class="product-name">
+                    <a href="/product/<%= product.slug %>"><%= product.name %></a>
+                  </h3>
+                  <% if (product.category) { %>
+                    <span class="product-category"><%= product.category.name %></span>
+                  <% } %>
+                  <div class="product-price-row">
+                    <span class="product-price">Rs <%= product.price.toLocaleString() %></span>
+                    <% if (product.originalPrice && product.originalPrice > product.price) { %>
+                      <span class="product-original-price">Rs <%= product.originalPrice.toLocaleString() %></span>
+                    <% } %>
+                  </div>
+                  <button class="btn-add-to-cart" 
+                          data-product-id="<%= product._id %>"
+                          onclick="addToCart(this, '<%= product._id %>', '<%= product.name.replace(/'/g, "\\'") %>', <%= product.price %>, '<%= product.images && product.images.length > 0 ? product.images[0] : '/images/placeholder.png' %>')">
+                    Add to Basket
+                  </button>
+                </div>
+              </div>
+            <% }) %>
+          </div>
+          <button class="carousel-nav-btn next-btn" data-carousel="featured">›</button>
+        </div>
+        <% if (featuredProducts.length > 8) { %>
+          <div class="show-more-container">
+            <a href="/offers/featured" class="btn-show-more">Show More Featured Products</a>
+          </div>
+        <% } %>
       </div>
     </section>
   <% } %>
@@ -178,7 +243,7 @@
   <%- include('../partials/footer') %>
   
   <script>
-    // Carousel functionality
+    // Hero Carousel functionality
     document.addEventListener('DOMContentLoaded', function() {
       const slides = document.querySelectorAll('.carousel-slide');
       const indicators = document.querySelectorAll('.carousel-indicator');
@@ -230,6 +295,23 @@
         
         startAutoPlay();
       }
+      
+      // Product Carousels scroll functionality
+      document.querySelectorAll('.carousel-nav-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const carouselId = this.dataset.carousel;
+          const carousel = document.getElementById(carouselId + '-carousel');
+          if (!carousel) return;
+          
+          const scrollAmount = carousel.clientWidth * 0.8;
+          
+          if (this.classList.contains('prev-btn')) {
+            carousel.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+          } else {
+            carousel.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+          }
+        });
+      });
     });
   </script>
 </body>

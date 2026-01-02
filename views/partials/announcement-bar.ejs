@@ -1,0 +1,73 @@
+<!-- Scrolling Announcement Bar -->
+<% if (typeof announcements !== 'undefined' && announcements && announcements.length > 0) { %>
+<div class="announcement-bar">
+  <div class="announcement-scroll-container">
+    <div class="announcement-scroll-track">
+      <% announcements.forEach(announcement => { %>
+        <span class="announcement-item"><%= announcement.text %></span>
+      <% }) %>
+      <!-- Duplicate for seamless scroll -->
+      <% announcements.forEach(announcement => { %>
+        <span class="announcement-item"><%= announcement.text %></span>
+      <% }) %>
+    </div>
+  </div>
+</div>
+<% } %>
+
+<style>
+.announcement-bar {
+  background: linear-gradient(90deg, #6b2d5b, #4a1e3f);
+  color: #fff;
+  padding: 8px 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.announcement-scroll-container {
+  width: 100%;
+  overflow: hidden;
+}
+
+.announcement-scroll-track {
+  display: flex;
+  animation: scroll-announcement 30s linear infinite;
+  white-space: nowrap;
+}
+
+.announcement-item {
+  flex-shrink: 0;
+  padding: 0 50px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+}
+
+.announcement-item::after {
+  content: '★';
+  margin-left: 50px;
+  color: #ffd700;
+}
+
+@keyframes scroll-announcement {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* Pause on hover */
+.announcement-bar:hover .announcement-scroll-track {
+  animation-play-state: paused;
+}
+
+@media (min-width: 768px) {
+  .announcement-item {
+    font-size: 0.9rem;
+    padding: 0 60px;
+  }
+}
+</style>

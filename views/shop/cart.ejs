@@ -8,6 +8,8 @@
   <link rel="stylesheet" href="/css/cart.css">
 </head>
 <body>
+  <%- include('../partials/announcement-bar') %>
+  
   <%- include('../partials/header') %>
   
   <%- include('../partials/mega-nav') %>
@@ -39,9 +41,9 @@
             <span>Total</span>
             <span id="cart-total">Rs 0</span>
           </div>
-          <button class="btn-checkout" id="btn-checkout" disabled>
+          <a href="/checkout" class="btn-checkout" id="btn-checkout">
             Proceed to Checkout
-          </button>
+          </a>
           <a href="/" class="btn-continue">Continue Shopping</a>
         </div>
       </div>
