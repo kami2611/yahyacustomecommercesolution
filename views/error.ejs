@@ -4,33 +4,75 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Error | E-Commerce Store</title>
-  <link rel="stylesheet" href="/css/shop.css">
+  <link rel="stylesheet" href="/css/home.css">
+  <style>
+    .error-page {
+      min-height: 60vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 40px 20px;
+    }
+    .error-icon {
+      font-size: 5rem;
+      margin-bottom: 20px;
+    }
+    .error-page h1 {
+      font-size: 2.5rem;
+      color: #6b2d5b;
+      margin: 0 0 15px 0;
+    }
+    .error-message {
+      font-size: 1.1rem;
+      color: #666;
+      margin: 0 0 30px 0;
+      max-width: 400px;
+    }
+    .error-btn {
+      display: inline-block;
+      padding: 14px 30px;
+      background: #6b2d5b;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 30px;
+      font-weight: 600;
+      transition: background 0.3s;
+    }
+    .error-btn:hover {
+      background: #5a2550;
+    }
+  </style>
 </head>
 <body>
-  <header class="shop-header">
-    <div class="container">
-      <a href="/" class="logo">E-Commerce Store</a>
-      <nav class="shop-nav">
-        <a href="/">All Products</a>
-        <a href="/admin">Admin</a>
-      </nav>
+  <header class="site-header">
+    <div class="header-desktop">
+      <div class="container header-container">
+        <a href="/" class="logo">
+          <span class="logo-text">E-Commerce Store</span>
+        </a>
+        <div class="header-actions">
+          <a href="/cart" class="btn-cart">
+            <span class="cart-icon">🛒</span>
+            <span>Basket</span>
+          </a>
+        </div>
+      </div>
     </div>
   </header>
   
-  <main class="shop-content">
+  <main>
     <div class="container">
       <div class="error-page">
+        <div class="error-icon">😕</div>
         <h1>Oops!</h1>
-        <p class="error-message"><%= message || 'Something went wrong' %></p>
-        <a href="/" class="btn btn-primary">Go to Homepage</a>
+        <p class="error-message"><%= message || 'Something went wrong. Please try again later.' %></p>
+        <a href="/" class="error-btn">Go to Homepage</a>
       </div>
     </div>
   </main>
   
-  <footer class="shop-footer">
-    <div class="container">
-      <p>&copy; 2025 E-Commerce Store. All rights reserved.</p>
-    </div>
-  </footer>
+  <%- include('partials/footer') %>
 </body>
 </html>

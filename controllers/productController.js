@@ -188,3 +188,24 @@ exports.apiShow = async (req, res) => {
     res.status(500).json({ success: false, message: 'Error fetching product' });
   }
 };
+
+// API: Get batch products by IDs (for cart)
+exports.apiBatch = async (req, res) => {
+  try {
+    const { ids } = req.body;
+    
+    if (!ids || !Array.isArray(ids)) {
+      return res.status(400).json({ success: false, message: 'Invalid product IDs' });
+    }
+    
+    const products = await Product.find({ 
+      _id: { $in: ids },
+      isActive: true 
+    }).populate('category', 'name slug');
+    
+    res.json(products);
+  } catch (error) {
+    console.error('Error fetching batch products:', error);
+    res.status(500).json({ success: false, message: 'Error fetching products' });
+  }
+};

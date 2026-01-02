@@ -10,5 +10,6 @@ router.get('/categories/:id/attributes', categoryController.getAttributes);
 // Product API routes
 router.get('/products', productController.apiIndex);
 router.get('/products/:id', productController.apiShow);
+router.post('/products/batch', productController.apiBatch);
 
 module.exports = router;

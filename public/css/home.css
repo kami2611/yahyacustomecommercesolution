@@ -508,6 +508,16 @@ body {
   cursor: pointer;
 }
 
+.newsletter-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.newsletter-message {
+  margin-top: 10px;
+  font-size: 0.9rem;
+}
+
 .footer-bottom {
   text-align: center;
   padding-top: 20px;

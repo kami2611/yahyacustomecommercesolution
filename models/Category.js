@@ -112,6 +112,7 @@ categorySchema.statics.getCategoryTree = async function(parentId = null, level =
       name: category.name,
       slug: category.slug,
       level: level,
+      parentId: parentId,
       displayName: '—'.repeat(level) + ' ' + category.name
     });
     

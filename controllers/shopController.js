@@ -101,10 +101,51 @@ exports.show = async (req, res) => {
       attributes = await Category.getInheritedAttributes(product.category._id);
     }
     
+    // Get breadcrumb trail
+    let breadcrumbs = [];
+    if (product.category) {
+      const categoryDoc = await Category.findById(product.category._id);
+      if (categoryDoc) {
+        breadcrumbs = await Category.getAncestors(product.category._id);
+        breadcrumbs.push(categoryDoc);
+      }
+    }
+    
+    // Similar products - same category, excluding current product
+    let similarProducts = [];
+    if (product.category) {
+      similarProducts = await Product.find({
+        category: product.category._id,
+        _id: { $ne: product._id },
+        isActive: true
+      })
+      .populate('category', 'name slug')
+      .limit(6);
+    }
+    
+    // You may also like - featured or random products from other categories
+    const youMayAlsoLike = await Product.find({
+      _id: { $ne: product._id },
+      isActive: true,
+      $or: [
+        { isFeatured: true },
+        { isBestOffer: true }
+      ]
+    })
+    .populate('category', 'name slug')
+    .limit(6);
+    
+    // Get all categories for mega nav
+    const categories = await Category.getCategoryTree();
+    
     res.render('shop/product', { 
       title: product.name,
       product,
-      attributes
+      attributes,
+      breadcrumbs,
+      similarProducts,
+      youMayAlsoLike,
+      categories
     });
   } catch (error) {
     console.error('Error fetching product:', error);
@@ -216,5 +257,105 @@ exports.category = async (req, res) => {
   } catch (error) {
     console.error('Error fetching category products:', error);
     res.status(500).render('error', { message: 'Error loading category' });
+  }
+};
+
+// Search products
+exports.search = async (req, res) => {
+  try {
+    const { q, sort = 'relevance', page = 1 } = req.query;
+    const limit = 12;
+    const skip = (parseInt(page) - 1) * limit;
+    
+    if (!q || q.trim() === '') {
+      return res.render('shop/search', {
+        title: 'Search',
+        query: '',
+        products: [],
+        categories: await Category.getCategoryTree(),
+        pagination: { currentPage: 1, totalPages: 0, totalProducts: 0 }
+      });
+    }
+    
+    const searchQuery = q.trim();
+    
+    // Build search filter using regex for partial matching
+    const searchFilter = {
+      isActive: true,
+      $or: [
+        { name: { $regex: searchQuery, $options: 'i' } },
+        { description: { $regex: searchQuery, $options: 'i' } }
+      ]
+    };
+    
+    // Sort options
+    let sortOption = { score: { $meta: 'textScore' } };
+    if (sort === 'price-low') sortOption = { price: 1 };
+    else if (sort === 'price-high') sortOption = { price: -1 };
+    else if (sort === 'newest') sortOption = { createdAt: -1 };
+    else sortOption = { createdAt: -1 }; // Default to newest if no text index
+    
+    const totalProducts = await Product.countDocuments(searchFilter);
+    const totalPages = Math.ceil(totalProducts / limit);
+    
+    const products = await Product.find(searchFilter)
+      .populate('category', 'name slug')
+      .sort(sortOption)
+      .skip(skip)
+      .limit(limit);
+    
+    const categories = await Category.getCategoryTree();
+    
+    res.render('shop/search', {
+      title: `Search: ${searchQuery}`,
+      query: searchQuery,
+      products,
+      categories,
+      pagination: {
+        currentPage: parseInt(page),
+        totalPages,
+        totalProducts,
+        hasNext: parseInt(page) < totalPages,
+        hasPrev: parseInt(page) > 1
+      },
+      filters: { sort }
+    });
+  } catch (error) {
+    console.error('Error searching products:', error);
+    res.status(500).render('error', { message: 'Error searching products' });
+  }
+};
+
+// Cart page
+exports.cart = async (req, res) => {
+  try {
+    const categories = await Category.getCategoryTree();
+    res.render('shop/cart', {
+      title: 'Your Basket',
+      categories
+    });
+  } catch (error) {
+    console.error('Error loading cart:', error);
+    res.status(500).render('error', { message: 'Error loading cart' });
+  }
+};
+
+// Newsletter subscribe
+exports.newsletterSubscribe = async (req, res) => {
+  try {
+    const { email } = req.body;
+    
+    if (!email || !email.includes('@')) {
+      return res.status(400).json({ success: false, message: 'Please enter a valid email address' });
+    }
+    
+    // In a real app, you would save this to a database or send to an email service
+    // For now, we'll just return success
+    console.log('Newsletter subscription:', email);
+    
+    res.json({ success: true, message: 'Thank you for subscribing!' });
+  } catch (error) {
+    console.error('Error subscribing to newsletter:', error);
+    res.status(500).json({ success: false, message: 'Error subscribing. Please try again.' });
   }
 };

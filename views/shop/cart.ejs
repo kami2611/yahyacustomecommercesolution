@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %> | E-Commerce Store</title>
+  <link rel="stylesheet" href="/css/home.css">
+  <link rel="stylesheet" href="/css/cart.css">
+</head>
+<body>
+  <%- include('../partials/header') %>
+  
+  <%- include('../partials/mega-nav') %>
+  
+  <main class="cart-page">
+    <div class="container">
+      <h1 class="cart-title">Your Basket</h1>
+      
+      <div class="cart-layout">
+        <!-- Cart Items -->
+        <div class="cart-items" id="cart-items">
+          <div class="cart-loading">
+            <p>Loading your basket...</p>
+          </div>
+        </div>
+        
+        <!-- Cart Summary -->
+        <div class="cart-summary" id="cart-summary">
+          <h3>Order Summary</h3>
+          <div class="summary-row">
+            <span>Subtotal</span>
+            <span id="cart-subtotal">Rs 0</span>
+          </div>
+          <div class="summary-row">
+            <span>Delivery</span>
+            <span id="cart-delivery">FREE</span>
+          </div>
+          <div class="summary-row total">
+            <span>Total</span>
+            <span id="cart-total">Rs 0</span>
+          </div>
+          <button class="btn-checkout" id="btn-checkout" disabled>
+            Proceed to Checkout
+          </button>
+          <a href="/" class="btn-continue">Continue Shopping</a>
+        </div>
+      </div>
+    </div>
+  </main>
+  
+  <%- include('../partials/footer') %>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', async function() {
+      const cartItemsContainer = document.getElementById('cart-items');
+      const subtotalEl = document.getElementById('cart-subtotal');
+      const totalEl = document.getElementById('cart-total');
+      const checkoutBtn = document.getElementById('btn-checkout');
+      
+      // Get cart from localStorage
+      let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      
+      if (cart.length === 0) {
+        cartItemsContainer.innerHTML = `
+          <div class="cart-empty">
+            <span class="empty-icon">🛒</span>
+            <h2>Your basket is empty</h2>
+            <p>Looks like you haven't added anything to your basket yet.</p>
+            <a href="/" class="btn-primary">Start Shopping</a>
+          </div>
+        `;
+        return;
+      }
+      
+      // Fetch product details for cart items
+      try {
+        const productIds = cart.map(item => item.productId);
+        const response = await fetch('/api/products/batch', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ids: productIds })
+        });
+        
+        if (!response.ok) throw new Error('Failed to fetch products');
+        
+        const products = await response.json();
+        
+        // Build cart items HTML
+        let cartHTML = '';
+        let subtotal = 0;
+        
+        cart.forEach(cartItem => {
+          const product = products.find(p => p._id === cartItem.productId);
+          if (product) {
+            const itemTotal = product.price * cartItem.quantity;
+            subtotal += itemTotal;
+            
+            cartHTML += `
+              <div class="cart-item" data-product-id="${product._id}">
+                <div class="cart-item-image">
+                  <img src="${product.images && product.images.length > 0 ? product.images[0] : '/images/placeholder.png'}" 
+                       alt="${product.name}"
+                       onerror="this.src='/images/placeholder.png'">
+                </div>
+                <div class="cart-item-details">
+                  <h3 class="cart-item-title">
+                    <a href="/product/${product.slug}">${product.name}</a>
+                  </h3>
+                  <p class="cart-item-price">Rs ${product.price.toLocaleString()}</p>
+                </div>
+                <div class="cart-item-quantity">
+                  <button class="qty-btn qty-minus" data-id="${product._id}">−</button>
+                  <input type="number" class="qty-input" value="${cartItem.quantity}" min="1" max="99" data-id="${product._id}">
+                  <button class="qty-btn qty-plus" data-id="${product._id}">+</button>
+                </div>
+                <div class="cart-item-total">
+                  <span>Rs ${itemTotal.toLocaleString()}</span>
+                </div>
+                <button class="cart-item-remove" data-id="${product._id}" aria-label="Remove item">✕</button>
+              </div>
+            `;
+          }
+        });
+        
+        cartItemsContainer.innerHTML = cartHTML || '<div class="cart-empty"><p>No valid items in cart</p></div>';
+        subtotalEl.textContent = `Rs ${subtotal.toLocaleString()}`;
+        totalEl.textContent = `Rs ${subtotal.toLocaleString()}`;
+        checkoutBtn.disabled = subtotal === 0;
+        
+        // Add event listeners
+        addCartEventListeners();
+        
+      } catch (error) {
+        console.error('Error loading cart:', error);
+        cartItemsContainer.innerHTML = `
+          <div class="cart-error">
+            <p>Error loading your basket. Please try again.</p>
+            <button onclick="location.reload()" class="btn-primary">Retry</button>
+          </div>
+        `;
+      }
+      
+      function addCartEventListeners() {
+        // Quantity minus buttons
+        document.querySelectorAll('.qty-minus').forEach(btn => {
+          btn.addEventListener('click', function() {
+            const id = this.dataset.id;
+            updateQuantity(id, -1);
+          });
+        });
+        
+        // Quantity plus buttons
+        document.querySelectorAll('.qty-plus').forEach(btn => {
+          btn.addEventListener('click', function() {
+            const id = this.dataset.id;
+            updateQuantity(id, 1);
+          });
+        });
+        
+        // Quantity input change
+        document.querySelectorAll('.qty-input').forEach(input => {
+          input.addEventListener('change', function() {
+            const id = this.dataset.id;
+            const newQty = parseInt(this.value) || 1;
+            setQuantity(id, newQty);
+          });
+        });
+        
+        // Remove buttons
+        document.querySelectorAll('.cart-item-remove').forEach(btn => {
+          btn.addEventListener('click', function() {
+            const id = this.dataset.id;
+            removeFromCart(id);
+          });
+        });
+      }
+      
+      function updateQuantity(productId, change) {
+        let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        const item = cart.find(i => i.productId === productId);
+        if (item) {
+          item.quantity = Math.max(1, item.quantity + change);
+          localStorage.setItem('cart', JSON.stringify(cart));
+          location.reload();
+        }
+      }
+      
+      function setQuantity(productId, quantity) {
+        let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        const item = cart.find(i => i.productId === productId);
+        if (item) {
+          item.quantity = Math.max(1, quantity);
+          localStorage.setItem('cart', JSON.stringify(cart));
+          location.reload();
+        }
+      }
+      
+      function removeFromCart(productId) {
+        let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        cart = cart.filter(i => i.productId !== productId);
+        localStorage.setItem('cart', JSON.stringify(cart));
+        location.reload();
+      }
+    });
+  </script>
+</body>
+</html>

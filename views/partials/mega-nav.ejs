@@ -8,12 +8,13 @@
         %>
         <% rootCategories.forEach(category => { %>
           <% 
-            // Get children of this category
-            const children = categories.filter(cat => cat.level === category.level + 1);
+            // Get direct children of THIS category by matching parentId
+            const children = categories.filter(cat => cat.parentId && cat.parentId.toString() === category._id.toString());
           %>
           <li class="nav-category-item" data-category-id="<%= category._id %>">
             <a href="/category/<%= category.slug %>" class="nav-category-link">
               <%= category.name %>
+              <% if (children.length > 0) { %><span class="nav-arrow">▼</span><% } %>
             </a>
             
             <% if (children.length > 0) { %>
@@ -21,8 +22,8 @@
                 <div class="mega-dropdown-content">
                   <% children.forEach(child => { %>
                     <% 
-                      // Get grandchildren
-                      const grandchildren = categories.filter(cat => cat.level === child.level + 1);
+                      // Get grandchildren of THIS child
+                      const grandchildren = categories.filter(cat => cat.parentId && cat.parentId.toString() === child._id.toString());
                     %>
                     <div class="mega-column">
                       <a href="/category/<%= child.slug %>" class="mega-column-title">
