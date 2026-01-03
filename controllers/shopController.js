@@ -74,6 +74,7 @@ exports.home = async (req, res) => {
     .limit(12);
     
     const categories = await Category.getCategoryTree();
+    const nestedCategories = await Category.getNestedCategoryTree();
     
     res.render('shop/home', { 
       title: 'Home',
@@ -82,6 +83,7 @@ exports.home = async (req, res) => {
       bestOffers,
       featuredProducts,
       categories,
+      nestedCategories,
       announcements
     });
   } catch (error) {
@@ -108,15 +110,25 @@ exports.show = async (req, res) => {
       attributes = await Category.getInheritedAttributes(product.category._id);
     }
     
-    // Get breadcrumb trail
-    let breadcrumbs = [];
+    // Get breadcrumb trail with SEO-friendly URLs
+    let breadcrumbs = [{ name: 'Home', url: '/' }];
+    let categoryPath = '';
     if (product.category) {
       const categoryDoc = await Category.findById(product.category._id);
       if (categoryDoc) {
-        breadcrumbs = await Category.getAncestors(product.category._id);
-        breadcrumbs.push(categoryDoc);
+        const ancestors = await Category.getAncestors(product.category._id);
+        ancestors.forEach(ancestor => {
+          categoryPath += (categoryPath ? '/' : '') + ancestor.slug;
+          breadcrumbs.push({ name: ancestor.name, url: `/category/${categoryPath}` });
+        });
+        categoryPath += (categoryPath ? '/' : '') + categoryDoc.slug;
+        breadcrumbs.push({ name: categoryDoc.name, url: `/category/${categoryPath}` });
       }
     }
+    breadcrumbs.push({ name: product.name, url: null });
+    
+    // Build the canonical SEO-friendly URL for this product
+    const productUrl = categoryPath ? `/${categoryPath}/${product.slug}` : `/product/${product.slug}`;
     
     // Similar products - same category, excluding current product
     let similarProducts = [];
@@ -144,6 +156,7 @@ exports.show = async (req, res) => {
     
     // Get all categories for mega nav
     const categories = await Category.getCategoryTree();
+    const nestedCategories = await Category.getNestedCategoryTree();
     const announcements = await Announcement.getActiveAnnouncements();
     
     res.render('shop/product', { 
@@ -151,13 +164,43 @@ exports.show = async (req, res) => {
       product,
       attributes,
       breadcrumbs,
+      productUrl,
+      categoryPath,
       similarProducts,
       youMayAlsoLike,
       categories,
+      nestedCategories,
       announcements
     });
   } catch (error) {
     console.error('Error fetching product:', error);
+    res.status(500).render('error', { message: 'Error loading product' });
+  }
+};
+
+// Product page via SEO-friendly URL path
+exports.showByPath = async (req, res) => {
+  try {
+    // Get the product slug from the last segment
+    const pathParts = Object.values(req.params).filter(Boolean);
+    const productSlug = pathParts[pathParts.length - 1];
+    
+    // Try to find product by slug
+    const product = await Product.findOne({ 
+      slug: productSlug,
+      isActive: true 
+    }).populate('category', 'name slug');
+    
+    if (!product) {
+      // Not a product, might be a category - redirect to category handler
+      return res.status(404).render('error', { message: 'Product not found' });
+    }
+    
+    // Delegate to the standard show method
+    req.params.slug = productSlug;
+    return exports.show(req, res);
+  } catch (error) {
+    console.error('Error fetching product by path:', error);
     res.status(500).render('error', { message: 'Error loading product' });
   }
 };
@@ -176,9 +219,12 @@ exports.category = async (req, res) => {
     const limit = 12;
     const skip = (parseInt(page) - 1) * limit;
     
-    // Build filter
+    // Get all descendant category IDs to include products from subcategories
+    const categoryIds = await Category.getAllDescendantIds(category._id);
+    
+    // Build filter - include all products from this category and its descendants
     const filter = {
-      category: category._id,
+      category: { $in: categoryIds },
       isActive: true
     };
     
@@ -226,20 +272,23 @@ exports.category = async (req, res) => {
     // Build breadcrumbs
     const breadcrumbs = [{ name: 'Home', url: '/' }];
     
-    // Get ancestors for breadcrumbs
+    // Get ancestors for breadcrumbs with SEO-friendly URLs
     const ancestors = await Category.getAncestors(category._id);
+    let pathSoFar = '';
     ancestors.forEach(ancestor => {
-      breadcrumbs.push({ name: ancestor.name, url: `/category/${ancestor.slug}` });
+      pathSoFar += (pathSoFar ? '/' : '') + ancestor.slug;
+      breadcrumbs.push({ name: ancestor.name, url: `/category/${pathSoFar}` });
     });
     breadcrumbs.push({ name: category.name, url: null });
     
-    // Get all categories for navigation
+    // Get all categories for navigation (nested structure for mobile menu)
     const categories = await Category.getCategoryTree();
+    const nestedCategories = await Category.getNestedCategoryTree();
     const announcements = await Announcement.getActiveAnnouncements();
     
-    // Get price range for filters
+    // Get price range for filters (from all descendants)
     const priceRange = await Product.aggregate([
-      { $match: { category: category._id, isActive: true } },
+      { $match: { category: { $in: categoryIds }, isActive: true } },
       { $group: { _id: null, minPrice: { $min: '$price' }, maxPrice: { $max: '$price' } } }
     ]);
     
@@ -249,6 +298,7 @@ exports.category = async (req, res) => {
       products,
       subcategories,
       categories,
+      nestedCategories,
       breadcrumbs,
       announcements,
       pagination: {
@@ -279,12 +329,18 @@ exports.search = async (req, res) => {
     const skip = (parseInt(page) - 1) * limit;
     
     if (!q || q.trim() === '') {
+      const categories = await Category.getCategoryTree();
+      const nestedCategories = await Category.getNestedCategoryTree();
+      const announcements = await Announcement.getActiveAnnouncements();
       return res.render('shop/search', {
         title: 'Search',
         query: '',
         products: [],
-        categories: await Category.getCategoryTree(),
-        pagination: { currentPage: 1, totalPages: 0, totalProducts: 0 }
+        categories,
+        nestedCategories,
+        announcements,
+        pagination: { currentPage: 1, totalPages: 0, totalProducts: 0 },
+        filters: { sort: 'relevance' }
       });
     }
     
@@ -316,12 +372,16 @@ exports.search = async (req, res) => {
       .limit(limit);
     
     const categories = await Category.getCategoryTree();
+    const nestedCategories = await Category.getNestedCategoryTree();
+    const announcements = await Announcement.getActiveAnnouncements();
     
     res.render('shop/search', {
       title: `Search: ${searchQuery}`,
       query: searchQuery,
       products,
       categories,
+      nestedCategories,
+      announcements,
       pagination: {
         currentPage: parseInt(page),
         totalPages,
@@ -341,11 +401,13 @@ exports.search = async (req, res) => {
 exports.cart = async (req, res) => {
   try {
     const categories = await Category.getCategoryTree();
+    const nestedCategories = await Category.getNestedCategoryTree();
     const announcements = await Announcement.getActiveAnnouncements();
     
     res.render('shop/cart', {
       title: 'Your Basket',
       categories,
+      nestedCategories,
       announcements
     });
   } catch (error) {

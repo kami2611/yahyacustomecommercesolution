@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="/css/category.css">
 </head>
 <body>
+  <%- include('../partials/announcement-bar') %>
   <%- include('../partials/header') %>
   
   <%- include('../partials/mega-nav') %>
@@ -117,11 +118,13 @@
                 <div class="product-card">
                   <div class="product-image">
                     <a href="/product/<%= product.slug %>">
-                      <img src="/images/placeholder.png" alt="<%= product.name %>">
+                      <img src="<%= product.images && product.images.length > 0 ? product.images[0] : '/images/placeholder.png' %>" 
+                           alt="<%= product.name %>"
+                           onerror="this.src='/images/placeholder.png'">
                     </a>
                     <% if (product.originalPrice && product.originalPrice > product.price) { %>
                       <span class="discount-badge">
-                        Save $<%= (product.originalPrice - product.price).toFixed(0) %>
+                        <%= Math.round((1 - product.price / product.originalPrice) * 100) %>% OFF
                       </span>
                     <% } %>
                   </div>
@@ -130,9 +133,9 @@
                       <a href="/product/<%= product.slug %>"><%= product.name %></a>
                     </h3>
                     <div class="product-pricing">
-                      <span class="current-price">$<%= product.price.toFixed(2) %></span>
+                      <span class="current-price">Rs <%= product.price.toLocaleString() %></span>
                       <% if (product.originalPrice && product.originalPrice > product.price) { %>
-                        <span class="original-price">$<%= product.originalPrice.toFixed(2) %></span>
+                        <span class="original-price">Rs <%= product.originalPrice.toLocaleString() %></span>
                       <% } %>
                     </div>
                     <% if (product.stock > 0) { %>
@@ -213,5 +216,7 @@
       }
     });
   </script>
+  
+  <%- include('../partials/cart-popup') %>
 </body>
 </html>

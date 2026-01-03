@@ -31,8 +31,8 @@ const adminProductRoutes = require('./routes/admin/products');
 const adminHomepageRoutes = require('./routes/admin/homepage');
 const adminAnnouncementRoutes = require('./routes/admin/announcements');
 
-// Use Routes
-app.use('/', shopRoutes);
+// Use Routes - Admin routes must come before shop routes
+// because shop routes have catch-all patterns that would intercept admin URLs
 app.use('/api', apiRoutes);
 app.use('/admin/categories', adminCategoryRoutes);
 app.use('/admin/products', adminProductRoutes);
@@ -43,6 +43,9 @@ app.use('/admin/announcements', adminAnnouncementRoutes);
 app.get('/admin', (req, res) => {
   res.redirect('/admin/homepage');
 });
+
+// Shop routes - mounted last because they have catch-all patterns
+app.use('/', shopRoutes);
 
 // 404 Handler
 app.use((req, res) => {

@@ -6,134 +6,391 @@
   <title><%= title %> | E-Commerce Store</title>
   <link rel="stylesheet" href="/css/home.css">
   <link rel="stylesheet" href="/css/category.css">
+  <style>
+    /* Search Page Specific Styles */
+    .search-header {
+      text-align: center;
+      padding: 30px 20px;
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      border-radius: 12px;
+      margin-bottom: 30px;
+    }
+    
+    .search-header h1 {
+      font-size: 1.5rem;
+      color: #333;
+      margin-bottom: 8px;
+    }
+    
+    .search-header .search-query {
+      color: #6b2d5b;
+      font-weight: 600;
+    }
+    
+    .search-header .results-count {
+      color: #666;
+      font-size: 0.95rem;
+    }
+    
+    /* Search Products Grid - Consistent Card Styling */
+    .search-results-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+    
+    .search-product-card {
+      background: #fff;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    .search-product-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+    }
+    
+    .search-product-card .card-image {
+      position: relative;
+      aspect-ratio: 1;
+      background: #f8f9fa;
+      overflow: hidden;
+    }
+    
+    .search-product-card .card-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s;
+    }
+    
+    .search-product-card:hover .card-image img {
+      transform: scale(1.05);
+    }
+    
+    .search-product-card .discount-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: #e53935;
+      color: #fff;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    
+    .search-product-card .card-info {
+      padding: 14px;
+    }
+    
+    .search-product-card .card-title {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #333;
+      margin-bottom: 6px;
+      line-height: 1.3;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    
+    .search-product-card .card-title a {
+      text-decoration: none;
+      color: inherit;
+    }
+    
+    .search-product-card .card-title a:hover {
+      color: #6b2d5b;
+    }
+    
+    .search-product-card .card-category {
+      font-size: 0.75rem;
+      color: #888;
+      margin-bottom: 8px;
+    }
+    
+    .search-product-card .card-category a {
+      color: inherit;
+      text-decoration: none;
+    }
+    
+    .search-product-card .card-category a:hover {
+      color: #6b2d5b;
+    }
+    
+    .search-product-card .card-price {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    
+    .search-product-card .price {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #6b2d5b;
+    }
+    
+    .search-product-card .original-price {
+      font-size: 0.85rem;
+      color: #999;
+      text-decoration: line-through;
+    }
+    
+    .search-product-card .btn-add-to-cart {
+      width: 100%;
+      padding: 10px;
+      background: #6b2d5b;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: background 0.2s;
+    }
+    
+    .search-product-card .btn-add-to-cart:hover {
+      background: #5a2550;
+    }
+    
+    .search-product-card .btn-add-to-cart .cart-icon {
+      font-size: 1rem;
+    }
+    
+    /* Sort Section */
+    .search-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding: 12px 16px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    }
+    
+    .sort-select {
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      background: #fff;
+    }
+    
+    /* No Results */
+    .no-results {
+      text-align: center;
+      padding: 60px 20px;
+      background: #f8f9fa;
+      border-radius: 12px;
+    }
+    
+    .no-results p {
+      color: #666;
+      margin-bottom: 20px;
+      font-size: 1rem;
+    }
+    
+    .no-results .btn-primary {
+      display: inline-block;
+      padding: 12px 28px;
+      background: #6b2d5b;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 500;
+      transition: background 0.2s;
+    }
+    
+    .no-results .btn-primary:hover {
+      background: #5a2550;
+    }
+    
+    /* Pagination */
+    .search-pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      margin-top: 40px;
+      flex-wrap: wrap;
+    }
+    
+    .pagination-btn, .pagination-number {
+      padding: 10px 16px;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      text-decoration: none;
+      color: #333;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+    
+    .pagination-btn:hover, .pagination-number:hover {
+      background: #f5f5f5;
+      border-color: #6b2d5b;
+    }
+    
+    .pagination-number.active {
+      background: #6b2d5b;
+      color: #fff;
+      border-color: #6b2d5b;
+    }
+    
+    /* Tablet */
+    @media (min-width: 768px) {
+      .search-header h1 {
+        font-size: 1.8rem;
+      }
+      
+      .search-results-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+      }
+    }
+    
+    /* Desktop */
+    @media (min-width: 1024px) {
+      .search-results-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 24px;
+      }
+      
+      .search-header {
+        padding: 40px;
+      }
+      
+      .search-header h1 {
+        font-size: 2rem;
+      }
+    }
+  </style>
 </head>
 <body>
+  <%- include('../partials/announcement-bar') %>
   <%- include('../partials/header') %>
-  
   <%- include('../partials/mega-nav') %>
   
   <main class="category-page">
     <div class="container">
       <!-- Search Header -->
-      <div class="category-header">
-        <h1 class="category-title">
+      <div class="search-header">
+        <h1>
           <% if (query) { %>
-            Search results for "<%= query %>"
+            Search results for "<span class="search-query"><%= query %></span>"
           <% } else { %>
             Search Products
           <% } %>
         </h1>
         <% if (pagination.totalProducts > 0) { %>
-          <p class="category-count"><%= pagination.totalProducts %> product<%= pagination.totalProducts !== 1 ? 's' : '' %> found</p>
+          <p class="results-count"><%= pagination.totalProducts %> product<%= pagination.totalProducts !== 1 ? 's' : '' %> found</p>
         <% } %>
       </div>
       
-      <div class="category-layout">
-        <!-- Filter Sidebar -->
-        <aside class="filter-sidebar">
-          <div class="filter-header">
-            <h3>Refine Results</h3>
-          </div>
-          
-          <!-- Sort (Mobile) -->
-          <div class="filter-section">
-            <h4 class="filter-title">Sort By</h4>
-            <form id="sort-form" method="GET" action="/search">
-              <input type="hidden" name="q" value="<%= query %>">
-              <select name="sort" class="sort-select" onchange="this.form.submit()">
-                <option value="relevance" <%= filters && filters.sort === 'relevance' ? 'selected' : '' %>>Relevance</option>
-                <option value="newest" <%= filters && filters.sort === 'newest' ? 'selected' : '' %>>Newest</option>
-                <option value="price-low" <%= filters && filters.sort === 'price-low' ? 'selected' : '' %>>Price: Low to High</option>
-                <option value="price-high" <%= filters && filters.sort === 'price-high' ? 'selected' : '' %>>Price: High to Low</option>
-              </select>
-            </form>
-          </div>
-        </aside>
+      <% if (products && products.length > 0) { %>
+        <!-- Sort Toolbar -->
+        <div class="search-toolbar">
+          <span><%= pagination.totalProducts %> results</span>
+          <form id="sort-form" method="GET" action="/search">
+            <input type="hidden" name="q" value="<%= query %>">
+            <select name="sort" class="sort-select" onchange="this.form.submit()">
+              <option value="relevance" <%= filters && filters.sort === 'relevance' ? 'selected' : '' %>>Relevance</option>
+              <option value="newest" <%= filters && filters.sort === 'newest' ? 'selected' : '' %>>Newest</option>
+              <option value="price-low" <%= filters && filters.sort === 'price-low' ? 'selected' : '' %>>Price: Low to High</option>
+              <option value="price-high" <%= filters && filters.sort === 'price-high' ? 'selected' : '' %>>Price: High to Low</option>
+            </select>
+          </form>
+        </div>
         
         <!-- Products Grid -->
-        <div class="products-section">
-          <% if (products && products.length > 0) { %>
-            <div class="products-grid">
-              <% products.forEach(product => { %>
-                <div class="product-card">
-                  <div class="product-card-image">
-                    <a href="/product/<%= product.slug %>">
-                      <% if (product.originalPrice && product.originalPrice > product.price) { %>
-                        <% const discount = Math.round((1 - product.price / product.originalPrice) * 100); %>
-                        <span class="discount-badge"><%= discount %>% OFF</span>
-                      <% } %>
-                      <img src="<%= product.images && product.images.length > 0 ? product.images[0] : '/images/placeholder.png' %>" 
-                           alt="<%= product.name %>"
-                           onerror="this.src='/images/placeholder.png'">
-                    </a>
-                  </div>
-                  <div class="product-card-info">
-                    <h3 class="product-card-title">
-                      <a href="/product/<%= product.slug %>"><%= product.name %></a>
-                    </h3>
-                    <% if (product.category) { %>
-                      <p class="product-card-category">
-                        <a href="/category/<%= product.category.slug %>"><%= product.category.name %></a>
-                      </p>
-                    <% } %>
-                    <div class="product-card-price">
-                      <span class="price">Rs <%= product.price.toLocaleString() %></span>
-                      <% if (product.originalPrice && product.originalPrice > product.price) { %>
-                        <span class="original-price">Rs <%= product.originalPrice.toLocaleString() %></span>
-                      <% } %>
-                    </div>
-                    <button class="btn-add-to-cart" 
-                            data-product-id="<%= product._id %>"
-                            onclick="addToCart(this, '<%= product._id %>', '<%= product.name.replace(/'/g, "\\'") %>', <%= product.price %>, '<%= product.images && product.images.length > 0 ? product.images[0] : '/images/placeholder.png' %>')">
-                      <span class="cart-icon">🛒</span>
-                      Add to Basket
-                    </button>
-                  </div>
-                </div>
-              <% }) %>
-            </div>
-            
-            <!-- Pagination -->
-            <% if (pagination.totalPages > 1) { %>
-              <div class="pagination">
-                <% if (pagination.hasPrev) { %>
-                  <a href="/search?q=<%= encodeURIComponent(query) %>&page=<%= pagination.currentPage - 1 %>&sort=<%= filters.sort %>" class="pagination-btn">← Previous</a>
+        <div class="search-results-grid">
+          <% products.forEach(product => { %>
+            <div class="search-product-card">
+              <div class="card-image">
+                <a href="/product/<%= product.slug %>">
+                  <% if (product.originalPrice && product.originalPrice > product.price) { %>
+                    <% const discount = Math.round((1 - product.price / product.originalPrice) * 100); %>
+                    <span class="discount-badge"><%= discount %>% OFF</span>
+                  <% } %>
+                  <img src="<%= product.images && product.images.length > 0 ? product.images[0] : '/images/placeholder.png' %>" 
+                       alt="<%= product.name %>"
+                       onerror="this.src='/images/placeholder.png'">
+                </a>
+              </div>
+              <div class="card-info">
+                <h3 class="card-title">
+                  <a href="/product/<%= product.slug %>"><%= product.name %></a>
+                </h3>
+                <% if (product.category) { %>
+                  <p class="card-category">
+                    <a href="/category/<%= product.category.slug %>"><%= product.category.name %></a>
+                  </p>
                 <% } %>
-                
-                <div class="pagination-numbers">
-                  <% for (let i = 1; i <= pagination.totalPages; i++) { %>
-                    <% if (i === pagination.currentPage) { %>
-                      <span class="pagination-number active"><%= i %></span>
-                    <% } else if (i === 1 || i === pagination.totalPages || (i >= pagination.currentPage - 2 && i <= pagination.currentPage + 2)) { %>
-                      <a href="/search?q=<%= encodeURIComponent(query) %>&page=<%= i %>&sort=<%= filters.sort %>" class="pagination-number"><%= i %></a>
-                    <% } else if (i === pagination.currentPage - 3 || i === pagination.currentPage + 3) { %>
-                      <span class="pagination-dots">...</span>
-                    <% } %>
+                <div class="card-price">
+                  <span class="price">Rs <%= product.price.toLocaleString() %></span>
+                  <% if (product.originalPrice && product.originalPrice > product.price) { %>
+                    <span class="original-price">Rs <%= product.originalPrice.toLocaleString() %></span>
                   <% } %>
                 </div>
-                
-                <% if (pagination.hasNext) { %>
-                  <a href="/search?q=<%= encodeURIComponent(query) %>&page=<%= pagination.currentPage + 1 %>&sort=<%= filters.sort %>" class="pagination-btn">Next →</a>
-                <% } %>
+                <button class="btn-add-to-cart" 
+                        data-product-id="<%= product._id %>"
+                        onclick="addToCart(this, '<%= product._id %>', '<%= product.name.replace(/'/g, "\\'") %>', <%= product.price %>, '<%= product.images && product.images.length > 0 ? product.images[0] : '/images/placeholder.png' %>')">
+                  <span class="cart-icon">🛒</span>
+                  Add to Basket
+                </button>
               </div>
-            <% } %>
-          <% } else { %>
-            <div class="no-products">
-              <p>
-                <% if (query) { %>
-                  No products found for "<%= query %>". Try different keywords.
-                <% } else { %>
-                  Enter a search term to find products.
-                <% } %>
-              </p>
-              <a href="/" class="btn-primary">Continue Shopping</a>
             </div>
-          <% } %>
+          <% }) %>
         </div>
-      </div>
+        
+        <!-- Pagination -->
+        <% if (pagination.totalPages > 1) { %>
+          <div class="search-pagination">
+            <% if (pagination.hasPrev) { %>
+              <a href="/search?q=<%= encodeURIComponent(query) %>&page=<%= pagination.currentPage - 1 %>&sort=<%= filters.sort %>" class="pagination-btn">← Previous</a>
+            <% } %>
+            
+            <% for (let i = 1; i <= pagination.totalPages; i++) { %>
+              <% if (i === pagination.currentPage) { %>
+                <span class="pagination-number active"><%= i %></span>
+              <% } else if (i === 1 || i === pagination.totalPages || (i >= pagination.currentPage - 2 && i <= pagination.currentPage + 2)) { %>
+                <a href="/search?q=<%= encodeURIComponent(query) %>&page=<%= i %>&sort=<%= filters.sort %>" class="pagination-number"><%= i %></a>
+              <% } else if (i === pagination.currentPage - 3 || i === pagination.currentPage + 3) { %>
+                <span class="pagination-dots">...</span>
+              <% } %>
+            <% } %>
+            
+            <% if (pagination.hasNext) { %>
+              <a href="/search?q=<%= encodeURIComponent(query) %>&page=<%= pagination.currentPage + 1 %>&sort=<%= filters.sort %>" class="pagination-btn">Next →</a>
+            <% } %>
+          </div>
+        <% } %>
+      <% } else { %>
+        <div class="no-results">
+          <p>
+            <% if (query) { %>
+              No products found for "<strong><%= query %></strong>". Try different keywords.
+            <% } else { %>
+              Enter a search term to find products.
+            <% } %>
+          </p>
+          <a href="/" class="btn-primary">Continue Shopping</a>
+        </div>
+      <% } %>
     </div>
   </main>
   
+  <%- include('../partials/cart-popup') %>
   <%- include('../partials/footer') %>
 </body>
 </html>

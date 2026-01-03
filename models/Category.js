@@ -112,7 +112,7 @@ categorySchema.statics.getCategoryTree = async function(parentId = null, level =
       name: category.name,
       slug: category.slug,
       level: level,
-      parentId: parentId,
+      parent: parentId,
       displayName: '—'.repeat(level) + ' ' + category.name
     });
     
@@ -121,6 +121,48 @@ categorySchema.statics.getCategoryTree = async function(parentId = null, level =
   }
   
   return tree;
+};
+
+// Static method to get full category tree with nested children
+categorySchema.statics.getNestedCategoryTree = async function(parentId = null) {
+  const categories = await this.find({ parent: parentId }).sort('name');
+  const tree = [];
+  
+  for (const category of categories) {
+    const children = await this.getNestedCategoryTree(category._id);
+    tree.push({
+      _id: category._id,
+      name: category.name,
+      slug: category.slug,
+      parent: parentId,
+      children: children
+    });
+  }
+  
+  return tree;
+};
+
+// Static method to get all descendant category IDs (for fetching products)
+categorySchema.statics.getAllDescendantIds = async function(categoryId) {
+  const ids = [categoryId];
+  const children = await this.find({ parent: categoryId });
+  
+  for (const child of children) {
+    const descendantIds = await this.getAllDescendantIds(child._id);
+    ids.push(...descendantIds);
+  }
+  
+  return ids;
+};
+
+// Static method to build SEO-friendly URL path for a category
+categorySchema.statics.getCategoryPath = async function(categoryId) {
+  const category = await this.findById(categoryId);
+  if (!category) return '';
+  
+  const ancestors = await this.getAncestors(categoryId);
+  const path = ancestors.map(a => a.slug).concat(category.slug).join('/');
+  return path;
 };
 
 module.exports = mongoose.model('Category', categorySchema);

@@ -62,31 +62,74 @@
     </div>
     
     <nav class="mobile-nav">
-      <a href="/" class="mobile-nav-link">Home</a>
+      <a href="/" class="mobile-nav-link">
+        <span>🏠</span> Home
+      </a>
       
-      <% if (typeof categories !== 'undefined' && categories && categories.length > 0) { %>
+      <% if (typeof nestedCategories !== 'undefined' && nestedCategories && nestedCategories.length > 0) { %>
+        <div class="mobile-nav-section">
+          <span class="mobile-nav-section-title">Categories</span>
+        </div>
+        
+        <%
+          // Recursive function to render category accordion
+          function renderCategoryAccordion(cats, level) {
+            level = level || 0;
+            let html = '';
+            cats.forEach(function(category) {
+              const hasChildren = category.children && category.children.length > 0;
+              const paddingLeft = level * 15;
+              
+              html += '<div class="mobile-accordion-item" data-level="' + level + '">';
+              
+              if (hasChildren) {
+                html += '<button class="mobile-accordion-header" style="padding-left: ' + (20 + paddingLeft) + 'px;">';
+                html += '<span>' + category.name + '</span>';
+                html += '<span class="accordion-arrow">›</span>';
+                html += '</button>';
+                html += '<div class="mobile-accordion-content">';
+                html += '<a href="/category/' + category.slug + '" class="mobile-accordion-link mobile-accordion-browse-all" style="padding-left: ' + (35 + paddingLeft) + 'px;">';
+                html += '🔍 Browse all ' + category.name;
+                html += '</a>';
+                // Recursively render children
+                html += renderCategoryAccordion(category.children, level + 1);
+                html += '</div>';
+              } else {
+                html += '<a href="/category/' + category.slug + '" class="mobile-accordion-header mobile-accordion-header-link" style="padding-left: ' + (20 + paddingLeft) + 'px;">';
+                html += '<span>' + category.name + '</span>';
+                html += '</a>';
+              }
+              
+              html += '</div>';
+            });
+            return html;
+          }
+        %>
+        <%- renderCategoryAccordion(nestedCategories, 0) %>
+      <% } else if (typeof categories !== 'undefined' && categories && categories.length > 0) { %>
+        <!-- Fallback to flat categories if nestedCategories not available -->
         <div class="mobile-nav-section">
           <span class="mobile-nav-section-title">Categories</span>
         </div>
         
         <% 
-          // Get root categories (no parent)
-          const rootCategories = categories.filter(c => !c.parent);
-          rootCategories.forEach(category => { 
-            // Find children of this category
-            const children = categories.filter(c => c.parent && c.parent.toString() === category._id.toString());
+          const rootCats = categories.filter(function(c) { return !c.parent; });
+          rootCats.forEach(function(category) { 
+            const children = categories.filter(function(c) { 
+              return c.parent && c.parent.toString() === category._id.toString(); 
+            });
         %>
           <div class="mobile-accordion-item">
             <% if (children.length > 0) { %>
-              <button class="mobile-accordion-header" data-category="<%= category._id %>">
+              <button class="mobile-accordion-header">
                 <span><%= category.name %></span>
                 <span class="accordion-arrow">›</span>
               </button>
-              <div class="mobile-accordion-content" id="accordion-<%= category._id %>">
-                <a href="/category/<%= category.slug %>" class="mobile-accordion-link mobile-accordion-view-all">
-                  View All <%= category.name %>
+              <div class="mobile-accordion-content">
+                <a href="/category/<%= category.slug %>" class="mobile-accordion-link mobile-accordion-browse-all">
+                  🔍 Browse all <%= category.name %>
                 </a>
-                <% children.forEach(child => { %>
+                <% children.forEach(function(child) { %>
                   <a href="/category/<%= child.slug %>" class="mobile-accordion-link">
                     <%= child.name %>
                   </a>
@@ -157,6 +200,9 @@
   padding: 15px 20px;
   background: #6b2d5b;
   color: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
 .mobile-menu-title {
@@ -195,15 +241,16 @@
 }
 
 .mobile-nav-section {
-  padding: 10px 20px 5px;
+  padding: 15px 20px 8px;
+  background: #f8f9fa;
 }
 
 .mobile-nav-section-title {
-  font-size: 0.75rem;
-  font-weight: 600;
+  font-size: 0.7rem;
+  font-weight: 700;
   text-transform: uppercase;
-  color: #888;
-  letter-spacing: 0.5px;
+  color: #6b2d5b;
+  letter-spacing: 1px;
 }
 
 .mobile-nav-divider {
@@ -215,6 +262,14 @@
 /* Accordion Styles */
 .mobile-accordion-item {
   border-bottom: 1px solid #f0f0f0;
+}
+
+.mobile-accordion-item[data-level="1"] {
+  background: #fafafa;
+}
+
+.mobile-accordion-item[data-level="2"] {
+  background: #f5f5f5;
 }
 
 .mobile-accordion-header {
@@ -233,32 +288,34 @@
 }
 
 .mobile-accordion-header:hover {
-  background: #f5f5f5;
+  background: rgba(107, 45, 91, 0.05);
 }
 
 .mobile-accordion-header-link {
   text-decoration: none;
+  display: flex;
+  justify-content: flex-start;
 }
 
 .accordion-arrow {
   font-size: 1.2rem;
-  color: #888;
+  color: #6b2d5b;
   transition: transform 0.3s;
+  font-weight: bold;
 }
 
-.mobile-accordion-item.active .accordion-arrow {
+.mobile-accordion-item.active > .mobile-accordion-header .accordion-arrow {
   transform: rotate(90deg);
 }
 
 .mobile-accordion-content {
   max-height: 0;
   overflow: hidden;
-  background: #fafafa;
   transition: max-height 0.3s ease;
 }
 
-.mobile-accordion-item.active .mobile-accordion-content {
-  max-height: 500px;
+.mobile-accordion-item.active > .mobile-accordion-content {
+  max-height: 1000px;
 }
 
 .mobile-accordion-link {
@@ -276,12 +333,18 @@
 }
 
 .mobile-accordion-link:hover {
-  background: #f0f0f0;
+  background: rgba(107, 45, 91, 0.05);
+  color: #6b2d5b;
 }
 
-.mobile-accordion-view-all {
+.mobile-accordion-browse-all {
   color: #6b2d5b;
   font-weight: 600;
+  background: rgba(107, 45, 91, 0.08);
+}
+
+.mobile-accordion-browse-all:hover {
+  background: rgba(107, 45, 91, 0.15);
 }
 
 /* Cart Badge */
@@ -350,31 +413,34 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
   
-  // Accordion functionality
-  document.querySelectorAll('.mobile-accordion-header:not(.mobile-accordion-header-link)').forEach(header => {
-    header.addEventListener('click', function() {
+  // Accordion functionality - allow multiple levels
+  document.querySelectorAll('.mobile-accordion-header:not(.mobile-accordion-header-link)').forEach(function(header) {
+    header.addEventListener('click', function(e) {
+      e.stopPropagation();
       const item = this.parentElement;
       const isActive = item.classList.contains('active');
       
-      // Close all other accordions
-      document.querySelectorAll('.mobile-accordion-item').forEach(i => {
-        i.classList.remove('active');
+      // Only close siblings at the same level, not all accordions
+      const parent = item.parentElement;
+      const siblings = parent.querySelectorAll(':scope > .mobile-accordion-item');
+      siblings.forEach(function(sibling) {
+        if (sibling !== item) {
+          sibling.classList.remove('active');
+        }
       });
       
       // Toggle current
-      if (!isActive) {
-        item.classList.add('active');
-      }
+      item.classList.toggle('active');
     });
   });
   
   // Update cart badge
   function updateCartBadge() {
     const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+    const totalItems = cart.reduce(function(sum, item) { return sum + item.quantity; }, 0);
     
     const badges = document.querySelectorAll('.cart-badge');
-    badges.forEach(badge => {
+    badges.forEach(function(badge) {
       badge.textContent = totalItems;
       badge.style.display = totalItems > 0 ? 'flex' : 'none';
     });
