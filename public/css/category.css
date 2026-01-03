@@ -152,8 +152,6 @@
 
 .filter-list {
   list-style: none;
-  max-height: 200px;
-  overflow-y: auto;
 }
 
 .filter-list li {
@@ -406,11 +404,17 @@
 @media (min-width: 1024px) {
   .category-layout {
     flex-direction: row;
+    align-items: flex-start;
   }
   
   .filter-sidebar {
     width: 250px;
     flex-shrink: 0;
+    position: sticky;
+    top: 20px;
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
+    padding-right: 10px;
   }
   
   .filter-header-mobile {
@@ -421,6 +425,16 @@
     display: block;
     padding: 0;
     border: none;
+  }
+  
+  .filter-section {
+    margin-bottom: 25px;
+    padding-bottom: 25px;
+  }
+  
+  .filter-list {
+    max-height: none;
+    overflow-y: visible;
   }
   
   .products-grid {

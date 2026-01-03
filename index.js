@@ -30,6 +30,7 @@ const adminCategoryRoutes = require('./routes/admin/categories');
 const adminProductRoutes = require('./routes/admin/products');
 const adminHomepageRoutes = require('./routes/admin/homepage');
 const adminAnnouncementRoutes = require('./routes/admin/announcements');
+const adminOrderRoutes = require('./routes/admin/orders');
 
 // Use Routes - Admin routes must come before shop routes
 // because shop routes have catch-all patterns that would intercept admin URLs
@@ -38,6 +39,7 @@ app.use('/admin/categories', adminCategoryRoutes);
 app.use('/admin/products', adminProductRoutes);
 app.use('/admin/homepage', adminHomepageRoutes);
 app.use('/admin/announcements', adminAnnouncementRoutes);
+app.use('/admin/orders', adminOrderRoutes);
 
 // Admin Dashboard
 app.get('/admin', (req, res) => {

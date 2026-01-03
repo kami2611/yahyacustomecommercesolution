@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %> | E-Commerce Store</title>
+  <link rel="stylesheet" href="/css/home.css">
+  <style>
+    .track-page {
+      padding: 30px 0 60px;
+      min-height: 60vh;
+    }
+    
+    .track-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    
+    .track-header h1 {
+      font-size: 1.8rem;
+      color: #333;
+      margin-bottom: 10px;
+    }
+    
+    .track-header p {
+      color: #666;
+    }
+    
+    /* Search Form */
+    .track-search {
+      max-width: 500px;
+      margin: 0 auto 40px;
+    }
+    
+    .track-search form {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .track-search input {
+      flex: 1;
+      padding: 14px 20px;
+      border: 2px solid #ddd;
+      border-radius: 30px;
+      font-size: 1rem;
+      transition: border-color 0.2s;
+    }
+    
+    .track-search input:focus {
+      outline: none;
+      border-color: #6b2d5b;
+    }
+    
+    .track-search button {
+      padding: 14px 30px;
+      background: #6b2d5b;
+      color: white;
+      border: none;
+      border-radius: 30px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    
+    .track-search button:hover {
+      background: #5a2550;
+    }
+    
+    /* Order Result */
+    .order-result {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    .order-card {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      overflow: hidden;
+    }
+    
+    .order-card-header {
+      background: linear-gradient(135deg, #6b2d5b, #4a1e3f);
+      color: white;
+      padding: 25px 30px;
+    }
+    
+    .order-number-display {
+      font-size: 0.85rem;
+      opacity: 0.8;
+      margin-bottom: 5px;
+    }
+    
+    .order-status-display {
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+    
+    .order-date-display {
+      font-size: 0.85rem;
+      opacity: 0.8;
+      margin-top: 10px;
+    }
+    
+    .order-card-body {
+      padding: 30px;
+    }
+    
+    /* Progress Tracker */
+    .progress-tracker {
+      margin-bottom: 35px;
+    }
+    
+    .progress-line {
+      display: flex;
+      justify-content: space-between;
+      position: relative;
+      padding: 0 10px;
+    }
+    
+    .progress-line::before {
+      content: '';
+      position: absolute;
+      top: 20px;
+      left: 30px;
+      right: 30px;
+      height: 4px;
+      background: #eee;
+      z-index: 0;
+    }
+    
+    .progress-line::after {
+      content: '';
+      position: absolute;
+      top: 20px;
+      left: 30px;
+      height: 4px;
+      background: #4caf50;
+      z-index: 1;
+      width: var(--progress-width, 0%);
+      transition: width 0.5s ease;
+    }
+    
+    .progress-point {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      z-index: 2;
+      flex: 1;
+    }
+    
+    .point-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: #eee;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      margin-bottom: 10px;
+      transition: all 0.3s;
+    }
+    
+    .progress-point.completed .point-icon {
+      background: #4caf50;
+      color: white;
+    }
+    
+    .progress-point.current .point-icon {
+      background: #6b2d5b;
+      color: white;
+      transform: scale(1.1);
+      box-shadow: 0 4px 12px rgba(107, 45, 91, 0.3);
+    }
+    
+    .progress-point.cancelled .point-icon {
+      background: #f44336;
+      color: white;
+    }
+    
+    .point-label {
+      font-size: 0.75rem;
+      color: #888;
+      text-align: center;
+      max-width: 80px;
+    }
+    
+    .progress-point.completed .point-label,
+    .progress-point.current .point-label {
+      color: #333;
+      font-weight: 500;
+    }
+    
+    /* Order Details */
+    .order-details-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 25px;
+    }
+    
+    @media (min-width: 768px) {
+      .order-details-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    
+    .detail-section {
+      padding: 20px;
+      background: #f8f8f8;
+      border-radius: 12px;
+    }
+    
+    .detail-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      font-size: 0.9rem;
+    }
+    
+    .detail-row .label {
+      color: #666;
+    }
+    
+    .detail-row .value {
+      color: #333;
+      font-weight: 500;
+      text-align: right;
+    }
+    
+    /* Items List */
+    .items-section {
+      margin-top: 25px;
+      padding-top: 25px;
+      border-top: 1px solid #eee;
+    }
+    
+    .items-title {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 15px;
+    }
+    
+    .item-row {
+      display: flex;
+      gap: 15px;
+      padding: 12px 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .item-row:last-child {
+      border-bottom: none;
+    }
+    
+    .item-image {
+      width: 50px;
+      height: 50px;
+      border-radius: 8px;
+      background: #f5f5f5;
+      overflow: hidden;
+    }
+    
+    .item-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .item-info {
+      flex: 1;
+    }
+    
+    .item-name {
+      font-weight: 500;
+      color: #333;
+      margin-bottom: 3px;
+    }
+    
+    .item-qty {
+      font-size: 0.85rem;
+      color: #666;
+    }
+    
+    .item-price {
+      font-weight: 600;
+      color: #333;
+    }
+    
+    /* Total */
+    .order-total-section {
+      margin-top: 20px;
+      padding-top: 15px;
+      border-top: 2px solid #eee;
+    }
+    
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #333;
+    }
+    
+    /* Not Found */
+    .not-found {
+      text-align: center;
+      padding: 50px 20px;
+    }
+    
+    .not-found .icon {
+      font-size: 4rem;
+      margin-bottom: 15px;
+      opacity: 0.5;
+    }
+    
+    .not-found h2 {
+      color: #333;
+      margin-bottom: 10px;
+    }
+    
+    .not-found p {
+      color: #666;
+    }
+    
+    /* Cancelled State */
+    .order-cancelled {
+      background: #ffebee;
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+      margin-bottom: 25px;
+    }
+    
+    .order-cancelled .icon {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+    
+    .order-cancelled h3 {
+      color: #c62828;
+      margin-bottom: 5px;
+    }
+    
+    .order-cancelled p {
+      color: #666;
+      font-size: 0.9rem;
+    }
+    
+    /* Tracking Info */
+    .tracking-info {
+      background: #e8f5e9;
+      padding: 15px 20px;
+      border-radius: 10px;
+      margin-bottom: 25px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .tracking-info .icon {
+      font-size: 1.5rem;
+    }
+    
+    .tracking-info .text {
+      flex: 1;
+    }
+    
+    .tracking-info .label {
+      font-size: 0.8rem;
+      color: #2e7d32;
+      margin-bottom: 2px;
+    }
+    
+    .tracking-info .number {
+      font-weight: 600;
+      color: #1b5e20;
+    }
+    
+    @media (max-width: 600px) {
+      .progress-line::before,
+      .progress-line::after {
+        display: none;
+      }
+      
+      .progress-line {
+        flex-direction: column;
+        gap: 15px;
+        padding: 0;
+      }
+      
+      .progress-point {
+        flex-direction: row;
+        gap: 15px;
+      }
+      
+      .point-label {
+        text-align: left;
+        max-width: none;
+      }
+      
+      .track-search form {
+        flex-direction: column;
+      }
+      
+      .track-search button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <%- include('../partials/header') %>
+  
+  <%- include('../partials/mega-nav') %>
+  
+  <main class="track-page">
+    <div class="container">
+      <div class="track-header">
+        <h1>Track Your Order</h1>
+        <p>Enter your order number to see the status of your order</p>
+      </div>
+      
+      <div class="track-search">
+        <form action="/track" method="GET">
+          <input type="text" name="order" placeholder="Enter your order number (e.g., ORD-XXXXX)" 
+                 value="<%= typeof orderNumber !== 'undefined' ? orderNumber : '' %>" required>
+          <button type="submit">Track</button>
+        </form>
+      </div>
+      
+      <% if (typeof order !== 'undefined' && order) { %>
+        <div class="order-result">
+          <div class="order-card">
+            <div class="order-card-header">
+              <div class="order-number-display">Order #<%= order.orderNumber %></div>
+              <div class="order-status-display">
+                <%= order.status === 'cancelled' ? 'Order Cancelled' : order.status.charAt(0).toUpperCase() + order.status.slice(1).replace(/-/g, ' ') %>
+              </div>
+              <div class="order-date-display">
+                Placed on <%= new Date(order.createdAt).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) %>
+              </div>
+            </div>
+            
+            <div class="order-card-body">
+              <% if (order.status === 'cancelled') { %>
+                <div class="order-cancelled">
+                  <div class="icon">❌</div>
+                  <h3>This order has been cancelled</h3>
+                  <p>If you have any questions, please contact our support team.</p>
+                </div>
+              <% } else { %>
+                <% if (order.trackingNumber) { %>
+                  <div class="tracking-info">
+                    <span class="icon">🚚</span>
+                    <div class="text">
+                      <div class="label">Tracking Number</div>
+                      <div class="number"><%= order.trackingNumber %></div>
+                    </div>
+                  </div>
+                <% } %>
+                
+                <div class="progress-tracker">
+                  <% 
+                    const steps = [
+                      { status: 'pending', label: 'Order Placed', icon: '📋' },
+                      { status: 'confirmed', label: 'Confirmed', icon: '✓' },
+                      { status: 'processing', label: 'Processing', icon: '📦' },
+                      { status: 'shipped', label: 'Shipped', icon: '🚚' },
+                      { status: 'out-for-delivery', label: 'Out for Delivery', icon: '🏃' },
+                      { status: 'delivered', label: 'Delivered', icon: '🎉' }
+                    ];
+                    const currentIndex = steps.findIndex(s => s.status === order.status);
+                    const progressWidth = currentIndex >= 0 ? (currentIndex / (steps.length - 1)) * 100 : 0;
+                  %>
+                  <div class="progress-line" style="--progress-width: <%= progressWidth %>%">
+                    <% steps.forEach((step, index) => { %>
+                      <div class="progress-point <%= index < currentIndex ? 'completed' : '' %> <%= index === currentIndex ? 'current' : '' %>">
+                        <div class="point-icon"><%= step.icon %></div>
+                        <div class="point-label"><%= step.label %></div>
+                      </div>
+                    <% }) %>
+                  </div>
+                </div>
+              <% } %>
+              
+              <div class="order-details-grid">
+                <div class="detail-section">
+                  <div class="detail-title">Delivery Address</div>
+                  <div class="detail-row">
+                    <span class="label">Name</span>
+                    <span class="value"><%= order.customer.fullName %></span>
+                  </div>
+                  <div class="detail-row">
+                    <span class="label">Address</span>
+                    <span class="value"><%= order.customer.address %></span>
+                  </div>
+                  <div class="detail-row">
+                    <span class="label">City</span>
+                    <span class="value"><%= order.customer.city %></span>
+                  </div>
+                  <% if (order.customer.phone) { %>
+                    <div class="detail-row">
+                      <span class="label">Phone</span>
+                      <span class="value"><%= order.customer.phone %></span>
+                    </div>
+                  <% } %>
+                </div>
+                
+                <div class="detail-section">
+                  <div class="detail-title">Order Info</div>
+                  <div class="detail-row">
+                    <span class="label">Payment Method</span>
+                    <span class="value"><%= order.paymentMethod %></span>
+                  </div>
+                  <% if (order.estimatedDelivery) { %>
+                    <div class="detail-row">
+                      <span class="label">Est. Delivery</span>
+                      <span class="value"><%= new Date(order.estimatedDelivery).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) %></span>
+                    </div>
+                  <% } %>
+                  <div class="detail-row">
+                    <span class="label">Items</span>
+                    <span class="value"><%= order.items.length %> item<%= order.items.length > 1 ? 's' : '' %></span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="items-section">
+                <div class="items-title">Order Items</div>
+                <% order.items.forEach(item => { %>
+                  <div class="item-row">
+                    <div class="item-image">
+                      <img src="<%= item.image || '/images/placeholder.png' %>" alt="<%= item.name %>">
+                    </div>
+                    <div class="item-info">
+                      <div class="item-name"><%= item.name %></div>
+                      <div class="item-qty">Qty: <%= item.quantity %></div>
+                    </div>
+                    <div class="item-price">Rs <%= item.total.toLocaleString() %></div>
+                  </div>
+                <% }) %>
+                
+                <div class="order-total-section">
+                  <div class="total-row">
+                    <span>Total</span>
+                    <span>Rs <%= order.total.toLocaleString() %></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% } else if (typeof notFound !== 'undefined' && notFound) { %>
+        <div class="not-found">
+          <div class="icon">🔍</div>
+          <h2>Order Not Found</h2>
+          <p>We couldn't find an order with that number. Please check and try again.</p>
+        </div>
+      <% } %>
+    </div>
+  </main>
+  
+  <%- include('../partials/footer') %>
+</body>
+</html>

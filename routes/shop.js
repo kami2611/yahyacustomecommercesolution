@@ -10,6 +10,7 @@ router.get('/cart', shopController.cart);
 router.get('/checkout', shopController.checkout);
 router.post('/checkout/place-order', shopController.placeOrder);
 router.get('/offers/:type', shopController.offers);
+router.get('/track', shopController.trackOrder);
 
 // Product routes - support both simple and SEO-friendly URLs
 router.get('/product/:slug', shopController.show);

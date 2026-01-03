@@ -1,6 +1,7 @@
 const Product = require('../models/Product');
 const Category = require('../models/Category');
 const Announcement = require('../models/Announcement');
+const Order = require('../models/Order');
 
 // Shop homepage - list all products
 exports.index = async (req, res) => {
@@ -500,11 +501,13 @@ exports.offers = async (req, res) => {
 exports.checkout = async (req, res) => {
   try {
     const categories = await Category.getCategoryTree();
+    const nestedCategories = await Category.getNestedCategoryTree();
     const announcements = await Announcement.getActiveAnnouncements();
     
     res.render('shop/checkout', {
       title: 'Checkout',
       categories,
+      nestedCategories,
       announcements
     });
   } catch (error) {
@@ -546,45 +549,105 @@ exports.placeOrder = async (req, res) => {
     const productIds = cart.map(item => item.productId);
     const products = await Product.find({ _id: { $in: productIds } });
     
-    let orderTotal = 0;
+    let subtotal = 0;
     const orderItems = [];
     
     for (const cartItem of cart) {
       const product = products.find(p => p._id.toString() === cartItem.productId);
       if (product) {
         const itemTotal = product.price * cartItem.quantity;
-        orderTotal += itemTotal;
+        subtotal += itemTotal;
         orderItems.push({
           productId: product._id,
           name: product.name,
           price: product.price,
           quantity: cartItem.quantity,
-          total: itemTotal
+          total: itemTotal,
+          image: product.images && product.images.length > 0 ? product.images[0] : null
         });
       }
     }
     
     // Generate order number
-    const orderNumber = 'ORD-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5).toUpperCase();
+    const orderNumber = Order.generateOrderNumber();
     
-    // In a real app, save to database
-    console.log('New Order:', {
+    // Create the order in database
+    const order = await Order.create({
       orderNumber,
-      customer: { fullName, email, phone, address, city, postalCode },
+      customer: { 
+        fullName, 
+        email, 
+        phone, 
+        address, 
+        city, 
+        postalCode 
+      },
       items: orderItems,
-      total: orderTotal,
+      subtotal,
+      deliveryFee: 0,
+      total: subtotal,
       paymentMethod: 'Cash on Delivery',
-      notes
+      notes,
+      status: 'pending',
+      statusHistory: [{
+        status: 'pending',
+        note: 'Order placed',
+        updatedAt: new Date()
+      }]
     });
     
     res.json({ 
       success: true, 
       message: 'Order placed successfully!',
-      orderNumber,
-      total: orderTotal
+      orderNumber: order.orderNumber,
+      total: order.total
     });
   } catch (error) {
     console.error('Error placing order:', error);
     res.status(500).json({ success: false, message: 'Error placing order. Please try again.' });
+  }
+};
+
+// Track order
+exports.trackOrder = async (req, res) => {
+  try {
+    const { order: orderNumber } = req.query;
+    const categories = await Category.getCategoryTree();
+    const nestedCategories = await Category.getNestedCategoryTree();
+    const announcements = await Announcement.getActiveAnnouncements();
+    
+    if (!orderNumber) {
+      return res.render('shop/track', {
+        title: 'Track Order',
+        categories,
+        nestedCategories,
+        announcements
+      });
+    }
+    
+    const order = await Order.findByOrderNumber(orderNumber.trim());
+    
+    if (!order) {
+      return res.render('shop/track', {
+        title: 'Track Order',
+        categories,
+        nestedCategories,
+        announcements,
+        orderNumber,
+        notFound: true
+      });
+    }
+    
+    res.render('shop/track', {
+      title: `Order ${order.orderNumber}`,
+      categories,
+      nestedCategories,
+      announcements,
+      order,
+      orderNumber
+    });
+  } catch (error) {
+    console.error('Error tracking order:', error);
+    res.status(500).render('error', { message: 'Error tracking order' });
   }
 };
