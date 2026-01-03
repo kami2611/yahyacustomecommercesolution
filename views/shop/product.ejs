@@ -15,17 +15,7 @@
   <main class="product-page">
     <!-- Breadcrumbs -->
     <div class="container">
-      <nav class="breadcrumbs" aria-label="Breadcrumb">
-        <a href="/">Home</a>
-        <% if (breadcrumbs && breadcrumbs.length > 0) { %>
-          <% breadcrumbs.forEach(cat => { %>
-            <span class="separator">›</span>
-            <a href="/category/<%= cat.slug %>"><%= cat.name %></a>
-          <% }) %>
-        <% } %>
-        <span class="separator">›</span>
-        <span class="current"><%= product.name %></span>
-      </nav>
+      <%- include('../partials/breadcrumbs', { breadcrumbs: breadcrumbs }) %>
     </div>
     
     <!-- Product Detail Section -->

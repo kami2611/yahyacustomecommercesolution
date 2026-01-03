@@ -1,0 +1,16 @@
+<nav class="breadcrumbs" aria-label="Breadcrumb">
+  <% if (typeof breadcrumbs !== 'undefined' && breadcrumbs && breadcrumbs.length > 0) { %>
+    <% breadcrumbs.forEach((crumb, index) => { %>
+      <% if (crumb.url) { %>
+        <a href="<%= crumb.url %>"><%= crumb.name %></a>
+        <% if (index < breadcrumbs.length - 1) { %>
+          <span class="separator">›</span>
+        <% } %>
+      <% } else { %>
+        <span class="current"><%= crumb.name %></span>
+      <% } %>
+    <% }) %>
+  <% } else { %>
+    <a href="/">Home</a>
+  <% } %>
+</nav>

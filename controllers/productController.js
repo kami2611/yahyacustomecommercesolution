@@ -4,19 +4,80 @@ const Category = require('../models/Category');
 // Render admin product list page
 exports.index = async (req, res) => {
   try {
-    const products = await Product.find()
+    const { search, category, sortBy, minPrice, maxPrice } = req.query;
+    
+    // Build filter object
+    let filter = {};
+    
+    // Text search across name and description
+    if (search) {
+      filter.$or = [
+        { name: { $regex: search, $options: 'i' } },
+        { description: { $regex: search, $options: 'i' } }
+      ];
+    }
+    
+    // Filter by category (including subcategories)
+    if (category && category !== 'all') {
+      const selectedCategory = await Category.findById(category);
+      if (selectedCategory) {
+        // Get all descendant categories
+        const allCategories = await Category.find();
+        const descendantIds = getDescendantCategoryIds(selectedCategory._id, allCategories);
+        descendantIds.push(selectedCategory._id);
+        filter.category = { $in: descendantIds };
+      }
+    }
+    
+    // Price range filter
+    if (minPrice || maxPrice) {
+      filter.price = {};
+      if (minPrice) filter.price.$gte = parseFloat(minPrice);
+      if (maxPrice) filter.price.$lte = parseFloat(maxPrice);
+    }
+    
+    // Build sort object
+    let sort = '-createdAt'; // default
+    if (sortBy === 'price-asc') sort = 'price';
+    else if (sortBy === 'price-desc') sort = '-price';
+    else if (sortBy === 'name-asc') sort = 'name';
+    else if (sortBy === 'name-desc') sort = '-name';
+    else if (sortBy === 'stock-asc') sort = 'stock';
+    else if (sortBy === 'stock-desc') sort = '-stock';
+    
+    const products = await Product.find(filter)
       .populate('category', 'name')
-      .sort('-createdAt');
+      .sort(sort);
+    
+    // Get all categories for filter dropdown
+    const categories = await Category.getCategoryTree();
     
     res.render('admin/products/index', { 
       title: 'Products',
-      products 
+      products,
+      categories,
+      filters: { search, category, sortBy, minPrice, maxPrice }
     });
   } catch (error) {
     console.error('Error fetching products:', error);
     res.status(500).render('error', { message: 'Error fetching products' });
   }
 };
+
+// Helper function to get all descendant category IDs
+function getDescendantCategoryIds(parentId, allCategories) {
+  const descendants = [];
+  const children = allCategories.filter(cat => 
+    cat.parentId && cat.parentId.toString() === parentId.toString()
+  );
+  
+  children.forEach(child => {
+    descendants.push(child._id);
+    descendants.push(...getDescendantCategoryIds(child._id, allCategories));
+  });
+  
+  return descendants;
+}
 
 // Render create product form
 exports.create = async (req, res) => {

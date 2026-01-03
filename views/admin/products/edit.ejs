@@ -159,13 +159,7 @@
   <script>
     // Initialize product form with dynamic attribute fetching
     document.addEventListener('DOMContentLoaded', function() {
-      const existingMetadata = <%-
-        JSON.stringify(
-          product.metadata instanceof Map 
-            ? Object.fromEntries(product.metadata) 
-            : (product.metadata || {})
-        )
-      %>;
+      const existingMetadata = <%- JSON.stringify(product.metadata instanceof Map ? Object.fromEntries(product.metadata) : (product.metadata || {})) %>;
       initProductForm(existingMetadata);
     });
   </script>

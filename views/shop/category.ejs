@@ -16,16 +16,7 @@
   <main class="category-page">
     <div class="container">
       <!-- Breadcrumbs -->
-      <nav class="breadcrumbs">
-        <% breadcrumbs.forEach((crumb, index) => { %>
-          <% if (crumb.url) { %>
-            <a href="<%= crumb.url %>"><%= crumb.name %></a>
-            <span class="separator">›</span>
-          <% } else { %>
-            <span class="current"><%= crumb.name %></span>
-          <% } %>
-        <% }) %>
-      </nav>
+      <%- include('../partials/breadcrumbs', { breadcrumbs: breadcrumbs }) %>
       
       <!-- Category Header -->
       <div class="category-header">

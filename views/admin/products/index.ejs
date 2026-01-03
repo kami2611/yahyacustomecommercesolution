@@ -30,6 +30,96 @@
       <a href="/admin/products/create" class="btn btn-primary">Add Product</a>
     </div>
     
+    <!-- Search and Filter Section -->
+    <div class="card" style="margin-bottom: 20px;">
+      <form method="GET" action="/admin/products" class="search-filter-form">
+        <div class="filter-row">
+          <!-- Search Input -->
+          <div class="form-group" style="flex: 2;">
+            <label>Search Products</label>
+            <input 
+              type="text" 
+              name="search" 
+              class="form-control" 
+              placeholder="Search by name or description..."
+              value="<%= typeof filters !== 'undefined' && filters.search ? filters.search : '' %>"
+            >
+          </div>
+          
+          <!-- Category Filter -->
+          <div class="form-group" style="flex: 1;">
+            <label>Category</label>
+            <select name="category" class="form-control">
+              <option value="all">All Categories</option>
+              <% if (typeof categories !== 'undefined' && categories) { %>
+                <% categories.forEach(cat => { %>
+                  <option value="<%= cat._id %>" 
+                    <%= typeof filters !== 'undefined' && filters.category === cat._id.toString() ? 'selected' : '' %>>
+                    <%= '—'.repeat(cat.level) %> <%= cat.name %>
+                  </option>
+                <% }) %>
+              <% } %>
+            </select>
+          </div>
+          
+          <!-- Sort By -->
+          <div class="form-group" style="flex: 1;">
+            <label>Sort By</label>
+            <select name="sortBy" class="form-control">
+              <option value="newest" <%= typeof filters !== 'undefined' && filters.sortBy === 'newest' ? 'selected' : '' %>>Newest First</option>
+              <option value="price-asc" <%= typeof filters !== 'undefined' && filters.sortBy === 'price-asc' ? 'selected' : '' %>>Price: Low to High</option>
+              <option value="price-desc" <%= typeof filters !== 'undefined' && filters.sortBy === 'price-desc' ? 'selected' : '' %>>Price: High to Low</option>
+              <option value="name-asc" <%= typeof filters !== 'undefined' && filters.sortBy === 'name-asc' ? 'selected' : '' %>>Name: A to Z</option>
+              <option value="name-desc" <%= typeof filters !== 'undefined' && filters.sortBy === 'name-desc' ? 'selected' : '' %>>Name: Z to A</option>
+              <option value="stock-asc" <%= typeof filters !== 'undefined' && filters.sortBy === 'stock-asc' ? 'selected' : '' %>>Stock: Low to High</option>
+              <option value="stock-desc" <%= typeof filters !== 'undefined' && filters.sortBy === 'stock-desc' ? 'selected' : '' %>>Stock: High to Low</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="filter-row">
+          <!-- Min Price -->
+          <div class="form-group" style="flex: 1;">
+            <label>Min Price</label>
+            <input 
+              type="number" 
+              name="minPrice" 
+              class="form-control" 
+              placeholder="0" 
+              step="0.01"
+              value="<%= typeof filters !== 'undefined' && filters.minPrice ? filters.minPrice : '' %>"
+            >
+          </div>
+          
+          <!-- Max Price -->
+          <div class="form-group" style="flex: 1;">
+            <label>Max Price</label>
+            <input 
+              type="number" 
+              name="maxPrice" 
+              class="form-control" 
+              placeholder="9999" 
+              step="0.01"
+              value="<%= typeof filters !== 'undefined' && filters.maxPrice ? filters.maxPrice : '' %>"
+            >
+          </div>
+          
+          <!-- Action Buttons -->
+          <div class="form-group" style="flex: 1; display: flex; align-items: flex-end; gap: 10px;">
+            <button type="submit" class="btn btn-primary" style="flex: 1;">Apply Filters</button>
+            <a href="/admin/products" class="btn btn-secondary" style="flex: 1;">Clear</a>
+          </div>
+        </div>
+        
+        <!-- Results Count -->
+        <% if (typeof filters !== 'undefined' && (filters.search || filters.category || filters.sortBy || filters.minPrice || filters.maxPrice)) { %>
+          <div style="margin-top: 10px; color: #666;">
+            Found <%= products.length %> product(s)
+          </div>
+        <% } %>
+      </form>
+    </div>
+    
     <div class="card">
       <table class="table">
         <thead>
