@@ -17,6 +17,7 @@
       <li><a href="/admin/orders">Orders</a></li>
       <li><a href="/admin/announcements">Announcements</a></li>
       <li><a href="/" target="_blank">View Shop</a></li>
+      <li><a href="/admin/logout" class="logout-link">Logout</a></li>
     </ul>
   </nav>
   
@@ -33,7 +34,7 @@
     </div>
     
     <div class="card">
-      <form action="/admin/products" method="POST" id="product-form">
+      <form action="/admin/products" method="POST" id="product-form" enctype="multipart/form-data">
         <div class="form-row">
           <div class="form-group">
             <label for="name">Product Name *</label>
@@ -112,6 +113,14 @@
           <input type="text" id="carouselImage" name="carouselImage" class="form-control"
                  placeholder="https://example.com/image.jpg" value="<%= product ? product.carouselImage : '' %>">
           <small class="help-text">Add image URL to show this product in the homepage carousel</small>
+        </div>
+        
+        <!-- Product Images Upload -->
+        <div class="form-group">
+          <label for="images">Product Images</label>
+          <input type="file" id="images" name="images" class="form-control" 
+                 accept="image/*" multiple>
+          <small class="help-text">Upload up to 5 images (JPG, PNG, GIF, WebP). Max 5MB each.</small>
         </div>
         
         <!-- Dynamic Metadata Fields Container -->

@@ -1,5 +1,6 @@
 const Product = require('../models/Product');
 const Category = require('../models/Category');
+const { deleteImage, getPublicIdFromUrl } = require('../config/cloudinary');
 
 // Render admin product list page
 exports.index = async (req, res) => {
@@ -119,6 +120,7 @@ exports.store = async (req, res) => {
       stock: parseInt(stock) || 0,
       category,
       metadata: metadataMap,
+      images: req.files ? req.files.map(file => file.path) : [],
       isNewOffer: isNewOffer === 'true',
       isBestOffer: isBestOffer === 'true',
       isFeatured: isFeatured === 'true',
@@ -171,7 +173,7 @@ exports.edit = async (req, res) => {
 exports.update = async (req, res) => {
   try {
     const { name, slug, description, price, originalPrice, stock, category, metadata,
-            isNewOffer, isBestOffer, isFeatured, carouselImage } = req.body;
+            isNewOffer, isBestOffer, isFeatured, carouselImage, existingImages } = req.body;
     
     // Convert metadata object to Map
     const metadataMap = new Map();
@@ -183,6 +185,20 @@ exports.update = async (req, res) => {
       });
     }
     
+    // Handle images - combine existing and new
+    let images = [];
+    
+    // Keep existing images that weren't removed
+    if (existingImages) {
+      images = Array.isArray(existingImages) ? existingImages : [existingImages];
+    }
+    
+    // Add new uploaded images
+    if (req.files && req.files.length > 0) {
+      const newImages = req.files.map(file => file.path);
+      images = [...images, ...newImages];
+    }
+    
     await Product.findByIdAndUpdate(req.params.id, {
       name,
       slug: slug || name.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-' + Date.now(),
@@ -192,6 +208,7 @@ exports.update = async (req, res) => {
       stock: parseInt(stock) || 0,
       category,
       metadata: metadataMap,
+      images: images,
       isNewOffer: isNewOffer === 'true',
       isBestOffer: isBestOffer === 'true',
       isFeatured: isFeatured === 'true',
@@ -268,5 +285,77 @@ exports.apiBatch = async (req, res) => {
   } catch (error) {
     console.error('Error fetching batch products:', error);
     res.status(500).json({ success: false, message: 'Error fetching products' });
+  }
+};
+
+// Upload additional images to an existing product
+exports.uploadImages = async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    
+    if (!product) {
+      return res.status(404).json({ success: false, message: 'Product not found' });
+    }
+    
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ success: false, message: 'No images uploaded' });
+    }
+    
+    const newImages = req.files.map(file => file.path);
+    product.images = [...(product.images || []), ...newImages];
+    await product.save();
+    
+    res.json({ 
+      success: true, 
+      message: 'Images uploaded successfully',
+      images: product.images 
+    });
+  } catch (error) {
+    console.error('Error uploading images:', error);
+    res.status(500).json({ success: false, message: 'Error uploading images' });
+  }
+};
+
+// Delete a specific image from a product
+exports.deleteImage = async (req, res) => {
+  try {
+    const { id, imageIndex } = req.params;
+    const product = await Product.findById(id);
+    
+    if (!product) {
+      return res.status(404).json({ success: false, message: 'Product not found' });
+    }
+    
+    const index = parseInt(imageIndex);
+    if (index < 0 || index >= product.images.length) {
+      return res.status(400).json({ success: false, message: 'Invalid image index' });
+    }
+    
+    // Get the image URL to delete from Cloudinary
+    const imageUrl = product.images[index];
+    const publicId = getPublicIdFromUrl(imageUrl);
+    
+    // Delete from Cloudinary if it's a Cloudinary URL
+    if (publicId) {
+      try {
+        await deleteImage(publicId);
+      } catch (cloudinaryError) {
+        console.error('Error deleting from Cloudinary:', cloudinaryError);
+        // Continue even if Cloudinary delete fails
+      }
+    }
+    
+    // Remove from product images array
+    product.images.splice(index, 1);
+    await product.save();
+    
+    res.json({ 
+      success: true, 
+      message: 'Image deleted successfully',
+      images: product.images 
+    });
+  } catch (error) {
+    console.error('Error deleting image:', error);
+    res.status(500).json({ success: false, message: 'Error deleting image' });
   }
 };

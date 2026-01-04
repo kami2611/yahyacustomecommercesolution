@@ -245,3 +245,71 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 });
+
+/**
+ * Remove existing image from product
+ * @param {HTMLElement} button - The remove button element
+ * @param {number} index - Image index
+ */
+function removeExistingImage(button, index) {
+  const preview = button.closest('.image-preview');
+  const hiddenInput = preview.querySelector('input[name="existingImages"]');
+  
+  if (preview.classList.contains('removed')) {
+    // Re-add the image
+    preview.classList.remove('removed');
+    if (hiddenInput) {
+      hiddenInput.disabled = false;
+    }
+    button.innerHTML = '×';
+    button.title = 'Remove image';
+  } else {
+    // Mark for removal
+    preview.classList.add('removed');
+    if (hiddenInput) {
+      hiddenInput.disabled = true;
+    }
+    button.innerHTML = '↺';
+    button.title = 'Restore image';
+  }
+}
+
+/**
+ * Preview selected images before upload
+ */
+document.addEventListener('DOMContentLoaded', function() {
+  const fileInput = document.getElementById('images');
+  
+  if (fileInput) {
+    fileInput.addEventListener('change', function(e) {
+      // Remove any existing preview
+      const existingPreview = document.querySelector('.new-images-preview');
+      if (existingPreview) {
+        existingPreview.remove();
+      }
+      
+      if (this.files && this.files.length > 0) {
+        const previewContainer = document.createElement('div');
+        previewContainer.className = 'new-images-preview';
+        previewContainer.innerHTML = '<p style="margin: 10px 0 5px; font-weight: 500;">New images to upload:</p>';
+        
+        const previewGrid = document.createElement('div');
+        previewGrid.className = 'current-images';
+        
+        Array.from(this.files).forEach((file, index) => {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            const preview = document.createElement('div');
+            preview.className = 'image-preview';
+            preview.innerHTML = `<img src="${e.target.result}" alt="Preview ${index + 1}">`;
+            previewGrid.appendChild(preview);
+          };
+          reader.readAsDataURL(file);
+        });
+        
+        previewContainer.appendChild(previewGrid);
+        this.parentNode.appendChild(previewContainer);
+      }
+    });
+  }
+});

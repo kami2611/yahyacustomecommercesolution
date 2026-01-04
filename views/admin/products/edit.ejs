@@ -17,6 +17,7 @@
       <li><a href="/admin/orders">Orders</a></li>
       <li><a href="/admin/announcements">Announcements</a></li>
       <li><a href="/" target="_blank">View Shop</a></li>
+      <li><a href="/admin/logout" class="logout-link">Logout</a></li>
     </ul>
   </nav>
   
@@ -33,7 +34,7 @@
     </div>
     
     <div class="card">
-      <form action="/admin/products/<%= product._id %>?_method=PUT" method="POST" id="product-form">
+      <form action="/admin/products/<%= product._id %>?_method=PUT" method="POST" id="product-form" enctype="multipart/form-data">
         <div class="form-row">
           <div class="form-group">
             <label for="name">Product Name *</label>
@@ -108,12 +109,36 @@
         </div>
         
         <div class="form-group">
-          <label for="carouselImage">Carousel Image URL</label>
-          <input type="text" id="carouselImage" name="carouselImage" class="form-control"
-                 placeholder="https://example.com/image.jpg" value="<%= product.carouselImage || '' %}">
-          <small class="help-text">Add image URL to show this product in the homepage carousel</small>
+  <label for="carouselImage">Carousel Image URL</label>
+  <input type="text" id="carouselImage" name="carouselImage" class="form-control"
+         placeholder="https://example.com/image.jpg" value="<%= product.carouselImage || '' %>">
+  <small class="help-text">Add image URL to show this product in the homepage carousel</small>
+</div>
+        <!-- Existing Product Images -->
+        <div class="form-group">
+          <label>Current Product Images</label>
+          <% if (product.images && product.images.length > 0) { %>
+            <div class="current-images">
+              <% product.images.forEach((img, index) => { %>
+                <div class="image-preview" data-index="<%= index %>">
+                  <img src="<%= img %>" alt="Product image <%= index + 1 %>" onerror="this.src='/images/placeholder.png'">
+                  <input type="hidden" name="existingImages" value="<%= img %>">
+                  <button type="button" class="remove-image-btn" onclick="removeExistingImage(this, <%= index %>)" title="Remove image">×</button>
+                </div>
+              <% }) %>
+            </div>
+          <% } else { %>
+            <p class="no-images">No images uploaded yet</p>
+          <% } %>
         </div>
         
+        <!-- Upload New Images -->
+        <div class="form-group">
+          <label for="images">Add More Images</label>
+          <input type="file" id="images" name="images" class="form-control" 
+                 accept="image/*" multiple>
+          <small class="help-text">Upload up to 5 images (JPG, PNG, GIF, WebP). Max 5MB each.</small>
+        </div>        
         <!-- Dynamic Metadata Fields Container -->
         <div id="metadata-container" class="metadata-section" style="<%= attributes && attributes.length > 0 ? '' : 'display: none;' %>">
           <h3>Category Attributes</h3>

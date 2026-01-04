@@ -1,6 +1,9 @@
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const methodOverride = require('method-override');
+const session = require('express-session');
+const rateLimit = require('express-rate-limit');
 const path = require('path');
 
 const app = express();
@@ -17,11 +20,83 @@ mongoose.connect(MONGODB_URI)
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
+// Rate limiter for login attempts
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // 5 attempts per window
+  message: { success: false, message: 'Too many login attempts. Please try again in 15 minutes.' },
+  standardHeaders: true,
+  legacyHeaders: false
+});
+
+// Session middleware
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'your-secret-key-change-in-production',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: process.env.NODE_ENV === 'production',
+    httpOnly: true,
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  }
+}));
+
+// Make session available in all views
+app.use((req, res, next) => {
+  res.locals.isAuthenticated = req.session.isAuthenticated || false;
+  next();
+});
+
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Auth middleware
+const requireAuth = (req, res, next) => {
+  if (req.session.isAuthenticated) {
+    return next();
+  }
+  // Store the originally requested URL
+  req.session.returnTo = req.originalUrl;
+  res.redirect('/admin/login');
+};
+
+// Admin Login routes (before auth middleware)
+app.get('/admin/login', (req, res) => {
+  if (req.session.isAuthenticated) {
+    return res.redirect('/admin');
+  }
+  res.render('admin/login', { 
+    title: 'Admin Login',
+    error: null 
+  });
+});
+
+app.post('/admin/login', loginLimiter, (req, res) => {
+  const { username, password } = req.body;
+  const adminUsername = process.env.ADMIN_USERNAME || 'admin';
+  const adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
+  
+  if (username === adminUsername && password === adminPassword) {
+    req.session.isAuthenticated = true;
+    const returnTo = req.session.returnTo || '/admin';
+    delete req.session.returnTo;
+    res.redirect(returnTo);
+  } else {
+    res.render('admin/login', { 
+      title: 'Admin Login',
+      error: 'Invalid username or password' 
+    });
+  }
+});
+
+app.get('/admin/logout', (req, res) => {
+  req.session.destroy((err) => {
+    res.redirect('/admin/login');
+  });
+});
 
 // Import Routes
 const shopRoutes = require('./routes/shop');
@@ -35,14 +110,16 @@ const adminOrderRoutes = require('./routes/admin/orders');
 // Use Routes - Admin routes must come before shop routes
 // because shop routes have catch-all patterns that would intercept admin URLs
 app.use('/api', apiRoutes);
-app.use('/admin/categories', adminCategoryRoutes);
-app.use('/admin/products', adminProductRoutes);
-app.use('/admin/homepage', adminHomepageRoutes);
-app.use('/admin/announcements', adminAnnouncementRoutes);
-app.use('/admin/orders', adminOrderRoutes);
+
+// Apply auth middleware to all admin routes
+app.use('/admin/categories', requireAuth, adminCategoryRoutes);
+app.use('/admin/products', requireAuth, adminProductRoutes);
+app.use('/admin/homepage', requireAuth, adminHomepageRoutes);
+app.use('/admin/announcements', requireAuth, adminAnnouncementRoutes);
+app.use('/admin/orders', requireAuth, adminOrderRoutes);
 
 // Admin Dashboard
-app.get('/admin', (req, res) => {
+app.get('/admin', requireAuth, (req, res) => {
   res.redirect('/admin/homepage');
 });
 

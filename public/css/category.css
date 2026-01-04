@@ -59,10 +59,16 @@
   text-decoration: none;
   color: #333;
   font-size: 14px;
+  transition: background 0.2s, color 0.2s;
 }
 
 .subcategory-link:hover {
   background: #e0e0e0;
+}
+
+.subcategory-link.active {
+  background: #333;
+  color: #fff;
 }
 
 /* Category Layout */

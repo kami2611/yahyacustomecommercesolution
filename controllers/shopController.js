@@ -441,8 +441,8 @@ exports.newsletterSubscribe = async (req, res) => {
 exports.offers = async (req, res) => {
   try {
     const { type } = req.params;
-    const { page = 1 } = req.query;
-    const limit = 20;
+    const { sort = 'newest', minPrice, maxPrice, page = 1 } = req.query;
+    const limit = 12;
     const skip = (parseInt(page) - 1) * limit;
     
     let filter = { isActive: true };
@@ -465,17 +465,51 @@ exports.offers = async (req, res) => {
         return res.status(404).render('error', { message: 'Offers page not found' });
     }
     
+    // Price filter
+    if (minPrice || maxPrice) {
+      filter.price = {};
+      if (minPrice) filter.price.$gte = parseFloat(minPrice);
+      if (maxPrice) filter.price.$lte = parseFloat(maxPrice);
+    }
+    
+    // Sort options
+    let sortOption = { createdAt: -1 }; // default newest
+    switch (sort) {
+      case 'price-low':
+        sortOption = { price: 1 };
+        break;
+      case 'price-high':
+        sortOption = { price: -1 };
+        break;
+      case 'name-az':
+        sortOption = { name: 1 };
+        break;
+      case 'name-za':
+        sortOption = { name: -1 };
+        break;
+      case 'newest':
+      default:
+        sortOption = { createdAt: -1 };
+    }
+    
     const totalProducts = await Product.countDocuments(filter);
     const totalPages = Math.ceil(totalProducts / limit);
     
     const products = await Product.find(filter)
       .populate('category', 'name slug')
-      .sort({ createdAt: -1 })
+      .sort(sortOption)
       .skip(skip)
       .limit(limit);
     
     const categories = await Category.getCategoryTree();
     const announcements = await Announcement.getActiveAnnouncements();
+    
+    // Build breadcrumbs
+    const breadcrumbs = [
+      { name: 'Home', url: '/' },
+      { name: 'Offers', url: '/offers/new' },
+      { name: title, url: null }
+    ];
     
     res.render('shop/offers', {
       title,
@@ -483,12 +517,18 @@ exports.offers = async (req, res) => {
       products,
       categories,
       announcements,
+      breadcrumbs,
       pagination: {
         currentPage: parseInt(page),
         totalPages,
         totalProducts,
         hasNext: parseInt(page) < totalPages,
         hasPrev: parseInt(page) > 1
+      },
+      filters: {
+        sort,
+        minPrice: minPrice || '',
+        maxPrice: maxPrice || ''
       }
     });
   } catch (error) {
