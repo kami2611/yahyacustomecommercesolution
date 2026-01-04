@@ -106,6 +106,7 @@ const adminProductRoutes = require('./routes/admin/products');
 const adminHomepageRoutes = require('./routes/admin/homepage');
 const adminAnnouncementRoutes = require('./routes/admin/announcements');
 const adminOrderRoutes = require('./routes/admin/orders');
+const adminNewsletterRoutes = require('./routes/admin/newsletters');
 
 // Use Routes - Admin routes must come before shop routes
 // because shop routes have catch-all patterns that would intercept admin URLs
@@ -117,6 +118,7 @@ app.use('/admin/products', requireAuth, adminProductRoutes);
 app.use('/admin/homepage', requireAuth, adminHomepageRoutes);
 app.use('/admin/announcements', requireAuth, adminAnnouncementRoutes);
 app.use('/admin/orders', requireAuth, adminOrderRoutes);
+app.use('/admin/newsletters', requireAuth, adminNewsletterRoutes);
 
 // Admin Dashboard
 app.get('/admin', requireAuth, (req, res) => {

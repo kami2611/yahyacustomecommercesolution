@@ -426,9 +426,29 @@ exports.newsletterSubscribe = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Please enter a valid email address' });
     }
     
-    // In a real app, you would save this to a database or send to an email service
-    // For now, we'll just return success
-    console.log('Newsletter subscription:', email);
+    // Import Newsletter model
+    const Newsletter = require('../models/Newsletter');
+    
+    // Check if email already exists
+    const existing = await Newsletter.findOne({ email: email.toLowerCase() });
+    if (existing) {
+      if (!existing.isActive) {
+        // Reactivate the subscription
+        existing.isActive = true;
+        existing.unsubscribedAt = null;
+        await existing.save();
+        return res.json({ success: true, message: 'Welcome back! Your subscription has been reactivated.' });
+      }
+      return res.json({ success: true, message: 'You are already subscribed!' });
+    }
+    
+    // Create new subscriber
+    const subscriber = new Newsletter({
+      email: email.toLowerCase(),
+      source: 'website'
+    });
+    
+    await subscriber.save();
     
     res.json({ success: true, message: 'Thank you for subscribing!' });
   } catch (error) {
