@@ -470,3 +470,226 @@ input[type="file"].form-control {
 .nav-links .logout-link:hover {
   color: #ef4444;
 }
+/* Admin Theme Toggle */
+.admin-theme-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  color: #d1d5db;
+  transition: background-color 0.2s;
+}
+
+.admin-theme-toggle:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Dark Theme Admin Overrides - Black & White */
+[data-theme="dark"] {
+  --bg-color: #000000;
+  --card-bg: #0a0a0a;
+  --text-color: #ffffff;
+  --text-muted: #aaaaaa;
+  --border-color: #333333;
+  --nav-bg: #000000;
+  --primary-color: #ffffff;
+  --primary-hover: #e0e0e0;
+}
+
+[data-theme="dark"] body {
+  background-color: #000000;
+  color: #ffffff;
+}
+
+[data-theme="dark"] .admin-nav {
+  background-color: #000000;
+  border-bottom: 1px solid #333333;
+}
+
+[data-theme="dark"] .nav-brand a {
+  color: #ffffff;
+}
+
+[data-theme="dark"] .nav-links a {
+  color: #cccccc;
+}
+
+[data-theme="dark"] .nav-links a:hover {
+  color: #ffffff;
+}
+
+[data-theme="dark"] .nav-links a.active {
+  color: #ffffff;
+}
+
+[data-theme="dark"] .card {
+  background: #0a0a0a;
+  border: 1px solid #333333;
+}
+
+[data-theme="dark"] .table {
+  color: #ffffff;
+}
+
+[data-theme="dark"] .table th {
+  background-color: #111111;
+  color: #ffffff;
+  border-bottom-color: #333333;
+}
+
+[data-theme="dark"] .table td {
+  border-bottom-color: #222222;
+  color: #ffffff;
+}
+
+[data-theme="dark"] .table td a {
+  color: #ffffff;
+}
+
+[data-theme="dark"] .table td a:hover {
+  color: #cccccc;
+}
+
+[data-theme="dark"] .form-control {
+  background-color: #111111;
+  color: #ffffff;
+  border-color: #333333;
+}
+
+[data-theme="dark"] .form-control:focus {
+  border-color: #ffffff;
+  background-color: #1a1a1a;
+}
+
+[data-theme="dark"] .form-group label {
+  color: #ffffff;
+}
+
+[data-theme="dark"] textarea.form-control {
+  background-color: #111111;
+}
+
+[data-theme="dark"] .alert {
+  border: 1px solid #333333;
+}
+
+[data-theme="dark"] .alert-success {
+  background-color: #0a1a0a;
+  color: #4ade80;
+  border-color: #1a3a1a;
+}
+
+[data-theme="dark"] .alert-error {
+  background-color: #1a0a0a;
+  color: #ff6b6b;
+  border-color: #3a1a1a;
+}
+
+[data-theme="dark"] .image-preview {
+  background-color: #111111;
+  border-color: #333333;
+}
+
+[data-theme="dark"] .admin-theme-toggle {
+  color: #ffffff;
+}
+
+[data-theme="dark"] select.form-control {
+  background-color: #111111;
+  color: #ffffff;
+}
+
+[data-theme="dark"] select.form-control option {
+  background-color: #111111;
+  color: #ffffff;
+}
+
+[data-theme="dark"] .page-header h1 {
+  color: #ffffff;
+}
+
+[data-theme="dark"] .btn-primary {
+  background-color: #ffffff;
+  color: #000000;
+  border: 1px solid #ffffff;
+}
+
+[data-theme="dark"] .btn-primary:hover {
+  background-color: #e0e0e0;
+  color: #000000;
+}
+
+[data-theme="dark"] .btn-secondary {
+  background-color: #333333;
+  color: #ffffff;
+  border: 1px solid #333333;
+}
+
+[data-theme="dark"] .btn-secondary:hover {
+  background-color: #444444;
+}
+
+[data-theme="dark"] .btn-danger {
+  background-color: transparent;
+  color: #ff6b6b;
+  border: 1px solid #ff6b6b;
+}
+
+[data-theme="dark"] .btn-danger:hover {
+  background-color: #ff6b6b;
+  color: #000000;
+}
+
+[data-theme="dark"] h1, 
+[data-theme="dark"] h2, 
+[data-theme="dark"] h3, 
+[data-theme="dark"] h4, 
+[data-theme="dark"] h5, 
+[data-theme="dark"] h6 {
+  color: #ffffff;
+}
+
+[data-theme="dark"] p {
+  color: #cccccc;
+}
+
+[data-theme="dark"] .section-item {
+  background-color: #111111;
+  border-color: #333333;
+}
+
+[data-theme="dark"] .section-item h4 {
+  color: #ffffff;
+}
+
+[data-theme="dark"] .section-item p {
+  color: #aaaaaa;
+}
+
+[data-theme="dark"] .add-form {
+  background-color: #0a0a0a;
+  border: 1px solid #333333;
+}
+
+[data-theme="dark"] .empty-section {
+  background-color: #0a0a0a;
+  color: #aaaaaa;
+  border: 1px solid #333333;
+}
+
+[data-theme="dark"] .stats-card {
+  background-color: #0a0a0a;
+  border: 1px solid #333333;
+}
+
+[data-theme="dark"] .stats-card h3 {
+  color: #ffffff;
+}
+
+[data-theme="dark"] .stats-card p {
+  color: #aaaaaa;
+}
