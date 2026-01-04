@@ -687,7 +687,7 @@ body {
 }
 
 [data-theme="dark"] .search-input::placeholder {
-  color: #888888;
+  color: #ffffff;
 }
 
 [data-theme="dark"] .search-btn {
@@ -798,7 +798,7 @@ body {
 }
 
 [data-theme="dark"] .mobile-nav-section-title {
-  color: #888888;
+  color: #ffffff;
 }
 
 /* Product Cards */
@@ -822,7 +822,7 @@ body {
 }
 
 [data-theme="dark"] .product-category {
-  color: #888888;
+  color: #ffffff;
 }
 
 [data-theme="dark"] .current-price,
@@ -831,7 +831,7 @@ body {
 }
 
 [data-theme="dark"] .original-price {
-  color: #666666;
+  color: #ffffff;
 }
 
 [data-theme="dark"] .discount-badge {
@@ -1116,7 +1116,7 @@ body {
 }
 
 [data-theme="dark"] .cart-item-remove {
-  color: #888888;
+  color: #ffffff;
 }
 
 [data-theme="dark"] .cart-item-remove:hover {
@@ -1181,7 +1181,7 @@ body {
 
 /* Breadcrumbs */
 [data-theme="dark"] .breadcrumbs a {
-  color: #888888;
+  color: #ffffff;
 }
 
 [data-theme="dark"] .breadcrumbs a:hover {
@@ -1193,7 +1193,7 @@ body {
 }
 
 [data-theme="dark"] .breadcrumbs .separator {
-  color: #666666;
+  color: #ffffff;
 }
 
 /* Theme Toggle */
@@ -1305,7 +1305,7 @@ body {
 /* Input placeholders */
 [data-theme="dark"] input::placeholder,
 [data-theme="dark"] textarea::placeholder {
-  color: #666666;
+  color: #ffffff;
 }
 
 /* Select dropdowns */
@@ -1318,4 +1318,513 @@ body {
 [data-theme="dark"] select option {
   background-color: #111111;
   color: #ffffff;
+}
+
+/* ============================================
+   ADDITIONAL DARK THEME FIXES
+   ============================================ */
+
+/* 1. Trustpilot / Customer Reviews Section */
+[data-theme="dark"] .trustpilot-section {
+  background-color: #000000;
+}
+
+[data-theme="dark"] .trustpilot-widget {
+  background-color: #0a0a0a;
+  border: 1px solid #333333;
+}
+
+[data-theme="dark"] .trustpilot-placeholder {
+  background-color: #0a0a0a;
+}
+
+[data-theme="dark"] .trustpilot-stars {
+  color: #ffffff;
+}
+
+[data-theme="dark"] .trustpilot-score {
+  color: #ffffff !important;
+}
+
+[data-theme="dark"] .trustpilot-reviews {
+  color: #cccccc !important;
+}
+
+/* 2. Offers page - Add to basket button & discount badge */
+[data-theme="dark"] .discount-badge {
+  background-color: #ffffff;
+  color: #000000 !important;
+}
+
+/* 3. Cart page - Proceed to checkout button hover effect (same as Start Shopping) */
+[data-theme="dark"] .btn-checkout {
+  background-color: #ffffff;
+  color: #000000 !important;
+  border: 1px solid #ffffff;
+}
+
+[data-theme="dark"] .btn-checkout:hover {
+  background-color: #000000;
+  color: #ffffff !important;
+  border: 1px solid #ffffff;
+}
+
+[data-theme="dark"] .btn-primary {
+  background-color: #ffffff;
+  color: #000000 !important;
+  border: 1px solid #ffffff;
+}
+
+[data-theme="dark"] .btn-primary:hover {
+  background-color: #000000;
+  color: #ffffff !important;
+  border: 1px solid #ffffff;
+}
+
+/* Empty cart styles */
+[data-theme="dark"] .cart-empty {
+  background-color: #0a0a0a;
+}
+
+[data-theme="dark"] .cart-empty .empty-icon {
+  color: #ffffff;
+}
+
+/* 4. Checkout page - Full dark theme alignment */
+[data-theme="dark"] .checkout-page {
+  background-color: #000000;
+}
+
+[data-theme="dark"] .checkout-header h1 {
+  color: #ffffff !important;
+}
+
+[data-theme="dark"] .checkout-form-section,
+[data-theme="dark"] .checkout-summary {
+  background-color: #0a0a0a;
+  border: 1px solid #333333;
+  box-shadow: none;
+}
+
+[data-theme="dark"] .checkout-form-section .section-title,
+[data-theme="dark"] .checkout-summary .section-title {
+  color: #ffffff;
+  border-bottom-color: #333333;
+}
+
+[data-theme="dark"] .checkout-page .form-group label {
+  color: #ffffff !important;
+}
+
+[data-theme="dark"] .checkout-page .form-group input,
+[data-theme="dark"] .checkout-page .form-group textarea {
+  background-color: #111111;
+  color: #ffffff;
+  border-color: #333333;
+}
+
+[data-theme="dark"] .checkout-page .form-group input:focus,
+[data-theme="dark"] .checkout-page .form-group textarea:focus {
+  border-color: #ffffff;
+}
+
+[data-theme="dark"] .checkout-page .form-group input::placeholder,
+[data-theme="dark"] .checkout-page .form-group textarea::placeholder {
+  color: #ffffff;
+}
+
+[data-theme="dark"] .payment-method {
+  background-color: #111111;
+  border-color: #ffffff;
+}
+
+[data-theme="dark"] .payment-method-title {
+  color: #ffffff !important;
+}
+
+[data-theme="dark"] .payment-method-desc {
+  color: #cccccc !important;
+}
+
+[data-theme="dark"] .payment-radio {
+  accent-color: #ffffff;
+}
+
+[data-theme="dark"] .summary-item {
+  border-bottom-color: #333333;
+}
+
+[data-theme="dark"] .summary-item-name {
+  color: #ffffff !important;
+}
+
+[data-theme="dark"] .summary-item-qty {
+  color: #aaaaaa !important;
+}
+
+[data-theme="dark"] .summary-item-price {
+  color: #ffffff !important;
+}
+
+[data-theme="dark"] .summary-totals {
+  border-top-color: #333333;
+}
+
+[data-theme="dark"] .checkout-page .summary-row {
+  color: #cccccc;
+}
+
+[data-theme="dark"] .checkout-page .summary-row.total {
+  color: #ffffff;
+  border-top-color: #333333;
+}
+
+[data-theme="dark"] .checkout-page .summary-row.total .value {
+  color: #ffffff !important;
+}
+
+[data-theme="dark"] .btn-place-order {
+  background-color: #ffffff;
+  color: #000000 !important;
+  border: 1px solid #ffffff;
+}
+
+[data-theme="dark"] .btn-place-order:hover {
+  background-color: #000000;
+  color: #ffffff !important;
+  border: 1px solid #ffffff;
+}
+
+[data-theme="dark"] .btn-place-order:disabled {
+  background-color: #333333;
+  color: #666666 !important;
+  border-color: #333333;
+}
+
+[data-theme="dark"] .empty-checkout {
+  background-color: #0a0a0a;
+}
+
+[data-theme="dark"] .empty-checkout p {
+  color: #ffffff !important;
+}
+
+[data-theme="dark"] .btn-shop {
+  background-color: #ffffff;
+  color: #000000 !important;
+}
+
+[data-theme="dark"] .btn-shop:hover {
+  background-color: #000000;
+  color: #ffffff !important;
+  border: 1px solid #ffffff;
+}
+
+/* Order success modal */
+[data-theme="dark"] .order-success-modal .modal-content {
+  background-color: #0a0a0a;
+  border: 1px solid #333333;
+}
+
+[data-theme="dark"] .order-success-modal h2,
+[data-theme="dark"] .order-success-modal p {
+  color: #ffffff;
+}
+
+/* 5. Track page - Heading text white */
+[data-theme="dark"] .track-page {
+  background-color: #000000;
+}
+
+[data-theme="dark"] .track-header {
+  color: #ffffff;
+}
+
+[data-theme="dark"] .track-header h1 {
+  color: #ffffff !important;
+}
+
+[data-theme="dark"] .track-header p {
+  color: #ffffff !important;
+}
+
+[data-theme="dark"] .track-search {
+  background-color: #0a0a0a;
+  border: 1px solid #333333;
+}
+
+[data-theme="dark"] .track-search input {
+  background-color: #111111;
+  color: #ffffff;
+  border-color: #333333;
+}
+
+[data-theme="dark"] .track-search input::placeholder {
+  color: #ffffff;
+}
+
+[data-theme="dark"] .track-search button {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+[data-theme="dark"] .track-search button:hover {
+  background-color: #e0e0e0;
+}
+
+[data-theme="dark"] .order-result {
+  background-color: #0a0a0a;
+}
+
+[data-theme="dark"] .order-card {
+  background-color: #0a0a0a;
+  border: 1px solid #333333;
+}
+
+[data-theme="dark"] .order-card-header {
+  background-color: #111111;
+  border-bottom-color: #333333;
+}
+
+[data-theme="dark"] .order-number-display {
+  color: #ffffff;
+}
+
+[data-theme="dark"] .order-status-display {
+  color: #ffffff;
+}
+
+[data-theme="dark"] .order-card-body {
+  background-color: #0a0a0a;
+}
+
+[data-theme="dark"] .order-card-body h3,
+[data-theme="dark"] .order-card-body h4,
+[data-theme="dark"] .order-card-body p,
+[data-theme="dark"] .order-card-body span {
+  color: #ffffff;
+}
+
+[data-theme="dark"] .order-info-row {
+  color: #cccccc;
+}
+
+[data-theme="dark"] .order-item {
+  border-bottom-color: #333333;
+}
+
+[data-theme="dark"] .order-item-name {
+  color: #ffffff;
+}
+
+[data-theme="dark"] .order-item-price {
+  color: #ffffff;
+}
+
+/* 6. Search page - Add to basket button hover white text */
+[data-theme="dark"] .search-header {
+  background: #0a0a0a !important;
+  border: 1px solid #333333;
+}
+
+[data-theme="dark"] .search-header h1 {
+  color: #ffffff !important;
+}
+
+[data-theme="dark"] .search-header p {
+  color: #cccccc !important;
+}
+
+[data-theme="dark"] .search-results-info {
+  color: #ffffff;
+}
+
+[data-theme="dark"] .btn-add-to-cart:hover,
+[data-theme="dark"] .btn-add-to-cart-small:hover {
+  background-color: #000000;
+  color: #ffffff !important;
+  border: 1px solid #ffffff;
+}
+
+/* 7. Product page - Similar products & You may also like - white text */
+[data-theme="dark"] .similar-products,
+[data-theme="dark"] .also-like-section {
+  background-color: #000000;
+}
+
+[data-theme="dark"] .similar-products .section-title,
+[data-theme="dark"] .also-like-section .section-title {
+  color: #ffffff;
+}
+
+[data-theme="dark"] .product-card-title,
+[data-theme="dark"] .product-card-title a {
+  color: #ffffff !important;
+}
+
+[data-theme="dark"] .product-card-title a:hover {
+  color: #cccccc !important;
+}
+
+[data-theme="dark"] .product-card-price .price {
+  color: #ffffff !important;
+}
+
+[data-theme="dark"] .product-card-price .original-price {
+  color: #ffffff;
+}
+
+[data-theme="dark"] .product-card-info {
+  background-color: #0a0a0a;
+}
+
+[data-theme="dark"] .products-carousel {
+  background-color: #000000;
+}
+
+[data-theme="dark"] .carousel-nav-btn {
+  background-color: #111111;
+  color: #ffffff;
+  border: 1px solid #333333;
+}
+
+[data-theme="dark"] .carousel-nav-btn:hover {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+[data-theme="dark"] .wishlist-btn {
+  background-color: #111111;
+  color: #ffffff;
+}
+
+[data-theme="dark"] .wishlist-btn:hover {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+/* 8. Product description and specification section */
+[data-theme="dark"] .product-accordion-section {
+  background-color: #000000;
+}
+
+[data-theme="dark"] .accordion {
+  background-color: #000000;
+}
+
+[data-theme="dark"] .accordion-item {
+  background-color: #0a0a0a;
+  border: 1px solid #333333;
+  margin-bottom: 10px;
+}
+
+[data-theme="dark"] .accordion-header {
+  background-color: #111111;
+  color: #ffffff !important;
+  border: none;
+}
+
+[data-theme="dark"] .accordion-header:hover {
+  background-color: #1a1a1a;
+}
+
+[data-theme="dark"] .accordion-header span {
+  color: #ffffff !important;
+}
+
+[data-theme="dark"] .accordion-icon {
+  color: #ffffff !important;
+}
+
+[data-theme="dark"] .accordion-content {
+  background-color: #0a0a0a;
+  border-top: 1px solid #333333;
+}
+
+[data-theme="dark"] .accordion-body {
+  color: #ffffff !important;
+}
+
+[data-theme="dark"] .accordion-body p {
+  color: #cccccc !important;
+}
+
+[data-theme="dark"] .specs-table {
+  background-color: #0a0a0a;
+}
+
+[data-theme="dark"] .specs-table tr {
+  border-bottom: 1px solid #333333;
+}
+
+[data-theme="dark"] .specs-table th {
+  background-color: #111111;
+  color: #ffffff !important;
+  border-color: #333333;
+}
+
+[data-theme="dark"] .specs-table td {
+  background-color: #0a0a0a;
+  color: #ffffff !important;
+  border-color: #333333;
+}
+
+/* Product page main content */
+[data-theme="dark"] .product-page {
+  background-color: #000000;
+}
+
+[data-theme="dark"] .product-main {
+  background-color: #000000;
+}
+
+[data-theme="dark"] .product-gallery {
+  background-color: #0a0a0a;
+}
+
+[data-theme="dark"] .product-info {
+  background-color: #000000;
+}
+
+[data-theme="dark"] .product-title {
+  color: #ffffff !important;
+}
+
+[data-theme="dark"] .product-sku {
+  color: #ffffff;
+}
+
+[data-theme="dark"] .product-price-section .price,
+[data-theme="dark"] .product-price-section .current-price {
+  color: #ffffff !important;
+}
+
+[data-theme="dark"] .product-price-section .original-price {
+  color: #ffffff;
+}
+
+[data-theme="dark"] .product-short-desc {
+  color: #cccccc;
+}
+
+[data-theme="dark"] .quantity-section label {
+  color: #ffffff;
+}
+
+[data-theme="dark"] .product-actions .btn-add-to-cart {
+  background-color: #ffffff;
+  color: #000000 !important;
+  border: 1px solid #ffffff;
+}
+
+[data-theme="dark"] .product-actions .btn-add-to-cart:hover {
+  background-color: #000000;
+  color: #ffffff !important;
+  border: 1px solid #ffffff;
+}
+
+/* Product section general */
+[data-theme="dark"] .product-section {
+  background-color: #000000;
+  border-top: 1px solid #333333;
 }
