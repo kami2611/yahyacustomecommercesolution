@@ -92,11 +92,15 @@ body {
 
 .search-btn {
   padding: 10px 15px;
-  background: #333;
   color: white;
   border: none;
   border-radius: 0 4px 4px 0;
   cursor: pointer;
+  font-size: 16px;
+}
+
+.search-btn:hover {
+  background: #5a2550;
 }
 
 /* Mobile Menu Overlay */
@@ -267,7 +271,7 @@ body {
 .carousel-slides {
   position: relative;
   width: 100%;
-  height: 100%;
+  height: 85%;
 }
 
 .carousel-slide {
@@ -285,7 +289,7 @@ body {
 .carousel-slide img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 .carousel-placeholder img {
@@ -802,6 +806,7 @@ body {
   }
   
   .btn-signin,
+  .btn-track-order,
   .btn-cart {
     text-decoration: none;
     color: #333;
@@ -809,6 +814,17 @@ body {
     display: flex;
     align-items: center;
     gap: 5px;
+  }
+  
+  .btn-track-order {
+    background: #6b2d5b;
+    color: white;
+    border-radius: 4px;
+    font-weight: 500;
+  }
+  
+  .btn-track-order:hover {
+    background: #5a2550;
   }
   
   /* Show mega navigation on desktop */

@@ -12,6 +12,7 @@
       <a href="/admin">Admin Panel</a>
     </div>
     <ul class="nav-links">
+      <li><a href="/admin/homepage">Homepage</a></li>
       <li><a href="/admin/categories">Categories</a></li>
       <li><a href="/admin/products" class="active">Products</a></li>
       <li><a href="/admin/orders">Orders</a></li>
@@ -109,10 +110,16 @@
         </div>
         
         <div class="form-group">
-  <label for="carouselImage">Carousel Image URL</label>
-  <input type="text" id="carouselImage" name="carouselImage" class="form-control"
-         placeholder="https://example.com/image.jpg" value="<%= product.carouselImage || '' %>">
-  <small class="help-text">Add image URL to show this product in the homepage carousel</small>
+  <label for="carouselImage">Carousel Image</label>
+  <% if (product.carouselImage) { %>
+    <div class="current-carousel-image" style="margin-bottom: 10px;">
+      <img src="<%= product.carouselImage %>" alt="Current carousel image" style="max-width: 200px; max-height: 100px; object-fit: cover; border-radius: 4px;">
+      <p style="font-size: 0.85rem; color: #666; margin-top: 5px;">Current image</p>
+    </div>
+  <% } %>
+  <input type="file" id="carouselImage" name="carouselImage" class="form-control"
+         accept="image/*">
+  <small class="help-text">Upload a new image to update the homepage carousel (leave empty to keep current)</small>
 </div>
         <!-- Existing Product Images -->
         <div class="form-group">

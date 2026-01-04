@@ -63,7 +63,7 @@
         <div class="empty-section">No products in carousel</div>
       <% } %>
       
-      <form action="/admin/homepage/carousel/add" method="POST" class="add-form">
+      <form action="/admin/homepage/carousel/add" method="POST" class="add-form" enctype="multipart/form-data">
         <div class="form-group">
           <label>Select Product</label>
           <select name="productId" required>
@@ -74,8 +74,8 @@
           </select>
         </div>
         <div class="form-group">
-          <label>Carousel Image URL</label>
-          <input type="url" name="carouselImage" placeholder="https://example.com/banner.jpg" required>
+          <label>Carousel Image</label>
+          <input type="file" name="carouselImage" accept="image/*" required>
         </div>
         <button type="submit" class="btn btn-primary">Add to Carousel</button>
       </form>

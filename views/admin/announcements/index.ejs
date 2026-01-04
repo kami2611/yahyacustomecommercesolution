@@ -228,21 +228,68 @@
       border-radius: 20px;
       font-size: 0.85rem;
     }
+    /* Override admin-nav to use admin.css styles */
+    .admin-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 20px;
+      background: #6b2d5b;
+      color: white;
+    }
+    
+    .nav-brand a {
+      color: white;
+      text-decoration: none;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    
+    .nav-links {
+      display: flex;
+      list-style: none;
+      gap: 5px;
+      margin: 0;
+      padding: 0;
+    }
+    
+    .nav-links li a {
+      color: rgba(255,255,255,0.9);
+      text-decoration: none;
+      padding: 8px 15px;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      transition: background-color 0.2s;
+    }
+    
+    .nav-links li a:hover {
+      background: rgba(255,255,255,0.1);
+    }
+    
+    .nav-links li a.active {
+      background: rgba(255,255,255,0.2);
+      font-weight: 500;
+    }
+    
+    .nav-links li a.logout-link {
+      color: #ffcdd2;
+    }
   </style>
 </head>
 <body>
-  <header class="admin-header">
-    <h1>Admin Panel</h1>
-    <a href="/">← Back to Store</a>
-  </header>
-  
   <nav class="admin-nav">
-    <a href="/admin/homepage">Homepage</a>
-    <a href="/admin/categories">Categories</a>
-    <a href="/admin/products">Products</a>
-    <a href="/admin/orders">Orders</a>
-    <a href="/admin/announcements" class="active">Announcements</a>
-    <a href="/admin/logout" style="color: #e53935;">Logout</a>
+    <div class="nav-brand">
+      <a href="/admin">Admin Panel</a>
+    </div>
+    <ul class="nav-links">
+      <li><a href="/admin/homepage">Homepage</a></li>
+      <li><a href="/admin/categories">Categories</a></li>
+      <li><a href="/admin/products">Products</a></li>
+      <li><a href="/admin/orders">Orders</a></li>
+      <li><a href="/admin/announcements" class="active">Announcements</a></li>
+      <li><a href="/" target="_blank">View Shop</a></li>
+      <li><a href="/admin/logout" class="logout-link">Logout</a></li>
+    </ul>
   </nav>
   
   <div class="container">

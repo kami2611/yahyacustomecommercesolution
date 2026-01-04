@@ -8,8 +8,8 @@
   <link rel="stylesheet" href="/css/product.css">
 </head>
 <body>
-  <%- include('../partials/header') %>
-  
+ <%- include('../partials/header') %>
+ 
   <%- include('../partials/mega-nav') %>
   
   <main class="product-page">
@@ -81,7 +81,10 @@
             <!-- Add to Cart Button -->
             <button class="btn-add-to-cart" 
                     data-product-id="<%= product._id %>"
-                    onclick="addToCart(this, '<%= product._id %>', '<%= product.name.replace(/'/g, "\\'") %>', <%= product.price %>, '<%= product.images && product.images.length > 0 ? product.images[0] : '/images/placeholder.png' %>')">
+                    data-product-name="<%= product.name %>"
+                    data-product-price="<%= product.price %>"
+                    data-product-image="<%= product.images && product.images.length > 0 ? product.images[0] : '/images/placeholder.png' %>"
+                    onclick="addToCartFromData(this)">
               <span class="cart-icon">🛒</span>
               Add to Basket
             </button>
@@ -187,7 +190,10 @@
                     </div>
                     <button class="btn-add-to-cart-small" 
                             data-product-id="<%= item._id %>"
-                            onclick="addToCart(this, '<%= item._id %>', '<%= item.name.replace(/'/g, "\\'") %>', <%= item.price %>, '<%= item.images && item.images.length > 0 ? item.images[0] : '/images/placeholder.png' %>')">
+                            data-product-name="<%= item.name %>"
+                            data-product-price="<%= item.price %>"
+                            data-product-image="<%= item.images && item.images.length > 0 ? item.images[0] : '/images/placeholder.png' %>"
+                            onclick="addToCartFromData(this)">
                       <span class="cart-icon">🛒</span>
                       Add to Basket
                     </button>
@@ -235,7 +241,10 @@
                     </div>
                     <button class="btn-add-to-cart-small" 
                             data-product-id="<%= item._id %>"
-                            onclick="addToCart(this, '<%= item._id %>', '<%= item.name.replace(/'/g, "\\'") %>', <%= item.price %>, '<%= item.images && item.images.length > 0 ? item.images[0] : '/images/placeholder.png' %>')">
+                            data-product-name="<%= item.name %>"
+                            data-product-price="<%= item.price %>"
+                            data-product-image="<%= item.images && item.images.length > 0 ? item.images[0] : '/images/placeholder.png' %>"
+                            onclick="addToCartFromData(this)">
                       <span class="cart-icon">🛒</span>
                       Add to Basket
                     </button>
@@ -367,6 +376,20 @@
         }
       });
     });
+    
+    // Add to cart function using data attributes
+    function addToCartFromData(button) {
+      const productId = button.dataset.productId;
+      const productName = button.dataset.productName;
+      const productPrice = parseFloat(button.dataset.productPrice);
+      const productImage = button.dataset.productImage;
+      
+      // Get quantity if available (for main product button)
+      const qtyInput = document.getElementById('product-qty');
+      const quantity = qtyInput ? parseInt(qtyInput.value) || 1 : 1;
+      
+      addToCart(button, productId, productName, productPrice, productImage, quantity);
+    }
   </script>
 </body>
 </html>

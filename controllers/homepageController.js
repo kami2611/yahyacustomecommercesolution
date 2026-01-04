@@ -44,7 +44,9 @@ exports.homepage = async (req, res) => {
 // Add product to carousel
 exports.addToCarousel = async (req, res) => {
   try {
-    const { productId, carouselImage } = req.body;
+    const { productId } = req.body;
+    // If file was uploaded, use its URL from Cloudinary
+    const carouselImage = req.file ? req.file.path : req.body.carouselImage;
     await Product.findByIdAndUpdate(productId, { carouselImage });
     res.redirect('/admin/homepage');
   } catch (error) {

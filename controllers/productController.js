@@ -99,7 +99,7 @@ exports.create = async (req, res) => {
 exports.store = async (req, res) => {
   try {
     const { name, slug, description, price, originalPrice, stock, category, metadata, 
-            isNewOffer, isBestOffer, isFeatured, carouselImage } = req.body;
+            isNewOffer, isBestOffer, isFeatured } = req.body;
     
     // Convert metadata object to Map
     const metadataMap = new Map();
@@ -111,6 +111,10 @@ exports.store = async (req, res) => {
       });
     }
     
+    // Handle file uploads (using upload.fields())
+    const productImages = req.files && req.files['images'] ? req.files['images'].map(file => file.path) : [];
+    const carouselImageFile = req.files && req.files['carouselImage'] && req.files['carouselImage'][0] ? req.files['carouselImage'][0].path : '';
+    
     const product = new Product({
       name,
       slug: slug || undefined, // Let pre-save hook generate if empty
@@ -120,11 +124,11 @@ exports.store = async (req, res) => {
       stock: parseInt(stock) || 0,
       category,
       metadata: metadataMap,
-      images: req.files ? req.files.map(file => file.path) : [],
+      images: productImages,
       isNewOffer: isNewOffer === 'true',
       isBestOffer: isBestOffer === 'true',
       isFeatured: isFeatured === 'true',
-      carouselImage: carouselImage || ''
+      carouselImage: carouselImageFile
     });
     
     await product.save();
@@ -173,7 +177,7 @@ exports.edit = async (req, res) => {
 exports.update = async (req, res) => {
   try {
     const { name, slug, description, price, originalPrice, stock, category, metadata,
-            isNewOffer, isBestOffer, isFeatured, carouselImage, existingImages } = req.body;
+            isNewOffer, isBestOffer, isFeatured, existingImages } = req.body;
     
     // Convert metadata object to Map
     const metadataMap = new Map();
@@ -193,10 +197,20 @@ exports.update = async (req, res) => {
       images = Array.isArray(existingImages) ? existingImages : [existingImages];
     }
     
-    // Add new uploaded images
-    if (req.files && req.files.length > 0) {
-      const newImages = req.files.map(file => file.path);
+    // Add new uploaded images (using upload.fields())
+    if (req.files && req.files['images'] && req.files['images'].length > 0) {
+      const newImages = req.files['images'].map(file => file.path);
       images = [...images, ...newImages];
+    }
+    
+    // Handle carousel image - use new upload if provided, otherwise keep existing
+    let carouselImage;
+    if (req.files && req.files['carouselImage'] && req.files['carouselImage'][0]) {
+      carouselImage = req.files['carouselImage'][0].path;
+    } else {
+      // Keep existing carousel image from the database
+      const existingProduct = await Product.findById(req.params.id);
+      carouselImage = existingProduct ? existingProduct.carouselImage : '';
     }
     
     await Product.findByIdAndUpdate(req.params.id, {
