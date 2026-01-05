@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %> | SEO Admin Panel</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <!-- Quill Editor CSS -->
+  <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
+  <style>
+    :root {
+      --seo-primary: #0d6efd;
+      --seo-secondary: #6c757d;
+      --seo-success: #198754;
+      --seo-danger: #dc3545;
+      --seo-warning: #ffc107;
+      --seo-info: #0dcaf0;
+      --seo-light: #f8f9fa;
+      --seo-dark: #212529;
+    }
+    
+    body {
+      background-color: #f5f7fa;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    .seo-navbar {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .seo-navbar .navbar-brand {
+      font-weight: 700;
+      font-size: 1.3rem;
+    }
+    
+    .seo-sidebar {
+      background: #fff;
+      min-height: calc(100vh - 56px);
+      box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+      padding-top: 1.5rem;
+    }
+    
+    .seo-sidebar .nav-link {
+      color: #495057;
+      padding: 0.75rem 1.25rem;
+      border-radius: 0.5rem;
+      margin: 0.25rem 0.75rem;
+      transition: all 0.2s ease;
+    }
+    
+    .seo-sidebar .nav-link:hover,
+    .seo-sidebar .nav-link.active {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+    }
+    
+    .seo-sidebar .nav-link i {
+      margin-right: 0.75rem;
+      width: 20px;
+      text-align: center;
+    }
+    
+    .seo-content {
+      padding: 2rem;
+    }
+    
+    .seo-card {
+      background: #fff;
+      border-radius: 1rem;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      border: none;
+      overflow: hidden;
+    }
+    
+    .seo-card .card-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      padding: 1rem 1.5rem;
+      border: none;
+    }
+    
+    .seo-card .card-header h5 {
+      margin: 0;
+      font-weight: 600;
+    }
+    
+    .seo-card .card-body {
+      padding: 1.5rem;
+    }
+    
+    .form-label {
+      font-weight: 600;
+      color: #495057;
+      margin-bottom: 0.5rem;
+    }
+    
+    .form-control:focus,
+    .form-select:focus {
+      border-color: #667eea;
+      box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    }
+    
+    .char-count {
+      font-size: 0.8rem;
+      color: #6c757d;
+    }
+    
+    .char-count.warning {
+      color: #ffc107;
+    }
+    
+    .char-count.danger {
+      color: #dc3545;
+    }
+    
+    .btn-seo-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      color: #fff;
+      padding: 0.5rem 1.5rem;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .btn-seo-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+      color: #fff;
+    }
+    
+    .btn-seo-secondary {
+      background: #6c757d;
+      border: none;
+      color: #fff;
+      padding: 0.5rem 1.5rem;
+      border-radius: 0.5rem;
+    }
+
+    .btn-seo-secondary:hover {
+      background: #5a6268;
+      color: #fff;
+    }
+    
+    .page-title {
+      font-weight: 700;
+      color: #212529;
+      margin-bottom: 1.5rem;
+    }
+    
+    /* Quill Editor Styles */
+    .ql-container {
+      min-height: 200px;
+      font-size: 1rem;
+    }
+    
+    .ql-editor {
+      min-height: 200px;
+    }
+    
+    /* SEO Preview */
+    .seo-preview {
+      background: #fff;
+      border: 1px solid #e9ecef;
+      border-radius: 0.5rem;
+      padding: 1rem;
+      margin-top: 1rem;
+    }
+    
+    .seo-preview .preview-title {
+      color: #1a0dab;
+      font-size: 1.1rem;
+      margin-bottom: 0.25rem;
+      text-decoration: none;
+    }
+    
+    .seo-preview .preview-url {
+      color: #006621;
+      font-size: 0.85rem;
+      margin-bottom: 0.25rem;
+    }
+    
+    .seo-preview .preview-description {
+      color: #545454;
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
+    
+    /* Responsive */
+    @media (max-width: 991.98px) {
+      .seo-sidebar {
+        min-height: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-dark seo-navbar">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/admin/seo-panel">
+        <i class="bi bi-search-heart"></i> SEO Admin Panel
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/" target="_blank">
+              <i class="bi bi-eye"></i> View Site
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/admin" target="_blank">
+              <i class="bi bi-gear"></i> Main Admin
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/admin/seo-panel/logout">
+              <i class="bi bi-box-arrow-right"></i> Logout
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container-fluid">
+    <div class="row">
+      <!-- Sidebar -->
+      <div class="col-lg-2 seo-sidebar d-none d-lg-block">
+        <nav class="nav flex-column">
+          <a class="nav-link" href="/admin/seo-panel">
+            <i class="bi bi-speedometer2"></i> Dashboard
+          </a>
+          <a class="nav-link" href="/admin/seo-panel/create">
+            <i class="bi bi-plus-circle"></i> Add Page
+          </a>
+          <hr class="mx-3">
+          <span class="px-3 text-muted small text-uppercase">Quick Links</span>
+          <a class="nav-link" href="/" target="_blank">
+            <i class="bi bi-house"></i> Home Page
+          </a>
+          <a class="nav-link" href="/shop" target="_blank">
+            <i class="bi bi-shop"></i> Shop
+          </a>
+        </nav>
+      </div>
+
+      <!-- Main Content -->
+      <div class="col-lg-10 seo-content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <div>
+            <a href="/admin/seo-panel" class="text-decoration-none text-muted">
+              <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
+            </a>
+            <h1 class="page-title mb-0 mt-2">
+              <i class="bi bi-pencil-square me-2"></i>Edit SEO: <%= page.pageName %>
+            </h1>
+          </div>
+          <div>
+            <span class="badge bg-secondary me-2">Slug: <%= page.pageSlug %></span>
+          </div>
+        </div>
+
+        <% if (typeof success !== 'undefined' && success) { %>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+          <i class="bi bi-check-circle me-2"></i><%= success %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <% } %>
+
+        <% if (typeof error !== 'undefined' && error) { %>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+          <i class="bi bi-exclamation-triangle me-2"></i><%= error %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <% } %>
+
+        <form action="/admin/seo-panel/edit/<%= page.pageSlug %>" method="POST">
+          <div class="row">
+            <!-- Left Column - SEO Metadata -->
+            <div class="col-lg-6 mb-4">
+              <div class="seo-card h-100">
+                <div class="card-header">
+                  <h5><i class="bi bi-search me-2"></i>Search Engine Metadata</h5>
+                </div>
+                <div class="card-body">
+                  <div class="mb-3">
+                    <label for="pageName" class="form-label">Page Display Name</label>
+                    <input type="text" class="form-control" id="pageName" name="pageName" 
+                           value="<%= page.pageName || '' %>" required>
+                    <small class="text-muted">Internal name for this page (shown in dashboard)</small>
+                  </div>
+                  
+                  <div class="mb-3">
+                    <label for="metaTitle" class="form-label">
+                      Meta Title 
+                      <span class="char-count" id="metaTitle-count">0/70</span>
+                    </label>
+                    <input type="text" class="form-control" id="metaTitle" name="metaTitle" 
+                           value="<%= page.metaTitle || '' %>" data-char-count="70" maxlength="70">
+                    <small class="text-muted">Recommended: 50-60 characters. Displayed in search results.</small>
+                  </div>
+                  
+                  <div class="mb-3">
+                    <label for="metaDescription" class="form-label">
+                      Meta Description 
+                      <span class="char-count" id="metaDescription-count">0/160</span>
+                    </label>
+                    <textarea class="form-control" id="metaDescription" name="metaDescription" 
+                              rows="3" data-char-count="160" maxlength="160"><%= page.metaDescription || '' %></textarea>
+                    <small class="text-muted">Recommended: 150-160 characters. Shown in search results.</small>
+                  </div>
+                  
+                  <div class="mb-3">
+                    <label for="metaKeywords" class="form-label">Meta Keywords</label>
+                    <input type="text" class="form-control" id="metaKeywords" name="metaKeywords" 
+                           value="<%= page.metaKeywords || '' %>" placeholder="keyword1, keyword2, keyword3">
+                    <small class="text-muted">Comma-separated keywords (less important for modern SEO)</small>
+                  </div>
+                  
+                  <div class="mb-3">
+                    <label for="robots" class="form-label">Robots Directive</label>
+                    <select class="form-select" id="robots" name="robots">
+                      <option value="index, follow" <%= page.robots === 'index, follow' ? 'selected' : '' %>>Index, Follow (Recommended)</option>
+                      <option value="noindex, follow" <%= page.robots === 'noindex, follow' ? 'selected' : '' %>>NoIndex, Follow</option>
+                      <option value="index, nofollow" <%= page.robots === 'index, nofollow' ? 'selected' : '' %>>Index, NoFollow</option>
+                      <option value="noindex, nofollow" <%= page.robots === 'noindex, nofollow' ? 'selected' : '' %>>NoIndex, NoFollow</option>
+                    </select>
+                  </div>
+                  
+                  <div class="mb-3">
+                    <label for="canonicalUrl" class="form-label">Canonical URL</label>
+                    <input type="url" class="form-control" id="canonicalUrl" name="canonicalUrl" 
+                           value="<%= page.canonicalUrl || '' %>" placeholder="https://example.com/page">
+                    <small class="text-muted">Leave empty to use the default URL</small>
+                  </div>
+                  
+                  <!-- Google Search Preview -->
+                  <div class="mt-4">
+                    <label class="form-label">
+                      <i class="bi bi-google me-1"></i> Google Search Preview
+                    </label>
+                    <div class="seo-preview" id="searchPreview">
+                      <div class="preview-title" id="previewTitle"><%= page.metaTitle || page.pageName || 'Page Title' %></div>
+                      <div class="preview-url">yourwebsite.com/<%= page.pageSlug %></div>
+                      <div class="preview-description" id="previewDescription"><%= page.metaDescription || 'Add a meta description to see how your page will appear in search results.' %></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Right Column - Social & Advanced -->
+            <div class="col-lg-6 mb-4">
+              <div class="seo-card mb-4">
+                <div class="card-header">
+                  <h5><i class="bi bi-share me-2"></i>Social Media (Open Graph)</h5>
+                </div>
+                <div class="card-body">
+                  <div class="mb-3">
+                    <label for="ogImage" class="form-label">OG Image URL</label>
+                    <input type="url" class="form-control" id="ogImage" name="ogImage" 
+                           value="<%= page.ogImage || '' %>" placeholder="https://example.com/image.jpg">
+                    <small class="text-muted">Recommended size: 1200x630 pixels</small>
+                  </div>
+                  
+                  <div class="mb-3">
+                    <label for="ogType" class="form-label">OG Type</label>
+                    <select class="form-select" id="ogType" name="ogType">
+                      <option value="website" <%= page.ogType === 'website' ? 'selected' : '' %>>Website</option>
+                      <option value="article" <%= page.ogType === 'article' ? 'selected' : '' %>>Article</option>
+                      <option value="product" <%= page.ogType === 'product' ? 'selected' : '' %>>Product</option>
+                    </select>
+                  </div>
+                  
+                  <% if (page.ogImage) { %>
+                  <div class="mt-3">
+                    <label class="form-label">Image Preview</label>
+                    <img src="<%= page.ogImage %>" alt="OG Image Preview" class="img-fluid rounded" style="max-height: 200px;">
+                  </div>
+                  <% } %>
+                </div>
+              </div>
+              
+              <div class="seo-card">
+                <div class="card-header">
+                  <h5><i class="bi bi-code-slash me-2"></i>Advanced SEO</h5>
+                </div>
+                <div class="card-body">
+                  <div class="mb-3">
+                    <label for="structuredData" class="form-label">Structured Data (JSON-LD)</label>
+                    <textarea class="form-control font-monospace" id="structuredData" name="structuredData" 
+                              rows="5" placeholder='{"@context": "https://schema.org", ...}'><%= page.structuredData || '' %></textarea>
+                    <small class="text-muted">JSON-LD schema markup for rich snippets</small>
+                  </div>
+                  
+                  <div class="mb-3">
+                    <label for="customHeadTags" class="form-label">Custom Head Tags</label>
+                    <textarea class="form-control font-monospace" id="customHeadTags" name="customHeadTags" 
+                              rows="3" placeholder='<meta name="author" content="...">'><%= page.customHeadTags || '' %></textarea>
+                    <small class="text-muted">Additional meta tags to include in &lt;head&gt;</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- On-Page Content Section -->
+          <div class="seo-card mb-4">
+            <div class="card-header">
+              <h5><i class="bi bi-file-text me-2"></i>On-Page Content</h5>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="h1Text" class="form-label">H1 Heading</label>
+                  <input type="text" class="form-control" id="h1Text" name="h1Text" 
+                         value="<%= page.h1Text || '' %>" placeholder="Main page heading">
+                  <small class="text-muted">Primary heading - should include main keyword</small>
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                  <label for="h2Text" class="form-label">H2 Subheading</label>
+                  <input type="text" class="form-control" id="h2Text" name="h2Text" 
+                         value="<%= page.h2Text || '' %>" placeholder="Secondary heading">
+                  <small class="text-muted">Supporting heading with related keywords</small>
+                </div>
+              </div>
+              
+              <div class="mb-3">
+                <label for="altText" class="form-label">Primary Image Alt Text</label>
+                <input type="text" class="form-control" id="altText" name="altText" 
+                       value="<%= page.altText || '' %>" placeholder="Descriptive text for main image">
+                <small class="text-muted">Alt text for the main page image (important for accessibility & SEO)</small>
+              </div>
+              
+              <div class="mb-3">
+                <label for="mainParagraph" class="form-label">Main Content Paragraph</label>
+                <div class="quill-editor" id="mainParagraphEditor"></div>
+                <input type="hidden" id="mainParagraph" name="mainParagraph" value="<%- (page.mainParagraph || '').replace(/"/g, '&quot;') %>">
+                <small class="text-muted">Rich text content that can be displayed on the page</small>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Action Buttons -->
+          <div class="d-flex justify-content-between">
+            <a href="/admin/seo-panel" class="btn btn-seo-secondary">
+              <i class="bi bi-x-lg me-1"></i> Cancel
+            </a>
+            <button type="submit" class="btn btn-seo-primary">
+              <i class="bi bi-check-lg me-1"></i> Save Changes
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Quill Editor JS -->
+  <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialize Quill editor
+      const quillContainer = document.getElementById('mainParagraphEditor');
+      const hiddenInput = document.getElementById('mainParagraph');
+      
+      const quill = new Quill(quillContainer, {
+        theme: 'snow',
+        modules: {
+          toolbar: [
+            [{ 'header': [1, 2, 3, false] }],
+            ['bold', 'italic', 'underline', 'strike'],
+            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+            [{ 'color': [] }, { 'background': [] }],
+            ['link'],
+            ['clean']
+          ]
+        },
+        placeholder: 'Write your content here...'
+      });
+      
+      // Set initial content
+      if (hiddenInput.value) {
+        quill.root.innerHTML = hiddenInput.value;
+      }
+      
+      // Update hidden input on change
+      quill.on('text-change', function() {
+        hiddenInput.value = quill.root.innerHTML;
+      });
+      
+      // Character count functionality
+      const charCountInputs = document.querySelectorAll('[data-char-count]');
+      charCountInputs.forEach(function(input) {
+        const maxLength = parseInt(input.dataset.charCount);
+        const countEl = document.getElementById(input.id + '-count');
+        
+        function updateCount() {
+          const length = input.value.length;
+          countEl.textContent = length + '/' + maxLength;
+          countEl.classList.remove('warning', 'danger');
+          
+          if (length > maxLength) {
+            countEl.classList.add('danger');
+          } else if (length > maxLength * 0.9) {
+            countEl.classList.add('warning');
+          }
+        }
+        
+        input.addEventListener('input', updateCount);
+        updateCount();
+      });
+      
+      // Live preview update
+      const titleInput = document.getElementById('metaTitle');
+      const descInput = document.getElementById('metaDescription');
+      const previewTitle = document.getElementById('previewTitle');
+      const previewDescription = document.getElementById('previewDescription');
+      const defaultTitle = document.getElementById('pageName').value || 'Page Title';
+      
+      titleInput.addEventListener('input', function() {
+        previewTitle.textContent = this.value || defaultTitle;
+      });
+      
+      descInput.addEventListener('input', function() {
+        previewDescription.textContent = this.value || 'Add a meta description to see how your page will appear in search results.';
+      });
+    });
+  </script>
+</body>
+</html>

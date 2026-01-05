@@ -98,6 +98,48 @@ app.get('/admin/logout', (req, res) => {
   });
 });
 
+// SEO Admin Login routes (separate auth from main admin)
+const seoLoginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  message: 'Too many login attempts. Please try again in 15 minutes.'
+});
+
+app.get('/admin/seo-login', (req, res) => {
+  if (req.session.isSeoAuthenticated) {
+    return res.redirect('/admin/seo-panel');
+  }
+  res.render('admin/seo/login', {
+    title: 'SEO Admin Login',
+    error: null,
+    layout: false
+  });
+});
+
+app.post('/admin/seo-login', seoLoginLimiter, (req, res) => {
+  const { username, password } = req.body;
+  const seoUsername = process.env.SEO_ADMIN_USERNAME || 'seoadmin';
+  const seoPassword = process.env.SEO_ADMIN_PASSWORD || 'seo123';
+  
+  if (username === seoUsername && password === seoPassword) {
+    req.session.isSeoAuthenticated = true;
+    const returnTo = req.session.seoReturnTo || '/admin/seo-panel';
+    delete req.session.seoReturnTo;
+    res.redirect(returnTo);
+  } else {
+    res.render('admin/seo/login', {
+      title: 'SEO Admin Login',
+      error: 'Invalid username or password',
+      layout: false
+    });
+  }
+});
+
+app.get('/admin/seo-panel/logout', (req, res) => {
+  req.session.isSeoAuthenticated = false;
+  res.redirect('/admin/seo-login');
+});
+
 // Import Routes
 const shopRoutes = require('./routes/shop');
 const apiRoutes = require('./routes/api');
@@ -107,6 +149,11 @@ const adminHomepageRoutes = require('./routes/admin/homepage');
 const adminAnnouncementRoutes = require('./routes/admin/announcements');
 const adminOrderRoutes = require('./routes/admin/orders');
 const adminNewsletterRoutes = require('./routes/admin/newsletters');
+const adminSeoRoutes = require('./routes/admin/seo');
+
+// SEO Middleware
+const { redirectIfSeoAuthenticated } = require('./middleware/seoAuth');
+const seoController = require('./controllers/seoController');
 
 // Use Routes - Admin routes must come before shop routes
 // because shop routes have catch-all patterns that would intercept admin URLs
@@ -119,6 +166,10 @@ app.use('/admin/homepage', requireAuth, adminHomepageRoutes);
 app.use('/admin/announcements', requireAuth, adminAnnouncementRoutes);
 app.use('/admin/orders', requireAuth, adminOrderRoutes);
 app.use('/admin/newsletters', requireAuth, adminNewsletterRoutes);
+
+// SEO Admin Panel routes (uses separate auth)
+const { requireSeoAuth } = require('./middleware/seoAuth');
+app.use('/admin/seo-panel', requireSeoAuth, adminSeoRoutes);
 
 // Admin Dashboard
 app.get('/admin', requireAuth, (req, res) => {

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SEO Admin Login</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    .login-card {
+      background: #fff;
+      border-radius: 1.5rem;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      overflow: hidden;
+      max-width: 420px;
+      width: 100%;
+    }
+    
+    .login-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 2.5rem 2rem;
+      text-align: center;
+      color: #fff;
+    }
+    
+    .login-header h1 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+    
+    .login-header p {
+      opacity: 0.9;
+      margin-bottom: 0;
+    }
+    
+    .login-icon {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+    }
+    
+    .login-body {
+      padding: 2.5rem 2rem;
+    }
+    
+    .form-label {
+      font-weight: 600;
+      color: #495057;
+    }
+    
+    .form-control {
+      padding: 0.75rem 1rem;
+      border-radius: 0.75rem;
+      border: 2px solid #e9ecef;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .form-control:focus {
+      border-color: #667eea;
+      box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    }
+    
+    .btn-login {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      padding: 0.875rem 2rem;
+      border-radius: 0.75rem;
+      font-weight: 600;
+      font-size: 1rem;
+      width: 100%;
+      color: #fff;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .btn-login:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+      color: #fff;
+    }
+    
+    .alert {
+      border-radius: 0.75rem;
+      border: none;
+    }
+    
+    .back-link {
+      text-align: center;
+      margin-top: 1.5rem;
+    }
+    
+    .back-link a {
+      color: #6c757d;
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+    
+    .back-link a:hover {
+      color: #667eea;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-card">
+    <div class="login-header">
+      <div class="login-icon">🔍</div>
+      <h1>SEO Admin Panel</h1>
+      <p>Manage your website's SEO content</p>
+    </div>
+    
+    <div class="login-body">
+      <% if (error) { %>
+        <div class="alert alert-danger" role="alert">
+          <strong>Error:</strong> <%= error %>
+        </div>
+      <% } %>
+      
+      <form action="/admin/seo-login" method="POST">
+        <div class="mb-3">
+          <label for="username" class="form-label">Username</label>
+          <input type="text" class="form-control" id="username" name="username" required autocomplete="username" autofocus>
+        </div>
+        
+        <div class="mb-4">
+          <label for="password" class="form-label">Password</label>
+          <input type="password" class="form-control" id="password" name="password" required autocomplete="current-password">
+        </div>
+        
+        <button type="submit" class="btn btn-login">
+          Sign In
+        </button>
+      </form>
+      
+      <div class="back-link">
+        <a href="/">← Back to Website</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

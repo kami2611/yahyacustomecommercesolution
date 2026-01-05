@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %> | SEO Admin Panel</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <!-- Quill Editor CSS -->
+  <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
+  <style>
+    :root {
+      --seo-primary: #0d6efd;
+      --seo-secondary: #6c757d;
+      --seo-success: #198754;
+      --seo-danger: #dc3545;
+      --seo-warning: #ffc107;
+      --seo-info: #0dcaf0;
+      --seo-light: #f8f9fa;
+      --seo-dark: #212529;
+    }
+    
+    body {
+      background-color: #f5f7fa;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    .seo-navbar {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .seo-navbar .navbar-brand {
+      font-weight: 700;
+      font-size: 1.3rem;
+    }
+    
+    .seo-sidebar {
+      background: #fff;
+      min-height: calc(100vh - 56px);
+      box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+      padding-top: 1.5rem;
+    }
+    
+    .seo-sidebar .nav-link {
+      color: #495057;
+      padding: 0.75rem 1.25rem;
+      border-radius: 0.5rem;
+      margin: 0.25rem 0.75rem;
+      transition: all 0.2s ease;
+    }
+    
+    .seo-sidebar .nav-link:hover,
+    .seo-sidebar .nav-link.active {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+    }
+    
+    .seo-sidebar .nav-link i {
+      margin-right: 0.75rem;
+      width: 20px;
+      text-align: center;
+    }
+    
+    .seo-content {
+      padding: 2rem;
+    }
+    
+    .seo-card {
+      background: #fff;
+      border-radius: 1rem;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      border: none;
+      overflow: hidden;
+    }
+    
+    .seo-card .card-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      padding: 1rem 1.5rem;
+      border: none;
+    }
+    
+    .seo-card .card-header h5 {
+      margin: 0;
+      font-weight: 600;
+    }
+    
+    .seo-card .card-body {
+      padding: 1.5rem;
+    }
+    
+    .form-label {
+      font-weight: 600;
+      color: #495057;
+      margin-bottom: 0.5rem;
+    }
+    
+    .form-control:focus,
+    .form-select:focus {
+      border-color: #667eea;
+      box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    }
+    
+    .char-count {
+      font-size: 0.8rem;
+      color: #6c757d;
+    }
+    
+    .char-count.warning {
+      color: #ffc107;
+    }
+    
+    .char-count.danger {
+      color: #dc3545;
+    }
+    
+    .btn-seo-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      color: #fff;
+      padding: 0.5rem 1.5rem;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .btn-seo-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+      color: #fff;
+    }
+    
+    .btn-seo-secondary {
+      background: #6c757d;
+      border: none;
+      color: #fff;
+      padding: 0.5rem 1.5rem;
+      border-radius: 0.5rem;
+    }
+    
+    .page-title {
+      font-weight: 700;
+      color: #212529;
+      margin-bottom: 1.5rem;
+    }
+    
+    .section-divider {
+      margin: 2rem 0;
+      border-top: 2px solid #e9ecef;
+    }
+    
+    .section-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #667eea;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+    }
+    
+    .section-title i {
+      margin-right: 0.75rem;
+    }
+    
+    /* Quill Editor Styles */
+    .ql-container {
+      min-height: 200px;
+      font-size: 1rem;
+    }
+    
+    .ql-editor {
+      min-height: 200px;
+    }
+    
+    /* Table Styles */
+    .table-seo thead {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+    }
+    
+    .table-seo thead th {
+      border: none;
+      padding: 1rem;
+      font-weight: 600;
+    }
+    
+    .table-seo tbody td {
+      padding: 1rem;
+      vertical-align: middle;
+    }
+    
+    .table-seo tbody tr:hover {
+      background-color: #f8f9fa;
+    }
+    
+    /* Badge Styles */
+    .badge-seo {
+      padding: 0.5rem 1rem;
+      border-radius: 2rem;
+      font-weight: 500;
+    }
+    
+    /* Preview Card */
+    .seo-preview {
+      background: #fff;
+      border: 1px solid #e9ecef;
+      border-radius: 0.5rem;
+      padding: 1rem;
+      margin-top: 1rem;
+    }
+    
+    .seo-preview .preview-title {
+      color: #1a0dab;
+      font-size: 1.1rem;
+      margin-bottom: 0.25rem;
+      text-decoration: none;
+    }
+    
+    .seo-preview .preview-url {
+      color: #006621;
+      font-size: 0.85rem;
+      margin-bottom: 0.25rem;
+    }
+    
+    .seo-preview .preview-description {
+      color: #545454;
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
+    
+    /* Responsive */
+    @media (max-width: 991.98px) {
+      .seo-sidebar {
+        min-height: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-dark seo-navbar">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/admin/seo-panel">
+        <i class="bi bi-search-heart"></i> SEO Admin Panel
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/" target="_blank">
+              <i class="bi bi-eye"></i> View Site
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/admin" target="_blank">
+              <i class="bi bi-gear"></i> Main Admin
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/admin/seo-panel/logout">
+              <i class="bi bi-box-arrow-right"></i> Logout
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container-fluid">
+    <div class="row">
+      <!-- Sidebar -->
+      <div class="col-lg-2 seo-sidebar d-none d-lg-block">
+        <nav class="nav flex-column">
+          <a class="nav-link active" href="/admin/seo-panel">
+            <i class="bi bi-speedometer2"></i> Dashboard
+          </a>
+          <a class="nav-link" href="/admin/seo-panel/create">
+            <i class="bi bi-plus-circle"></i> Add Page
+          </a>
+          <hr class="mx-3">
+          <span class="px-3 text-muted small text-uppercase">Quick Links</span>
+          <a class="nav-link" href="/" target="_blank">
+            <i class="bi bi-house"></i> Home Page
+          </a>
+          <a class="nav-link" href="/shop" target="_blank">
+            <i class="bi bi-shop"></i> Shop
+          </a>
+        </nav>
+      </div>
+
+      <!-- Main Content -->
+      <div class="col-lg-10 seo-content">
+        <%- body %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Quill Editor JS -->
+  <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
+  
+  <script>
+    // Initialize any Quill editors on the page
+    document.addEventListener('DOMContentLoaded', function() {
+      const quillContainers = document.querySelectorAll('.quill-editor');
+      quillContainers.forEach(function(container) {
+        const hiddenInput = container.nextElementSibling;
+        const quill = new Quill(container, {
+          theme: 'snow',
+          modules: {
+            toolbar: [
+              [{ 'header': [1, 2, 3, false] }],
+              ['bold', 'italic', 'underline', 'strike'],
+              [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+              [{ 'color': [] }, { 'background': [] }],
+              ['link'],
+              ['clean']
+            ]
+          },
+          placeholder: 'Write your content here...'
+        });
+        
+        // Set initial content
+        if (hiddenInput.value) {
+          quill.root.innerHTML = hiddenInput.value;
+        }
+        
+        // Update hidden input on change
+        quill.on('text-change', function() {
+          hiddenInput.value = quill.root.innerHTML;
+        });
+      });
+      
+      // Character count functionality
+      const charCountInputs = document.querySelectorAll('[data-char-count]');
+      charCountInputs.forEach(function(input) {
+        const maxLength = parseInt(input.dataset.charCount);
+        const countEl = document.getElementById(input.id + '-count');
+        
+        function updateCount() {
+          const length = input.value.length;
+          countEl.textContent = length + '/' + maxLength;
+          countEl.classList.remove('warning', 'danger');
+          
+          if (length > maxLength) {
+            countEl.classList.add('danger');
+          } else if (length > maxLength * 0.9) {
+            countEl.classList.add('warning');
+          }
+        }
+        
+        input.addEventListener('input', updateCount);
+        updateCount();
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,68 @@
+<%# SEO Meta Tags Partial %>
+<%# Include this in the head section of your layouts %>
+<%# Usage: include('../partials/seo-head') %>
+
+<% 
+  // Get SEO data from res.locals or use defaults
+  const seo = typeof locals.seo !== 'undefined' ? locals.seo : {};
+  const siteName = 'E-Commerce Store';
+  
+  // Build final values with fallbacks
+  const pageTitle = seo.metaTitle || (typeof title !== 'undefined' ? title : siteName);
+  const metaDesc = seo.metaDescription || '';
+  const metaKeywords = seo.metaKeywords || '';
+  const ogImg = seo.ogImage || '/images/og-default.jpg';
+  const ogType = seo.ogType || 'website';
+  const canonical = seo.canonicalUrl || '';
+  const robotsDirective = seo.robots || 'index, follow';
+  const structuredData = seo.structuredData || '';
+  const customHead = seo.customHeadTags || '';
+%>
+
+<!-- Primary Meta Tags -->
+<title><%= pageTitle %> | <%= siteName %></title>
+<% if (metaDesc) { %>
+<meta name="description" content="<%= metaDesc %>">
+<% } %>
+<% if (metaKeywords) { %>
+<meta name="keywords" content="<%= metaKeywords %>">
+<% } %>
+<meta name="robots" content="<%= robotsDirective %>">
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="<%= ogType %>">
+<meta property="og:title" content="<%= pageTitle %>">
+<% if (metaDesc) { %>
+<meta property="og:description" content="<%= metaDesc %>">
+<% } %>
+<% if (ogImg) { %>
+<meta property="og:image" content="<%= ogImg %>">
+<% } %>
+<meta property="og:site_name" content="<%= siteName %>">
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="<%= pageTitle %>">
+<% if (metaDesc) { %>
+<meta name="twitter:description" content="<%= metaDesc %>">
+<% } %>
+<% if (ogImg) { %>
+<meta name="twitter:image" content="<%= ogImg %>">
+<% } %>
+
+<% if (canonical) { %>
+<!-- Canonical URL -->
+<link rel="canonical" href="<%= canonical %>">
+<% } %>
+
+<% if (structuredData) { %>
+<!-- Structured Data -->
+<script type="application/ld+json">
+<%- structuredData %>
+</script>
+<% } %>
+
+<% if (customHead) { %>
+<!-- Custom Head Tags -->
+<%- customHead %>
+<% } %>

@@ -2,6 +2,7 @@ const Product = require('../models/Product');
 const Category = require('../models/Category');
 const Announcement = require('../models/Announcement');
 const Order = require('../models/Order');
+const PageContent = require('../models/PageContent');
 
 // Shop homepage - list all products
 exports.index = async (req, res) => {
@@ -26,12 +27,16 @@ exports.index = async (req, res) => {
     const categories = await Category.getCategoryTree();
     const announcements = await Announcement.getActiveAnnouncements();
     
+    // Fetch SEO data
+    const seo = await PageContent.getPageSeo('shop');
+    
     res.render('shop/index', { 
       title: 'Shop',
       products,
       categories,
       currentCategory,
-      announcements
+      announcements,
+      seo
     });
   } catch (error) {
     console.error('Error fetching shop products:', error);
@@ -77,6 +82,9 @@ exports.home = async (req, res) => {
     const categories = await Category.getCategoryTree();
     const nestedCategories = await Category.getNestedCategoryTree();
     
+    // Fetch SEO data for home page
+    const seo = await PageContent.getPageSeo('home');
+    
     res.render('shop/home', { 
       title: 'Home',
       carouselProducts,
@@ -85,7 +93,8 @@ exports.home = async (req, res) => {
       featuredProducts,
       categories,
       nestedCategories,
-      announcements
+      announcements,
+      seo
     });
   } catch (error) {
     console.error('Error fetching home page data:', error);
@@ -160,6 +169,9 @@ exports.show = async (req, res) => {
     const nestedCategories = await Category.getNestedCategoryTree();
     const announcements = await Announcement.getActiveAnnouncements();
     
+    // Fetch SEO data for product pages (can be customized per product later)
+    const seo = await PageContent.getPageSeo('product');
+    
     res.render('shop/product', { 
       title: product.name,
       product,
@@ -171,7 +183,8 @@ exports.show = async (req, res) => {
       youMayAlsoLike,
       categories,
       nestedCategories,
-      announcements
+      announcements,
+      seo
     });
   } catch (error) {
     console.error('Error fetching product:', error);
@@ -293,6 +306,9 @@ exports.category = async (req, res) => {
       { $group: { _id: null, minPrice: { $min: '$price' }, maxPrice: { $max: '$price' } } }
     ]);
     
+    // Fetch SEO data for category pages
+    const seo = await PageContent.getPageSeo('category');
+    
     res.render('shop/category', { 
       title: category.name,
       category,
@@ -302,6 +318,7 @@ exports.category = async (req, res) => {
       nestedCategories,
       breadcrumbs,
       announcements,
+      seo,
       pagination: {
         currentPage: parseInt(page),
         totalPages,
@@ -333,6 +350,7 @@ exports.search = async (req, res) => {
       const categories = await Category.getCategoryTree();
       const nestedCategories = await Category.getNestedCategoryTree();
       const announcements = await Announcement.getActiveAnnouncements();
+      const seo = await PageContent.getPageSeo('search');
       return res.render('shop/search', {
         title: 'Search',
         query: '',
@@ -340,6 +358,7 @@ exports.search = async (req, res) => {
         categories,
         nestedCategories,
         announcements,
+        seo,
         pagination: { currentPage: 1, totalPages: 0, totalProducts: 0 },
         filters: { sort: 'relevance' }
       });
@@ -375,6 +394,7 @@ exports.search = async (req, res) => {
     const categories = await Category.getCategoryTree();
     const nestedCategories = await Category.getNestedCategoryTree();
     const announcements = await Announcement.getActiveAnnouncements();
+    const seo = await PageContent.getPageSeo('search');
     
     res.render('shop/search', {
       title: `Search: ${searchQuery}`,
@@ -383,6 +403,7 @@ exports.search = async (req, res) => {
       categories,
       nestedCategories,
       announcements,
+      seo,
       pagination: {
         currentPage: parseInt(page),
         totalPages,
@@ -404,12 +425,14 @@ exports.cart = async (req, res) => {
     const categories = await Category.getCategoryTree();
     const nestedCategories = await Category.getNestedCategoryTree();
     const announcements = await Announcement.getActiveAnnouncements();
+    const seo = await PageContent.getPageSeo('cart');
     
     res.render('shop/cart', {
       title: 'Your Basket',
       categories,
       nestedCategories,
-      announcements
+      announcements,
+      seo
     });
   } catch (error) {
     console.error('Error loading cart:', error);
@@ -522,7 +545,9 @@ exports.offers = async (req, res) => {
       .limit(limit);
     
     const categories = await Category.getCategoryTree();
+    const nestedCategories = await Category.getNestedCategoryTree();
     const announcements = await Announcement.getActiveAnnouncements();
+    const seo = await PageContent.getPageSeo('offers');
     
     // Build breadcrumbs
     const breadcrumbs = [
@@ -536,8 +561,10 @@ exports.offers = async (req, res) => {
       type,
       products,
       categories,
+      nestedCategories,
       announcements,
       breadcrumbs,
+      seo,
       pagination: {
         currentPage: parseInt(page),
         totalPages,
@@ -563,12 +590,14 @@ exports.checkout = async (req, res) => {
     const categories = await Category.getCategoryTree();
     const nestedCategories = await Category.getNestedCategoryTree();
     const announcements = await Announcement.getActiveAnnouncements();
+    const seo = await PageContent.getPageSeo('checkout');
     
     res.render('shop/checkout', {
       title: 'Checkout',
       categories,
       nestedCategories,
-      announcements
+      announcements,
+      seo
     });
   } catch (error) {
     console.error('Error loading checkout:', error);
@@ -675,13 +704,15 @@ exports.trackOrder = async (req, res) => {
     const categories = await Category.getCategoryTree();
     const nestedCategories = await Category.getNestedCategoryTree();
     const announcements = await Announcement.getActiveAnnouncements();
+    const seo = await PageContent.getPageSeo('track');
     
     if (!orderNumber) {
       return res.render('shop/track', {
         title: 'Track Order',
         categories,
         nestedCategories,
-        announcements
+        announcements,
+        seo
       });
     }
     
@@ -693,6 +724,7 @@ exports.trackOrder = async (req, res) => {
         categories,
         nestedCategories,
         announcements,
+        seo,
         orderNumber,
         notFound: true
       });
@@ -703,6 +735,7 @@ exports.trackOrder = async (req, res) => {
       categories,
       nestedCategories,
       announcements,
+      seo,
       order,
       orderNumber
     });

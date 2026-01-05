@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %> | SEO Admin Panel</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    :root {
+      --seo-primary: #0d6efd;
+      --seo-secondary: #6c757d;
+      --seo-success: #198754;
+      --seo-danger: #dc3545;
+      --seo-warning: #ffc107;
+    }
+    
+    body {
+      background-color: #f5f7fa;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    .seo-navbar {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .seo-navbar .navbar-brand {
+      font-weight: 700;
+      font-size: 1.3rem;
+    }
+    
+    .seo-sidebar {
+      background: #fff;
+      min-height: calc(100vh - 56px);
+      box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+      padding-top: 1.5rem;
+    }
+    
+    .seo-sidebar .nav-link {
+      color: #495057;
+      padding: 0.75rem 1.25rem;
+      border-radius: 0.5rem;
+      margin: 0.25rem 0.75rem;
+      transition: all 0.2s ease;
+    }
+    
+    .seo-sidebar .nav-link:hover,
+    .seo-sidebar .nav-link.active {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+    }
+    
+    .seo-sidebar .nav-link i {
+      margin-right: 0.75rem;
+      width: 20px;
+      text-align: center;
+    }
+    
+    .seo-content {
+      padding: 2rem;
+    }
+    
+    .seo-card {
+      background: #fff;
+      border-radius: 1rem;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      border: none;
+      overflow: hidden;
+    }
+    
+    .seo-card .card-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      padding: 1rem 1.5rem;
+      border: none;
+    }
+    
+    .seo-card .card-header h5 {
+      margin: 0;
+      font-weight: 600;
+    }
+    
+    .seo-card .card-body {
+      padding: 1.5rem;
+    }
+    
+    .btn-seo-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      color: #fff;
+      padding: 0.5rem 1.5rem;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .btn-seo-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+      color: #fff;
+    }
+    
+    .page-title {
+      font-weight: 700;
+      color: #212529;
+      margin-bottom: 1.5rem;
+    }
+    
+    /* Table Styles */
+    .table-seo thead {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+    }
+    
+    .table-seo thead th {
+      border: none;
+      padding: 1rem;
+      font-weight: 600;
+    }
+    
+    .table-seo tbody td {
+      padding: 1rem;
+      vertical-align: middle;
+    }
+    
+    .table-seo tbody tr:hover {
+      background-color: #f8f9fa;
+    }
+    
+    /* Badge Styles */
+    .badge-seo {
+      padding: 0.5rem 1rem;
+      border-radius: 2rem;
+      font-weight: 500;
+    }
+    
+    /* Responsive */
+    @media (max-width: 991.98px) {
+      .seo-sidebar {
+        min-height: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-dark seo-navbar">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/admin/seo-panel">
+        <i class="bi bi-search-heart"></i> SEO Admin Panel
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/" target="_blank">
+              <i class="bi bi-eye"></i> View Site
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/admin" target="_blank">
+              <i class="bi bi-gear"></i> Main Admin
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/admin/seo-panel/logout">
+              <i class="bi bi-box-arrow-right"></i> Logout
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container-fluid">
+    <div class="row">
+      <!-- Sidebar -->
+      <div class="col-lg-2 seo-sidebar d-none d-lg-block">
+        <nav class="nav flex-column">
+          <a class="nav-link active" href="/admin/seo-panel">
+            <i class="bi bi-speedometer2"></i> Dashboard
+          </a>
+          <a class="nav-link" href="/admin/seo-panel/create">
+            <i class="bi bi-plus-circle"></i> Add Page
+          </a>
+          <hr class="mx-3">
+          <span class="px-3 text-muted small text-uppercase">Quick Links</span>
+          <a class="nav-link" href="/" target="_blank">
+            <i class="bi bi-house"></i> Home Page
+          </a>
+          <a class="nav-link" href="/shop" target="_blank">
+            <i class="bi bi-shop"></i> Shop
+          </a>
+        </nav>
+      </div>
+
+      <!-- Main Content -->
+      <div class="col-lg-10 seo-content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h1 class="page-title mb-0">
+            <i class="bi bi-speedometer2 me-2"></i>SEO Dashboard
+          </h1>
+          <a href="/admin/seo-panel/create" class="btn btn-seo-primary">
+            <i class="bi bi-plus-lg me-1"></i> Add New Page
+          </a>
+        </div>
+
+        <% if (typeof success !== 'undefined' && success) { %>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+          <i class="bi bi-check-circle me-2"></i><%= success %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <% } %>
+
+        <% if (typeof error !== 'undefined' && error) { %>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+          <i class="bi bi-exclamation-triangle me-2"></i><%= error %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <% } %>
+
+        <!-- Stats Cards -->
+        <div class="row g-4 mb-4">
+          <div class="col-md-4">
+            <div class="seo-card">
+              <div class="card-body text-center">
+                <i class="bi bi-file-earmark-text" style="font-size: 2rem; color: #667eea;"></i>
+                <h3 class="mt-2 mb-0"><%= pages.length %></h3>
+                <p class="text-muted mb-0">Total Pages</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="seo-card">
+              <div class="card-body text-center">
+                <i class="bi bi-check-circle" style="font-size: 2rem; color: #198754;"></i>
+                <h3 class="mt-2 mb-0"><%= pages.filter(p => p.metaTitle && p.metaDescription).length %></h3>
+                <p class="text-muted mb-0">Optimized Pages</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="seo-card">
+              <div class="card-body text-center">
+                <i class="bi bi-exclamation-circle" style="font-size: 2rem; color: #ffc107;"></i>
+                <h3 class="mt-2 mb-0"><%= pages.filter(p => !p.metaTitle || !p.metaDescription).length %></h3>
+                <p class="text-muted mb-0">Needs Attention</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pages Table -->
+        <div class="seo-card">
+          <div class="card-header">
+            <h5><i class="bi bi-list-ul me-2"></i>All Pages</h5>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-seo mb-0">
+                <thead>
+                  <tr>
+                    <th>Page Name</th>
+                    <th>Slug</th>
+                    <th>Meta Title</th>
+                    <th>Status</th>
+                    <th>Last Updated</th>
+                    <th class="text-end">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% pages.forEach(function(page) { %>
+                  <tr>
+                    <td>
+                      <strong><%= page.pageName %></strong>
+                    </td>
+                    <td>
+                      <code><%= page.pageSlug %></code>
+                    </td>
+                    <td>
+                      <% if (page.metaTitle) { %>
+                        <span class="text-truncate d-inline-block" style="max-width: 200px;" title="<%= page.metaTitle %>"><%= page.metaTitle %></span>
+                      <% } else { %>
+                        <span class="text-muted">Not set</span>
+                      <% } %>
+                    </td>
+                    <td>
+                      <% if (page.metaTitle && page.metaDescription) { %>
+                        <span class="badge bg-success badge-seo"><i class="bi bi-check me-1"></i>Optimized</span>
+                      <% } else { %>
+                        <span class="badge bg-warning text-dark badge-seo"><i class="bi bi-exclamation me-1"></i>Incomplete</span>
+                      <% } %>
+                    </td>
+                    <td>
+                      <small class="text-muted"><%= new Date(page.updatedAt).toLocaleDateString() %></small>
+                    </td>
+                    <td class="text-end">
+                      <a href="/admin/seo-panel/edit/<%= page.pageSlug %>" class="btn btn-sm btn-outline-primary me-1">
+                        <i class="bi bi-pencil"></i> Edit
+                      </a>
+                      <% 
+                        const defaultPages = ['home', 'shop', 'category', 'product', 'cart', 'checkout', 'search', 'track', 'offers'];
+                        if (!defaultPages.includes(page.pageSlug)) { 
+                      %>
+                      <form action="/admin/seo-panel/delete/<%= page.pageSlug %>" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this page?');">
+                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                          <i class="bi bi-trash"></i>
+                        </button>
+                      </form>
+                      <% } %>
+                    </td>
+                  </tr>
+                  <% }); %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
