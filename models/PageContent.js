@@ -46,22 +46,16 @@ const pageContentSchema = new mongoose.Schema({
     default: 'index, follow',
     enum: ['index, follow', 'noindex, follow', 'index, nofollow', 'noindex, nofollow']
   },
-  // On-Page Content
-  h1Text: {
-    type: String,
-    default: ''
-  },
-  h2Text: {
-    type: String,
-    default: ''
-  },
-  mainParagraph: {
-    type: String,
-    default: ''
-  },
-  altText: {
-    type: String,
-    default: ''
+  // On-Page Content - Dynamic editable text elements
+  onPageContent: {
+    type: Map,
+    of: new mongoose.Schema({
+      originalText: { type: String, default: '' },
+      editedText: { type: String, default: '' },
+      elementType: { type: String, enum: ['heading', 'paragraph', 'button', 'link', 'label'], default: 'heading' },
+      description: { type: String, default: '' }
+    }, { _id: false }),
+    default: {}
   },
   // Additional SEO fields
   structuredData: {
@@ -91,10 +85,7 @@ pageContentSchema.statics.getPageSeo = async function(pageSlug) {
       ogType: 'website',
       canonicalUrl: '',
       robots: 'index, follow',
-      h1Text: '',
-      h2Text: '',
-      mainParagraph: '',
-      altText: '',
+      onPageContent: new Map(),
       structuredData: '',
       customHeadTags: ''
     };

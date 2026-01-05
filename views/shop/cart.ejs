@@ -16,7 +16,7 @@
   
   <main class="cart-page">
     <div class="container">
-      <h1 class="cart-title">Your Basket</h1>
+      <h1 class="cart-title"><%= getText('page_heading', 'Your Basket') %></h1>
       
       <div class="cart-layout">
         <!-- Cart Items -->
@@ -28,23 +28,23 @@
         
         <!-- Cart Summary -->
         <div class="cart-summary" id="cart-summary">
-          <h3>Order Summary</h3>
+          <h3><%= getText('summary_heading', 'Order Summary') %></h3>
           <div class="summary-row">
-            <span>Subtotal</span>
+            <span><%= getText('label_subtotal', 'Subtotal') %></span>
             <span id="cart-subtotal">Rs 0</span>
           </div>
           <div class="summary-row">
-            <span>Delivery</span>
-            <span id="cart-delivery">FREE</span>
+            <span><%= getText('label_delivery', 'Delivery') %></span>
+            <span id="cart-delivery"><%= getText('label_free', 'FREE') %></span>
           </div>
           <div class="summary-row total">
-            <span>Total</span>
+            <span><%= getText('label_total', 'Total') %></span>
             <span id="cart-total">Rs 0</span>
           </div>
           <a href="/checkout" class="btn-checkout" id="btn-checkout">
-            Proceed to Checkout
+            <%= getText('button_checkout', 'Proceed to Checkout') %>
           </a>
-          <a href="/" class="btn-continue">Continue Shopping</a>
+          <a href="/" class="btn-continue"><%= getText('button_continue_shopping', 'Continue Shopping') %></a>
         </div>
       </div>
     </div>
@@ -53,6 +53,13 @@
   <%- include('../partials/footer') %>
   
   <script>
+    // SEO Content Text (embedded from server)
+    const seoText = {
+      emptyHeading: '<%= getText("empty_heading", "Your basket is empty") %>',
+      emptyMessage: '<%= getText("empty_message", "Looks like you haven\\'t added anything to your basket yet.") %>',
+      startShopping: '<%= getText("button_start_shopping", "Start Shopping") %>'
+    };
+    
     document.addEventListener('DOMContentLoaded', async function() {
       const cartItemsContainer = document.getElementById('cart-items');
       const subtotalEl = document.getElementById('cart-subtotal');
@@ -66,9 +73,9 @@
         cartItemsContainer.innerHTML = `
           <div class="cart-empty">
             <span class="empty-icon">🛒</span>
-            <h2>Your basket is empty</h2>
-            <p>Looks like you haven't added anything to your basket yet.</p>
-            <a href="/" class="btn-primary">Start Shopping</a>
+            <h2>${seoText.emptyHeading}</h2>
+            <p>${seoText.emptyMessage}</p>
+            <a href="/" class="btn-primary">${seoText.startShopping}</a>
           </div>
         `;
         return;

@@ -20,11 +20,8 @@ router.get('/logout', seoController.logout);
 
 // Dashboard and management routes (auth required)
 router.get('/', requireSeoAuth, seoController.dashboard);
-router.get('/create', requireSeoAuth, seoController.createPage);
-router.post('/create', requireSeoAuth, seoController.storePage);
 router.get('/edit/:slug', requireSeoAuth, seoController.editPage);
 router.post('/edit/:slug', requireSeoAuth, seoController.updatePage);
-router.post('/delete/:slug', requireSeoAuth, seoController.deletePage);
 
 // API routes
 router.get('/api/:slug', requireSeoAuth, seoController.getPageSeoApi);

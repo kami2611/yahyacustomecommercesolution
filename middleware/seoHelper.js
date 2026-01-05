@@ -6,6 +6,27 @@
 const PageContent = require('../models/PageContent');
 
 /**
+ * Helper function to get text from onPageContent
+ * Returns edited text if available, otherwise returns original text
+ */
+const getContentText = (onPageContent, key, fallback = '') => {
+  if (!onPageContent) return fallback;
+  
+  // Handle both Map and plain object
+  let item;
+  if (onPageContent instanceof Map) {
+    item = onPageContent.get(key);
+  } else if (typeof onPageContent === 'object') {
+    item = onPageContent[key];
+  }
+  
+  if (!item) return fallback;
+  
+  // Return edited text if it exists and is not empty, otherwise return original
+  return (item.editedText && item.editedText.trim()) ? item.editedText : (item.originalText || fallback);
+};
+
+/**
  * Middleware to fetch SEO data based on a page slug
  * Usage: app.get('/about', fetchSeoData('about'), controller)
  */
@@ -14,6 +35,12 @@ const fetchSeoData = (pageSlug) => {
     try {
       const seoData = await PageContent.getPageSeo(pageSlug);
       res.locals.seo = seoData;
+      
+      // Add helper function to get on-page content text
+      res.locals.getContentText = (key, fallback = '') => {
+        return getContentText(seoData.onPageContent, key, fallback);
+      };
+      
       next();
     } catch (error) {
       console.error('Error fetching SEO data:', error);
@@ -22,11 +49,9 @@ const fetchSeoData = (pageSlug) => {
         metaTitle: '',
         metaDescription: '',
         ogImage: '',
-        h1Text: '',
-        h2Text: '',
-        mainParagraph: '',
-        altText: ''
+        onPageContent: new Map()
       };
+      res.locals.getContentText = (key, fallback = '') => fallback;
       next();
     }
   };
@@ -50,6 +75,12 @@ const autoFetchSeoData = async (req, res, next) => {
     
     const seoData = await PageContent.getPageSeo(pageSlug);
     res.locals.seo = seoData;
+    
+    // Add helper function to get on-page content text
+    res.locals.getContentText = (key, fallback = '') => {
+      return getContentText(seoData.onPageContent, key, fallback);
+    };
+    
     next();
   } catch (error) {
     console.error('Error auto-fetching SEO data:', error);
@@ -57,11 +88,9 @@ const autoFetchSeoData = async (req, res, next) => {
       metaTitle: '',
       metaDescription: '',
       ogImage: '',
-      h1Text: '',
-      h2Text: '',
-      mainParagraph: '',
-      altText: ''
+      onPageContent: new Map()
     };
+    res.locals.getContentText = (key, fallback = '') => fallback;
     next();
   }
 };
@@ -81,10 +110,7 @@ const buildSeoMetadata = (seoData, defaults = {}) => {
     ogType: seoData.ogType || defaults.ogType || 'website',
     canonicalUrl: seoData.canonicalUrl || defaults.canonicalUrl || '',
     robots: seoData.robots || defaults.robots || 'index, follow',
-    h1Text: seoData.h1Text || defaults.h1Text || '',
-    h2Text: seoData.h2Text || defaults.h2Text || '',
-    mainParagraph: seoData.mainParagraph || defaults.mainParagraph || '',
-    altText: seoData.altText || defaults.altText || '',
+    onPageContent: seoData.onPageContent || defaults.onPageContent || new Map(),
     structuredData: seoData.structuredData || defaults.structuredData || '',
     customHeadTags: seoData.customHeadTags || defaults.customHeadTags || ''
   };
@@ -93,5 +119,6 @@ const buildSeoMetadata = (seoData, defaults = {}) => {
 module.exports = {
   fetchSeoData,
   autoFetchSeoData,
-  buildSeoMetadata
+  buildSeoMetadata,
+  getContentText
 };

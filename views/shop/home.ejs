@@ -51,7 +51,7 @@
     <section class="product-section">
       <div class="container">
         <div class="section-header">
-          <h2 class="section-title">New Offers</h2>
+          <h2 class="section-title"><%= getText('section_new_offers_heading', 'New Offers') %></h2>
           <% if (newOffers.length > 8) { %>
             <a href="/offers/new" class="show-more-link">Show More →</a>
           <% } %>
@@ -89,7 +89,7 @@
                   <button class="btn-add-to-cart" 
                           data-product-id="<%= product._id %>"
                           onclick="addToCart(this, '<%= product._id %>', '<%= product.name.replace(/'/g, "\\'") %>', <%= product.price %>, '<%= product.images && product.images.length > 0 ? product.images[0] : '/images/placeholder.png' %>')">
-                    Add to Basket
+                    <%= getText('button_add_to_basket', 'Add to Basket') %>
                   </button>
                 </div>
               </div>
@@ -99,7 +99,7 @@
         </div>
         <% if (newOffers.length > 8) { %>
           <div class="show-more-container">
-            <a href="/offers/new" class="btn-show-more">Show More New Offers</a>
+            <a href="/offers/new" class="btn-show-more"><%= getText('section_new_offers_button', 'Show More New Offers') %></a>
           </div>
         <% } %>
       </div>
@@ -111,7 +111,7 @@
     <section class="product-section best-offers">
       <div class="container">
         <div class="section-header">
-          <h2 class="section-title">Our Best Offers</h2>
+          <h2 class="section-title"><%= getText('section_best_offers_heading', 'Our Best Offers') %></h2>
           <% if (bestOffers.length > 8) { %>
             <a href="/offers/best" class="show-more-link">Show More →</a>
           <% } %>
@@ -149,7 +149,7 @@
                   <button class="btn-add-to-cart" 
                           data-product-id="<%= product._id %>"
                           onclick="addToCart(this, '<%= product._id %>', '<%= product.name.replace(/'/g, "\\'") %>', <%= product.price %>, '<%= product.images && product.images.length > 0 ? product.images[0] : '/images/placeholder.png' %>')">
-                    Add to Basket
+                    <%= getText('button_add_to_basket', 'Add to Basket') %>
                   </button>
                 </div>
               </div>
@@ -159,7 +159,7 @@
         </div>
         <% if (bestOffers.length > 8) { %>
           <div class="show-more-container">
-            <a href="/offers/best" class="btn-show-more">Show More Best Offers</a>
+            <a href="/offers/best" class="btn-show-more"><%= getText('section_best_offers_button', 'Show More Best Offers') %></a>
           </div>
         <% } %>
       </div>
@@ -171,7 +171,7 @@
     <section class="product-section featured-products">
       <div class="container">
         <div class="section-header">
-          <h2 class="section-title">Products You'll Love</h2>
+          <h2 class="section-title"><%= getText('section_featured_heading', "Products You'll Love") %></h2>
           <% if (featuredProducts.length > 8) { %>
             <a href="/offers/featured" class="show-more-link">Show More →</a>
           <% } %>
@@ -209,7 +209,7 @@
                   <button class="btn-add-to-cart" 
                           data-product-id="<%= product._id %>"
                           onclick="addToCart(this, '<%= product._id %>', '<%= product.name.replace(/'/g, "\\'") %>', <%= product.price %>, '<%= product.images && product.images.length > 0 ? product.images[0] : '/images/placeholder.png' %>')">
-                    Add to Basket
+                    <%= getText('button_add_to_basket', 'Add to Basket') %>
                   </button>
                 </div>
               </div>
@@ -219,7 +219,7 @@
         </div>
         <% if (featuredProducts.length > 8) { %>
           <div class="show-more-container">
-            <a href="/offers/featured" class="btn-show-more">Show More Featured Products</a>
+            <a href="/offers/featured" class="btn-show-more"><%= getText('section_featured_button', 'Show More Featured Products') %></a>
           </div>
         <% } %>
       </div>
@@ -229,12 +229,12 @@
   <!-- Trust Pilot Section -->
   <section class="trustpilot-section">
     <div class="container">
-      <h2 class="section-title">Customer Reviews</h2>
+      <h2 class="section-title"><%= getText('section_reviews_heading', 'Customer Reviews') %></h2>
       <div class="trustpilot-widget">
         <div class="trustpilot-placeholder">
           <div class="trustpilot-stars">★★★★★</div>
-          <p class="trustpilot-score">4.8 out of 5</p>
-          <p class="trustpilot-reviews">Based on 1,234 reviews</p>
+          <p class="trustpilot-score"><%= getText('trustpilot_score', '4.8 out of 5') %></p>
+          <p class="trustpilot-reviews"><%= getText('trustpilot_reviews', 'Based on 1,234 reviews') %></p>
         </div>
       </div>
     </div>
