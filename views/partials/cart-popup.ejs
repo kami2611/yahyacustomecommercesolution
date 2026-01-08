@@ -136,7 +136,6 @@
 .cart-popup-header h2 {
   font-size: 1.25rem;
   font-weight: 600;
-  color: #333;
   margin: 0;
 }
 
@@ -363,6 +362,106 @@
   .popup-products-grid {
     grid-template-columns: repeat(3, 1fr);
   }
+}
+
+/* Dark Mode Overrides for Cart Popup */
+[data-theme="dark"] .cart-popup {
+  background: #000000;
+  color: #ffffff;
+  border: 1px solid #333333;
+}
+
+[data-theme="dark"] .cart-popup-content {
+  background: #000000;
+}
+
+[data-theme="dark"] .cart-popup-header {
+  border-bottom-color: #333333;
+}
+
+[data-theme="dark"] .success-icon {
+  background: var(--accent-color);
+  color: #000000;
+}
+
+[data-theme="dark"] .popup-item-image {
+  background: #111111;
+}
+
+[data-theme="dark"] .popup-item-details h3 {
+  color: #ffffff;
+}
+
+[data-theme="dark"] .popup-item-price {
+  color: var(--accent-color);
+}
+
+[data-theme="dark"] .popup-item-qty {
+  color: #dddddd;
+}
+
+[data-theme="dark"] .cart-popup-summary {
+  border-bottom-color: #333333;
+}
+
+[data-theme="dark"] .summary-line {
+  color: #ffffff;
+}
+
+[data-theme="dark"] .cart-popup-actions .btn-view-basket,
+[data-theme="dark"] .cart-popup-actions .btn-continue-shopping {
+  background: #000000;
+  color: #ffffff;
+  border: 2px solid var(--accent-color);
+}
+
+[data-theme="dark"] .cart-popup-actions .btn-view-basket:hover,
+[data-theme="dark"] .cart-popup-actions .btn-continue-shopping:hover {
+  background: var(--accent-color);
+  color: #000000;
+}
+
+[data-theme="dark"] .cart-popup-close {
+  background: #000000;
+  color: #ffffff;
+  border: 1px solid var(--accent-color);
+}
+
+[data-theme="dark"] .cart-popup-close:hover {
+  background: var(--accent-color);
+  color: #000000;
+}
+
+[data-theme="dark"] .cart-popup-recommendations h3 {
+  color: var(--accent-color);
+}
+
+[data-theme="dark"] .popup-product-card {
+  background: #000000;
+  border: 1px solid #222222;
+}
+
+[data-theme="dark"] .popup-card-image {
+  background: #111111;
+}
+
+[data-theme="dark"] .popup-card-title {
+  color: #ffffff;
+}
+
+[data-theme="dark"] .popup-card-price {
+  color: var(--accent-color);
+}
+
+[data-theme="dark"] .btn-popup-add {
+  background: #000000;
+  color: #ffffff;
+  border: 2px solid var(--accent-color);
+}
+
+[data-theme="dark"] .btn-popup-add:hover {
+  background: var(--accent-color);
+  color: #000000;
 }
 </style>
 

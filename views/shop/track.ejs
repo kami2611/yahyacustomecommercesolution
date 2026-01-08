@@ -28,6 +28,166 @@
       color: #666;
     }
     
+    .orders-count-badge {
+      background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+      border-left: 4px solid #4caf50;
+      padding: 15px 20px;
+      border-radius: 6px;
+      color: #2e7d32;
+      margin-bottom: 30px;
+    }
+    
+    .orders-count-badge p {
+      margin: 0;
+      font-size: 1rem;
+    }
+    
+    /* Dark mode */
+    [data-theme="dark"] .orders-count-badge {
+      background: rgba(254, 204, 1, 0.1);
+      border-left-color: var(--accent-color);
+      color: var(--accent-color);
+    }
+    
+    /* Recent Orders List */
+    .recent-orders-section {
+      margin-bottom: 40px;
+      display: none;
+    }
+    
+    .recent-orders-section.active {
+      display: block;
+    }
+    
+    .recent-orders-title {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 20px;
+    }
+    
+    [data-theme="dark"] .recent-orders-title {
+      color: #ffffff;
+    }
+    
+    .orders-list {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    
+    .order-item {
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 20px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .order-item:hover {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      border-color: var(--accent-color);
+    }
+    
+    [data-theme="dark"] .order-item {
+      background: #0a0a0a;
+      border-color: #333333;
+    }
+    
+    [data-theme="dark"] .order-item:hover {
+      border-color: var(--accent-color);
+      box-shadow: 0 4px 12px rgba(254, 204, 1, 0.2);
+    }
+    
+    .order-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    
+    .order-item-number {
+      font-weight: 600;
+      font-size: 1rem;
+      color: #333;
+    }
+    
+    [data-theme="dark"] .order-item-number {
+      color: #ffffff;
+    }
+    
+    .order-item-status {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: capitalize;
+    }
+    
+    .order-item-status.pending {
+      background: #fff3cd;
+      color: #856404;
+    }
+    
+    .order-item-status.processing {
+      background: #cfe2ff;
+      color: #084298;
+    }
+    
+    .order-item-status.shipped {
+      background: #d1e7dd;
+      color: #0f5132;
+    }
+    
+    .order-item-status.delivered {
+      background: #d1e7dd;
+      color: #0f5132;
+    }
+    
+    .order-item-status.cancelled {
+      background: #f8d7da;
+      color: #842029;
+    }
+    
+    .order-item-details {
+      font-size: 0.9rem;
+      color: #666;
+      margin-bottom: 10px;
+    }
+    
+    [data-theme="dark"] .order-item-details {
+      color: #cccccc;
+    }
+    
+    .order-item-items {
+      font-size: 0.85rem;
+      color: #888;
+      margin-bottom: 8px;
+    }
+    
+    [data-theme="dark"] .order-item-items {
+      color: #999999;
+    }
+    
+    .order-item-total {
+      font-weight: 600;
+      color: var(--accent-color);
+      font-size: 1rem;
+    }
+    
+    .order-item-click-hint {
+      font-size: 0.8rem;
+      color: #999;
+      margin-top: 10px;
+      font-style: italic;
+    }
+    
+    [data-theme="dark"] .order-item-click-hint {
+      color: #666;
+    }
+    
     /* Search Form */
     .track-search {
       max-width: 500px;
@@ -214,7 +374,9 @@
       background: #f8f8f8;
       border-radius: 12px;
     }
-    
+    [data-theme="dark"] .detail-section {
+      background: #1a1a1a;
+    }
     .detail-title {
       font-size: 0.9rem;
       font-weight: 600;
@@ -433,6 +595,14 @@
         <p>Enter your order number to see the status of your order</p>
       </div>
       
+      <!-- Recent Orders Section -->
+      <div class="recent-orders-section" id="recent-orders-section">
+        <h2 class="recent-orders-title">Your Recent Orders</h2>
+        <div class="orders-list" id="orders-list">
+          <!-- Orders will be loaded here -->
+        </div>
+      </div>
+      
       <div class="track-search">
         <form action="/track" method="GET">
           <input type="text" name="order" placeholder="Enter your order number (e.g., ORD-XXXXX)" 
@@ -574,5 +744,90 @@
   </main>
   
   <%- include('../partials/footer') %>
+
+  <script>
+    // Display orders from cookie on page load
+    document.addEventListener('DOMContentLoaded', async function() {
+      function getOrdersFromCookie() {
+        const cookie = document.cookie.split('; ').find(row => row.startsWith('user_orders='));
+        if (cookie) {
+          try {
+            const orders = JSON.parse(decodeURIComponent(cookie.split('=')[1]));
+            return Array.isArray(orders) ? orders : [];
+          } catch (e) {
+            return [];
+          }
+        }
+        return [];
+      }
+
+      const orderIds = getOrdersFromCookie();
+      if (orderIds.length > 0) {
+        const ordersList = document.getElementById('orders-list');
+        const section = document.getElementById('recent-orders-section');
+        
+        // Fetch all orders
+        const orders = [];
+        for (const orderId of orderIds) {
+          try {
+            const response = await fetch(`/api/orders/${orderId}`);
+            if (response.ok) {
+              const data = await response.json();
+              if (data.success) {
+                orders.push(data.order);
+              }
+            }
+          } catch (error) {
+            console.error(`Error fetching order ${orderId}:`, error);
+          }
+        }
+        
+        // Sort orders by creation date (newest first)
+        orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        
+        // Display orders
+        if (orders.length > 0) {
+          ordersList.innerHTML = orders.map(order => {
+            const itemsText = order.items.map(item => item.name).join(', ');
+            const createdDate = new Date(order.createdAt).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric'
+            });
+            
+            return `
+              <div class="order-item" onclick="searchOrder('${order.orderNumber}')">
+                <div class="order-item-header">
+                  <div class="order-item-number">Order #${order.orderNumber}</div>
+                  <span class="order-item-status ${order.status}">${order.status}</span>
+                </div>
+                <div class="order-item-details">
+                  <strong>${createdDate}</strong>
+                </div>
+                <div class="order-item-items">
+                  Items: ${itemsText}
+                </div>
+                <div class="order-item-total">
+                  Total: Rs ${order.total.toLocaleString()}
+                </div>
+                <div class="order-item-click-hint">
+                  Click to view order status and details
+                </div>
+              </div>
+            `;
+          }).join('');
+          
+          section.classList.add('active');
+        }
+      }
+    });
+    
+    // Search for an order
+    function searchOrder(orderNumber) {
+      const searchInput = document.querySelector('.track-search input');
+      searchInput.value = orderNumber;
+      searchInput.form.submit();
+    }
+  </script>
 </body>
 </html>

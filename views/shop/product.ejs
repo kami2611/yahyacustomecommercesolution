@@ -102,62 +102,45 @@
                 <span class="stock-unavailable">Currently out of stock</span>
               <% } %>
             </div>
+            
+            <!-- Specifications (Expanded - No Accordion) -->
+            <div class="product-specifications">
+              <h3 class="specs-header">Specifications</h3>
+              <% if (product.metadata && product.metadata.size > 0) { %>
+                <table class="specs-table">
+                  <tbody>
+                    <% 
+                      const metadataObj = product.metadata instanceof Map 
+                        ? Object.fromEntries(product.metadata) 
+                        : product.metadata;
+                      Object.entries(metadataObj).forEach(([key, value]) => { 
+                    %>
+                      <tr>
+                        <th><%= key %></th>
+                        <td><%= value %></td>
+                      </tr>
+                    <% }) %>
+                  </tbody>
+                </table>
+              <% } else { %>
+                <p>No specifications available for this product.</p>
+              <% } %>
+            </div>
           </div>
         </div>
       </div>
     </section>
     
-    <!-- Product Accordion Section -->
-    <section class="product-accordion-section">
+    <!-- Product Description Section (Expanded - No Accordion) -->
+    <section class="product-description-section">
       <div class="container">
-        <div class="accordion">
-          <!-- Product Description -->
-          <div class="accordion-item">
-            <button class="accordion-header" aria-expanded="false">
-              <span>Product Description</span>
-              <span class="accordion-icon">▼</span>
-            </button>
-            <div class="accordion-content">
-              <div class="accordion-body">
-                <% if (product.description) { %>
-                  <p><%= product.description %></p>
-                <% } else { %>
-                  <p>No description available for this product.</p>
-                <% } %>
-              </div>
-            </div>
-          </div>
-          
-          <!-- Specifications -->
-          <div class="accordion-item">
-            <button class="accordion-header" aria-expanded="false">
-              <span>Specifications</span>
-              <span class="accordion-icon">▼</span>
-            </button>
-            <div class="accordion-content">
-              <div class="accordion-body">
-                <% if (product.metadata && product.metadata.size > 0) { %>
-                  <table class="specs-table">
-                    <tbody>
-                      <% 
-                        const metadataObj = product.metadata instanceof Map 
-                          ? Object.fromEntries(product.metadata) 
-                          : product.metadata;
-                        Object.entries(metadataObj).forEach(([key, value]) => { 
-                      %>
-                        <tr>
-                          <th><%= key %></th>
-                          <td><%= value %></td>
-                        </tr>
-                      <% }) %>
-                    </tbody>
-                  </table>
-                <% } else { %>
-                  <p>No specifications available for this product.</p>
-                <% } %>
-              </div>
-            </div>
-          </div>
+        <div class="product-description-content">
+          <h3 class="description-header">Product Description</h3>
+          <% if (product.description) { %>
+            <p><%= product.description %></p>
+          <% } else { %>
+            <p>No description available for this product.</p>
+          <% } %>
         </div>
       </div>
     </section>
@@ -334,16 +317,6 @@
           if (val < max) qtyInput.value = val + 1;
         });
       }
-      
-      // Accordion
-      const accordionHeaders = document.querySelectorAll('.accordion-header');
-      accordionHeaders.forEach(header => {
-        header.addEventListener('click', () => {
-          const expanded = header.getAttribute('aria-expanded') === 'true';
-          header.setAttribute('aria-expanded', !expanded);
-          header.parentElement.classList.toggle('active', !expanded);
-        });
-      });
       
       // Products Carousel
       document.querySelectorAll('.products-carousel').forEach(carousel => {

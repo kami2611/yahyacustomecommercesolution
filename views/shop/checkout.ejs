@@ -342,6 +342,45 @@
       text-decoration: none;
       border-radius: 30px;
       font-weight: 600;
+      transition: background 0.3s;
+    }
+
+    .success-content .btn-continue:hover {
+      background: #5a2550;
+    }
+
+    /* Dark Mode Styles */
+    [data-theme="dark"] .success-content {
+      background: #000000;
+      border: 1px solid #333333;
+    }
+
+    [data-theme="dark"] .success-icon {
+      background: var(--accent-color);
+      color: #000000;
+    }
+
+    [data-theme="dark"] .success-content h2 {
+      color: #ffffff;
+    }
+
+    [data-theme="dark"] .success-content .order-number {
+      color: #dddddd;
+    }
+
+    [data-theme="dark"] .success-content .order-total {
+      color: var(--accent-color);
+    }
+
+    [data-theme="dark"] .success-content .btn-continue {
+      background: #000000;
+      color: #ffffff;
+      border: 2px solid var(--accent-color);
+    }
+
+    [data-theme="dark"] .success-content .btn-continue:hover {
+      background: var(--accent-color);
+      color: #000000;
     }
     
     /* Desktop */
@@ -573,6 +612,30 @@
           const data = await response.json();
           
           if (data.success) {
+            // Store order ID in cookie
+            const orderId = data.orderId || data.orderNumber;
+            let orders = [];
+            
+            // Get existing orders from cookie
+            const existingCookie = document.cookie.split('; ').find(row => row.startsWith('user_orders='));
+            if (existingCookie) {
+              try {
+                orders = JSON.parse(decodeURIComponent(existingCookie.split('=')[1]));
+              } catch (e) {
+                orders = [];
+              }
+            }
+            
+            // Add new order if not already present
+            if (!orders.includes(orderId)) {
+              orders.push(orderId);
+            }
+            
+            // Set cookie to expire in 365 days
+            const date = new Date();
+            date.setTime(date.getTime() + (365 * 24 * 60 * 60 * 1000));
+            document.cookie = `user_orders=${encodeURIComponent(JSON.stringify(orders))}; expires=${date.toUTCString()}; path=/`;
+            
             // Clear cart
             localStorage.removeItem('cart');
             window.dispatchEvent(new Event('cartUpdated'));

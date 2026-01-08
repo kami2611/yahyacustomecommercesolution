@@ -711,6 +711,7 @@ exports.placeOrder = async (req, res) => {
     res.json({ 
       success: true, 
       message: 'Order placed successfully!',
+      orderId: order._id.toString(),
       orderNumber: order.orderNumber,
       total: order.total
     });
@@ -769,5 +770,42 @@ exports.trackOrder = async (req, res) => {
   } catch (error) {
     console.error('Error tracking order:', error);
     res.status(500).render('error', { message: 'Error tracking order' });
+  }
+};
+// API: Get order details by ID
+exports.apiGetOrder = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const order = await Order.findById(orderId);
+    
+    if (!order) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'Order not found' 
+      });
+    }
+    
+    res.json({
+      success: true,
+      order: {
+        _id: order._id.toString(),
+        orderNumber: order.orderNumber,
+        status: order.status,
+        items: order.items,
+        total: order.total,
+        createdAt: order.createdAt,
+        customer: {
+          fullName: order.customer.fullName,
+          email: order.customer.email,
+          phone: order.customer.phone
+        }
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching order:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Error fetching order' 
+    });
   }
 };
