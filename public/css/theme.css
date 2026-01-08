@@ -20,9 +20,9 @@
   --border-light: #eeeeee;
   --border-dark: #dddddd;
   
-  --accent-color: #6b2d5b;
-  --accent-hover: #5a2550;
-  --accent-light: rgba(107, 45, 91, 0.1);
+  --accent-color: #035751;
+  --accent-hover: #024a45;
+  --accent-light: rgba(3, 87, 81, 0.1);
   
   --success-color: #22c55e;
   --success-bg: #e8f5e9;
@@ -42,7 +42,7 @@
   --footer-bg: #1a1a1a;
   --footer-text: #ffffff;
   
-  --announcement-bg: linear-gradient(90deg, #6b2d5b, #4a1e3f);
+  --announcement-bg: linear-gradient(90deg, #035751, #024239);
   --announcement-text: #ffffff;
   
   --product-card-bg: #ffffff;
@@ -72,9 +72,9 @@
   --border-light: #222222;
   --border-dark: #444444;
   
-  --accent-color: #ffffff;
-  --accent-hover: #e0e0e0;
-  --accent-light: rgba(255, 255, 255, 0.1);
+  --accent-color: #fecc01;
+  --accent-hover: #e5b800;
+  --accent-light: rgba(254, 204, 1, 0.1);
   
   --success-color: #4ade80;
   --success-bg: #0a1a0a;
@@ -94,8 +94,8 @@
   --footer-bg: #000000;
   --footer-text: #ffffff;
   
-  --announcement-bg: linear-gradient(90deg, #1a1a1a, #0a0a0a);
-  --announcement-text: #ffffff;
+  --announcement-bg: linear-gradient(90deg, #1a1a00, #0a0a00);
+  --announcement-text: #fecc01;
   
   --product-card-bg: #0a0a0a;
   --product-card-border: #333333;
@@ -660,7 +660,7 @@ body {
 
 /* Links in dark mode */
 [data-theme="dark"] a:hover {
-  color: #cccccc;
+  color: black;
 }
 
 /* Header specific */
@@ -1812,15 +1812,43 @@ body {
 }
 
 [data-theme="dark"] .product-actions .btn-add-to-cart {
-  background-color: #ffffff;
+  background-color: #fecc01;
   color: #000000 !important;
-  border: 1px solid #ffffff;
+  border: 1px solid #fecc01;
 }
 
 [data-theme="dark"] .product-actions .btn-add-to-cart:hover {
-  background-color: #000000;
-  color: #ffffff !important;
-  border: 1px solid #ffffff;
+  background-color: #e5b800;
+  color: #000000 !important;
+  border: 1px solid #e5b800;
+}
+
+/* Dark theme button hovers - yellow background with black text */
+[data-theme="dark"] .search-btn:hover {
+  background-color: #fecc01 !important;
+  color: #000000 !important;
+}
+
+[data-theme="dark"] .btn-track-order:hover {
+  background-color: #fecc01 !important;
+  color: #000000 !important;
+}
+
+[data-theme="dark"] .carousel-nav-btn:hover {
+  background: #fecc01 !important;
+  color: #000000 !important;
+  border-color: #fecc01 !important;
+}
+
+[data-theme="dark"] .newsletter-btn:hover {
+  background: #fecc01 !important;
+  color: #000000 !important;
+}
+
+[data-theme="dark"] .btn-add-to-cart:hover,
+[data-theme="dark"] .btn-add-to-cart-small:hover {
+  background-color: #fecc01 !important;
+  color: #000000 !important;
 }
 
 /* Product section general */

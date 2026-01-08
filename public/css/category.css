@@ -67,7 +67,6 @@
 }
 
 .subcategory-link.active {
-  background: #333;
   color: #fff;
 }
 
@@ -151,7 +150,6 @@
 .btn-apply-filter {
   width: 100%;
   padding: 8px;
-  background: #333;
   color: white;
   border: none;
   border-radius: 4px;
@@ -309,7 +307,6 @@
 .product-card .btn-add-to-cart {
   width: 100%;
   padding: 10px;
-  background: #333;
   color: white;
   border: none;
   border-radius: 4px;
@@ -351,7 +348,7 @@
 }
 
 .page-link.current {
-  background: #333;
+  
   color: white;
   border-color: #333;
 }

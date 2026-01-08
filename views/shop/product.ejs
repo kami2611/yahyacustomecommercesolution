@@ -178,7 +178,7 @@
                            alt="<%= item.name %>"
                            onerror="this.src='/images/placeholder.png'">
                     </a>
-                    <button class="wishlist-btn" aria-label="Save for later">♡</button>
+                   
                   </div>
                   <div class="product-card-info">
                     <h3 class="product-card-title">
@@ -225,7 +225,7 @@
                            alt="<%= item.name %>"
                            onerror="this.src='/images/placeholder.png'">
                     </a>
-                    <button class="wishlist-btn" aria-label="Save for later">♡</button>
+                    
                     <% if (item.originalPrice && item.originalPrice > item.price) { %>
                       <% const saveAmount = item.originalPrice - item.price; %>
                       <span class="save-badge">Save Rs <%= saveAmount.toLocaleString() %></span>

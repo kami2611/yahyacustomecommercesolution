@@ -100,7 +100,7 @@ body {
 }
 
 .search-btn:hover {
-  background: #5a2550;
+  background: var(--accent-hover);
 }
 
 /* Mobile Menu Overlay */
@@ -359,7 +359,7 @@ body {
 
 .show-more-link {
   font-size: 0.85rem;
-  color: #6b2d5b;
+  color: var(--accent-color);
   text-decoration: none;
   font-weight: 600;
 }
@@ -410,9 +410,9 @@ body {
 }
 
 .carousel-nav-btn:hover {
-  background: #6b2d5b;
+  background: var(--accent-color);
   color: #fff;
-  border-color: #6b2d5b;
+  border-color: var(--accent-color);
 }
 
 .carousel-nav-btn.prev-btn {
@@ -512,7 +512,7 @@ body {
 .product-price {
   font-size: 1rem;
   font-weight: 700;
-  color: #6b2d5b;
+  color: var(--accent-color);
 }
 
 .product-original-price {
@@ -542,7 +542,7 @@ body {
 .btn-add-to-cart {
   width: 100%;
   padding: 8px;
-  background: #6b2d5b;
+  background: var(--accent-color);
   color: white;
   border: none;
   border-radius: 20px;
@@ -553,7 +553,7 @@ body {
 }
 
 .btn-add-to-cart:hover {
-  background: #5a2550;
+  background: var(--accent-hover);
 }
 
 /* Show More Container */
@@ -566,8 +566,8 @@ body {
   display: inline-block;
   padding: 12px 30px;
   background: transparent;
-  color: #6b2d5b;
-  border: 2px solid #6b2d5b;
+  color: var(--accent-color);
+  border: 2px solid var(--accent-color);
   border-radius: 25px;
   text-decoration: none;
   font-weight: 600;
@@ -575,7 +575,7 @@ body {
 }
 
 .btn-show-more:hover {
-  background: #6b2d5b;
+  background: var(--accent-color);
   color: #fff;
 }
 
@@ -616,7 +616,7 @@ body {
    FOOTER
    ============================================ */
 .site-footer {
-  background: #333;
+  background: #035751;
   color: white;
   padding: 30px 0 20px;
 }
@@ -690,8 +690,8 @@ body {
 
 .newsletter-btn {
   padding: 10px 20px;
-  background: #555;
-  color: white;
+  background: var(--accent-color);
+  color: var(--text-inverse);
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -817,14 +817,14 @@ body {
   }
   
   .btn-track-order {
-    background: #6b2d5b;
+    background: var(--accent-color);
     color: white;
     border-radius: 4px;
     font-weight: 500;
   }
   
   .btn-track-order:hover {
-    background: #5a2550;
+    background: var(--accent-hover);
   }
   
   /* Show mega navigation on desktop */
