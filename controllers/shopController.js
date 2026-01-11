@@ -240,7 +240,7 @@ exports.category = async (req, res) => {
     }
     
     // Get query parameters
-    const { sort = 'newest', minPrice, maxPrice, page = 1 } = req.query;
+    const { sort = 'newest', minPrice, maxPrice, page = 1, attr } = req.query;
     const limit = 12;
     const skip = (parseInt(page) - 1) * limit;
     
@@ -258,6 +258,17 @@ exports.category = async (req, res) => {
       filter.price = {};
       if (minPrice) filter.price.$gte = parseFloat(minPrice);
       if (maxPrice) filter.price.$lte = parseFloat(maxPrice);
+    }
+    
+    // Attribute filters
+    const attributeFiltersApplied = {};
+    if (attr && typeof attr === 'object') {
+      Object.entries(attr).forEach(([key, value]) => {
+        if (value && value.trim()) {
+          filter[`metadata.${key}`] = value;
+          attributeFiltersApplied[key] = value;
+        }
+      });
     }
     
     // Sort options
@@ -317,6 +328,26 @@ exports.category = async (req, res) => {
       { $group: { _id: null, minPrice: { $min: '$price' }, maxPrice: { $max: '$price' } } }
     ]);
     
+    // Get inherited attributes for filtering
+    const categoryAttributes = await Category.getInheritedAttributes(category._id);
+    
+    // Get unique attribute values from products in this category
+    const products_for_attrs = await Product.find({ category: { $in: categoryIds }, isActive: true }, 'metadata').lean();
+    
+    // Build attribute options with available values
+    const attributeFilters = categoryAttributes.map(attr => {
+      const availableValues = new Set();
+      products_for_attrs.forEach(p => {
+        if (p.metadata && p.metadata[attr.key]) {
+          availableValues.add(p.metadata[attr.key]);
+        }
+      });
+      return {
+        ...attr,
+        availableValues: Array.from(availableValues).sort()
+      };
+    }).filter(attr => attr.availableValues.length > 0);
+    
     // Fetch SEO data for category pages
     const seo = await PageContent.getPageSeo('category');
     const getText = (key, fallback = '') => getContentText(seo.onPageContent, key, fallback);
@@ -332,6 +363,7 @@ exports.category = async (req, res) => {
       announcements,
       seo,
       getText,
+      attributeFilters,
       pagination: {
         currentPage: parseInt(page),
         totalPages,
@@ -343,7 +375,8 @@ exports.category = async (req, res) => {
         sort,
         minPrice: minPrice || '',
         maxPrice: maxPrice || '',
-        priceRange: priceRange[0] || { minPrice: 0, maxPrice: 1000 }
+        priceRange: priceRange[0] || { minPrice: 0, maxPrice: 1000 },
+        attributes: attributeFiltersApplied
       }
     });
   } catch (error) {
@@ -635,6 +668,7 @@ exports.placeOrder = async (req, res) => {
       fullName, 
       email, 
       phone, 
+      phone2,
       address, 
       city, 
       postalCode, 
@@ -643,10 +677,19 @@ exports.placeOrder = async (req, res) => {
     } = req.body;
     
     // Validate required fields
-    if (!fullName || !email || !phone || !address || !city) {
+    if (!fullName || !email || !phone || !phone2 || !address || !city) {
       return res.status(400).json({ 
         success: false, 
         message: 'Please fill all required fields' 
+      });
+    }
+    
+    // Validate phone numbers are different
+    const normalizePhone = (p) => p.replace(/[\s\-\(\)]/g, '');
+    if (normalizePhone(phone) === normalizePhone(phone2)) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Both phone numbers must be different' 
       });
     }
     
@@ -690,6 +733,7 @@ exports.placeOrder = async (req, res) => {
         fullName, 
         email, 
         phone, 
+        phone2,
         address, 
         city, 
         postalCode 

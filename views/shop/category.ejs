@@ -60,8 +60,40 @@
                   <input type="number" name="maxPrice" placeholder="Max" 
                          value="<%= filters.maxPrice %>" min="0" class="price-input">
                 </div>
-                <button type="submit" class="btn-apply-filter">Apply</button>
               </div>
+              
+              <!-- Dynamic Attribute Filters -->
+              <% if (typeof attributeFilters !== 'undefined' && attributeFilters && attributeFilters.length > 0) { %>
+                <% attributeFilters.forEach(attr => { %>
+                  <div class="filter-section">
+                    <h3><%= attr.label %></h3>
+                    <% if (attr.fieldType === 'select' || attr.availableValues.length > 0) { %>
+                      <select name="attr[<%= attr.key %>]" class="attribute-select">
+                        <option value="">All <%= attr.label %></option>
+                        <% attr.availableValues.forEach(val => { %>
+                          <option value="<%= val %>" <%= filters.attributes && filters.attributes[attr.key] === val ? 'selected' : '' %>><%= val %></option>
+                        <% }) %>
+                      </select>
+                    <% } else { %>
+                      <input type="text" name="attr[<%= attr.key %>]" 
+                             placeholder="Filter by <%= attr.label.toLowerCase() %>"
+                             value="<%= filters.attributes && filters.attributes[attr.key] ? filters.attributes[attr.key] : '' %>"
+                             class="attribute-input">
+                    <% } %>
+                  </div>
+                <% }) %>
+              <% } %>
+              
+              <button type="submit" class="btn-apply-filter">Apply Filters</button>
+              
+              <% 
+                // Check if any filters are applied
+                const hasActiveFilters = filters.minPrice || filters.maxPrice || 
+                  (filters.attributes && Object.values(filters.attributes).some(v => v));
+              %>
+              <% if (hasActiveFilters) { %>
+                <a href="/category/<%= category.slug %>" class="btn-clear-filters">Clear All Filters</a>
+              <% } %>
             </form>
           </div>
         </aside>
@@ -110,7 +142,7 @@
                     <div class="product-pricing">
                       <span class="current-price">Rs <%= product.price.toLocaleString() %></span>
                       <% if (product.originalPrice && product.originalPrice > product.price) { %>
-                        <span class="original-price">Rs <%= product.originalPrice.toLocaleString() %></span>
+                        <span class="original-price"><%= product.originalPrice.toLocaleString() %></span>
                       <% } %>
                     </div>
                     <% if (product.stock > 0) { %>
@@ -130,9 +162,23 @@
             
             <!-- Pagination -->
             <% if (pagination.totalPages > 1) { %>
+              <%
+                // Helper function to build pagination URL with all filters
+                function buildPaginationUrl(pageNum) {
+                  let url = `?page=${pageNum}&sort=${filters.sort}`;
+                  if (filters.minPrice) url += `&minPrice=${filters.minPrice}`;
+                  if (filters.maxPrice) url += `&maxPrice=${filters.maxPrice}`;
+                  if (filters.attributes) {
+                    Object.entries(filters.attributes).forEach(([key, val]) => {
+                      if (val) url += `&attr[${key}]=${encodeURIComponent(val)}`;
+                    });
+                  }
+                  return url;
+                }
+              %>
               <div class="pagination">
                 <% if (pagination.hasPrev) { %>
-                  <a href="?page=<%= pagination.currentPage - 1 %>&sort=<%= filters.sort %>&minPrice=<%= filters.minPrice %>&maxPrice=<%= filters.maxPrice %>" class="page-link prev">
+                  <a href="<%= buildPaginationUrl(pagination.currentPage - 1) %>" class="page-link prev">
                     ← Previous
                   </a>
                 <% } %>
@@ -142,7 +188,7 @@
                     <% if (i === pagination.currentPage) { %>
                       <span class="page-link current"><%= i %></span>
                     <% } else if (i === 1 || i === pagination.totalPages || (i >= pagination.currentPage - 2 && i <= pagination.currentPage + 2)) { %>
-                      <a href="?page=<%= i %>&sort=<%= filters.sort %>&minPrice=<%= filters.minPrice %>&maxPrice=<%= filters.maxPrice %>" class="page-link"><%= i %></a>
+                      <a href="<%= buildPaginationUrl(i) %>" class="page-link"><%= i %></a>
                     <% } else if (i === pagination.currentPage - 3 || i === pagination.currentPage + 3) { %>
                       <span class="page-ellipsis">...</span>
                     <% } %>
@@ -150,7 +196,7 @@
                 </div>
                 
                 <% if (pagination.hasNext) { %>
-                  <a href="?page=<%= pagination.currentPage + 1 %>&sort=<%= filters.sort %>&minPrice=<%= filters.minPrice %>&maxPrice=<%= filters.maxPrice %>" class="page-link next">
+                  <a href="<%= buildPaginationUrl(pagination.currentPage + 1) %>" class="page-link next">
                     Next →
                   </a>
                 <% } %>

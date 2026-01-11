@@ -1,6 +1,83 @@
 const express = require('express');
 const router = express.Router();
 const Order = require('../../models/Order');
+const Newsletter = require('../../models/Newsletter');
+
+// Export customer data for marketing
+router.get('/export-customers', async (req, res) => {
+  try {
+    // Get unique customers from orders
+    const orders = await Order.find({}, 'customer createdAt').lean();
+    
+    // Get newsletter subscribers
+    const subscribers = await Newsletter.find({ isActive: true }, 'email createdAt').lean();
+    
+    // Create a map to deduplicate by email
+    const customerMap = new Map();
+    
+    // Add order customers
+    orders.forEach(order => {
+      const email = order.customer.email.toLowerCase();
+      if (!customerMap.has(email)) {
+        customerMap.set(email, {
+          email: order.customer.email,
+          fullName: order.customer.fullName,
+          phone: order.customer.phone,
+          phone2: order.customer.phone2 || '',
+          city: order.customer.city,
+          address: order.customer.address,
+          source: 'order',
+          firstOrderDate: order.createdAt
+        });
+      }
+    });
+    
+    // Add newsletter subscribers (mark source)
+    subscribers.forEach(sub => {
+      const email = sub.email.toLowerCase();
+      if (customerMap.has(email)) {
+        customerMap.get(email).source = 'order+newsletter';
+      } else {
+        customerMap.set(email, {
+          email: sub.email,
+          fullName: '',
+          phone: '',
+          phone2: '',
+          city: '',
+          address: '',
+          source: 'newsletter',
+          firstOrderDate: sub.createdAt
+        });
+      }
+    });
+    
+    const customers = Array.from(customerMap.values());
+    
+    // Generate CSV content
+    const csvHeaders = ['Email', 'Full Name', 'Phone 1', 'Phone 2', 'City', 'Address', 'Source', 'First Contact Date'];
+    const csvRows = customers.map(c => [
+      c.email,
+      c.fullName,
+      c.phone,
+      c.phone2,
+      c.city,
+      c.address.replace(/,/g, ' '), // Remove commas from address
+      c.source,
+      new Date(c.firstOrderDate).toLocaleDateString()
+    ].map(field => `"${field}"`).join(','));
+    
+    const csvContent = [csvHeaders.join(','), ...csvRows].join('\n');
+    
+    // Set headers for CSV download
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', `attachment; filename=customers_export_${new Date().toISOString().split('T')[0]}.csv`);
+    res.send(csvContent);
+    
+  } catch (error) {
+    console.error('Error exporting customers:', error);
+    res.status(500).json({ success: false, message: 'Error exporting customer data' });
+  }
+});
 
 // List all orders
 router.get('/', async (req, res) => {

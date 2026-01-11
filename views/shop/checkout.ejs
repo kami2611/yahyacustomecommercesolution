@@ -434,9 +434,15 @@
                   <input type="email" name="email" required placeholder="your@email.com">
                 </div>
                 <div class="form-group">
-                  <label>Phone <span class="required">*</span></label>
-                  <input type="tel" name="phone" required placeholder="03XX-XXXXXXX">
+                  <label>Phone 1 <span class="required">*</span></label>
+                  <input type="tel" name="phone" id="phone1" required placeholder="03XX-XXXXXXX">
                 </div>
+              </div>
+              
+              <div class="form-group">
+                <label>Phone 2 (Alternate) <span class="required">*</span></label>
+                <input type="tel" name="phone2" id="phone2" required placeholder="03XX-XXXXXXX (must be different)">
+                <span class="phone-error" id="phone-error" style="color: #e53935; font-size: 0.85rem; display: none;">Both phone numbers must be different</span>
               </div>
               
               <div class="form-group">
@@ -589,6 +595,21 @@
           return;
         }
         
+        // Phone number uniqueness validation
+        const phone1 = formData.get('phone').trim();
+        const phone2 = formData.get('phone2').trim();
+        const phoneError = document.getElementById('phone-error');
+        
+        // Normalize phone numbers for comparison (remove spaces, dashes, etc.)
+        const normalizePhone = (phone) => phone.replace(/[\s\-\(\)]/g, '');
+        
+        if (normalizePhone(phone1) === normalizePhone(phone2)) {
+          phoneError.style.display = 'block';
+          document.getElementById('phone2').focus();
+          return;
+        }
+        phoneError.style.display = 'none';
+        
         const btn = this;
         btn.classList.add('loading');
         btn.disabled = true;
@@ -600,7 +621,8 @@
             body: JSON.stringify({
               fullName: formData.get('fullName'),
               email: formData.get('email'),
-              phone: formData.get('phone'),
+              phone: phone1,
+              phone2: phone2,
               address: formData.get('address'),
               city: formData.get('city'),
               postalCode: formData.get('postalCode'),

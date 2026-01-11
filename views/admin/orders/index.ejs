@@ -23,6 +23,37 @@
       margin: 0;
     }
     
+    .header-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    
+    .btn-export {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      background: #2e7d32;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+    
+    .btn-export:hover {
+      background: #1b5e20;
+    }
+    
+    .btn-export svg {
+      width: 18px;
+      height: 18px;
+    }
+    
     .search-box {
       display: flex;
       gap: 10px;
@@ -278,11 +309,21 @@
   <main class="admin-content">
     <div class="orders-header">
       <h1>Orders</h1>
-      <form action="/admin/orders" method="GET" class="search-box">
-        <input type="hidden" name="status" value="<%= filters.status %>">
-        <input type="text" name="search" placeholder="Search orders..." value="<%= filters.search %>">
-        <button type="submit">Search</button>
-      </form>
+      <div class="header-actions">
+        <a href="/admin/orders/export-customers" class="btn-export" title="Export customer data for marketing">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          Export Customers
+        </a>
+        <form action="/admin/orders" method="GET" class="search-box">
+          <input type="hidden" name="status" value="<%= filters.status %>">
+          <input type="text" name="search" placeholder="Search orders..." value="<%= filters.search %>">
+          <button type="submit">Search</button>
+        </form>
+      </div>
     </div>
     
     <div class="status-tabs">
