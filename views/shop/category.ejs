@@ -62,23 +62,6 @@
                 </div>
                 <button type="submit" class="btn-apply-filter">Apply</button>
               </div>
-              
-              <!-- Category Filter -->
-              <div class="filter-section">
-                <h3>Categories</h3>
-                <ul class="filter-list">
-                  <% if (typeof categories !== 'undefined') { %>
-                    <% categories.forEach(cat => { %>
-                      <li style="padding-left: <%= cat.level * 10 %>px;">
-                        <a href="/category/<%= cat.slug %>" 
-                           class="<%= cat.slug === category.slug ? 'active' : '' %>">
-                          <%= cat.name %>
-                        </a>
-                      </li>
-                    <% }) %>
-                  <% } %>
-                </ul>
-              </div>
             </form>
           </div>
         </aside>

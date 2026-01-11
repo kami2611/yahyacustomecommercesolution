@@ -65,23 +65,7 @@
                          value="<%= filters.maxPrice %>" min="0" class="price-input">
                 </div>
                 <button type="submit" class="btn-apply-filter">Apply</button>
-              </div>
-              
-              <!-- Category Filter -->
-              <div class="filter-section">
-                <h3>Categories</h3>
-                <ul class="filter-list">
-                  <% if (typeof categories !== 'undefined') { %>
-                    <% categories.forEach(cat => { %>
-                      <li style="padding-left: <%= cat.level * 10 %>px;">
-                        <a href="/category/<%= cat.slug %>">
-                          <%= cat.name %>
-                        </a>
-                      </li>
-                    <% }) %>
-                  <% } %>
-                </ul>
-              </div>
+              </div>              
             </form>
           </div>
         </aside>
@@ -130,7 +114,7 @@
                     <div class="product-pricing">
                       <span class="current-price">Rs <%= product.price.toLocaleString() %></span>
                       <% if (product.originalPrice && product.originalPrice > product.price) { %>
-                        <span class="original-price">Rs <%= product.originalPrice.toLocaleString() %></span>
+                        <span class="original-price"><%= product.originalPrice.toLocaleString() %></span>
                       <% } %>
                     </div>
                     <% if (product.stock > 0) { %>
