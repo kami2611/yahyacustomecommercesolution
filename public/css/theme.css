@@ -460,7 +460,7 @@ body {
 
 .specs-table th {
   color: var(--text-primary);
-  background-color: var(--bg-tertiary);
+  
 }
 
 .specs-table td {
