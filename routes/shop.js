@@ -12,6 +12,10 @@ router.post('/checkout/place-order', shopController.placeOrder);
 router.get('/offers/:type', shopController.offers);
 router.get('/track', shopController.trackOrder);
 
+// Brand routes
+router.get('/shop/brands', shopController.allBrands);
+router.get('/shop/brand/:slug', shopController.brand);
+
 // Product routes - support both simple and SEO-friendly URLs
 router.get('/product/:slug', shopController.show);
 

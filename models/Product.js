@@ -36,6 +36,11 @@ const productSchema = new mongoose.Schema({
     ref: 'Category',
     required: true
   },
+  brand: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Brand',
+    default: null
+  },
   metadata: {
     type: Map,
     of: mongoose.Schema.Types.Mixed,

@@ -890,3 +890,104 @@ body {
   height: 18px;
   cursor: pointer;
 }
+
+/* ============================================
+   SHOP BY BRANDS SECTION
+   ============================================ */
+.brands-section {
+  padding: 40px 0;
+  background: var(--secondary-color);
+}
+
+.brands-grid-home {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.brand-tile {
+  position: relative;
+  display: block;
+  border-radius: 10px;
+  overflow: hidden;
+  aspect-ratio: 16/10;
+  background: var(--card-bg);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  text-decoration: none;
+}
+
+.brand-tile:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.brand-tile-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.brand-tile-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+  color: white;
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.brand-tile-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 12px 15px;
+  background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.3) 70%, transparent 100%);
+}
+
+.brand-tile-name {
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+/* Tablet - 3 columns */
+@media (min-width: 576px) {
+  .brands-grid-home {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  
+  .brand-tile-name {
+    font-size: 1rem;
+  }
+}
+
+/* Desktop - 4 columns */
+@media (min-width: 992px) {
+  .brands-grid-home {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+  
+  .brand-tile {
+    aspect-ratio: 16/9;
+  }
+  
+  .brand-tile-placeholder {
+    font-size: 2.5rem;
+  }
+  
+  .brand-tile-name {
+    font-size: 1.1rem;
+  }
+  
+  .brand-tile-overlay {
+    padding: 15px 20px;
+  }
+}

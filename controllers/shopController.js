@@ -1,5 +1,6 @@
 const Product = require('../models/Product');
 const Category = require('../models/Category');
+const Brand = require('../models/Brand');
 const Announcement = require('../models/Announcement');
 const Order = require('../models/Order');
 const PageContent = require('../models/PageContent');
@@ -84,6 +85,11 @@ exports.home = async (req, res) => {
     .populate('category', 'name slug')
     .limit(12);
     
+    // Fetch brands for "Shop by Brands" section (max 8)
+    const brands = await Brand.find({ isActive: true })
+      .sort({ displayOrder: 1, name: 1 })
+      .limit(8);
+    
     const categories = await Category.getCategoryTree();
     const nestedCategories = await Category.getNestedCategoryTree();
     
@@ -99,6 +105,7 @@ exports.home = async (req, res) => {
       newOffers,
       bestOffers,
       featuredProducts,
+      brands,
       categories,
       nestedCategories,
       announcements,
@@ -851,5 +858,186 @@ exports.apiGetOrder = async (req, res) => {
       success: false, 
       message: 'Error fetching order' 
     });
+  }
+};
+
+// All Brands page
+exports.allBrands = async (req, res) => {
+  try {
+    const brands = await Brand.find({ isActive: true }).sort({ displayOrder: 1, name: 1 });
+    
+    // Get product count for each brand
+    const brandsWithCount = await Promise.all(brands.map(async (brand) => {
+      const productCount = await Product.countDocuments({ brand: brand._id, isActive: true });
+      return {
+        ...brand.toObject(),
+        productCount
+      };
+    }));
+    
+    const categories = await Category.getCategoryTree();
+    const nestedCategories = await Category.getNestedCategoryTree();
+    const announcements = await Announcement.getActiveAnnouncements();
+    
+    const seo = await PageContent.getPageSeo('brands');
+    const getText = (key, fallback = '') => getContentText(seo.onPageContent, key, fallback);
+    
+    res.render('shop/brands', {
+      title: 'Shop by Brands',
+      brands: brandsWithCount,
+      categories,
+      nestedCategories,
+      announcements,
+      seo,
+      getText,
+      breadcrumbs: [
+        { name: 'Home', url: '/' },
+        { name: 'Brands', url: null }
+      ]
+    });
+  } catch (error) {
+    console.error('Error fetching brands:', error);
+    res.status(500).render('error', { message: 'Error loading brands' });
+  }
+};
+
+// Individual Brand page with products, sorting, and filters
+exports.brand = async (req, res) => {
+  try {
+    const { slug } = req.params;
+    const { sort = 'newest', minPrice, maxPrice, page = 1, attr } = req.query;
+    const limit = 12;
+    const skip = (parseInt(page) - 1) * limit;
+    
+    const brand = await Brand.findOne({ slug, isActive: true });
+    
+    if (!brand) {
+      return res.status(404).render('error', { message: 'Brand not found' });
+    }
+    
+    // Build filter
+    const filter = {
+      brand: brand._id,
+      isActive: true
+    };
+    
+    // Price filter
+    if (minPrice || maxPrice) {
+      filter.price = {};
+      if (minPrice) filter.price.$gte = parseFloat(minPrice);
+      if (maxPrice) filter.price.$lte = parseFloat(maxPrice);
+    }
+    
+    // Attribute filters
+    const attributeFiltersApplied = {};
+    if (attr && typeof attr === 'object') {
+      Object.entries(attr).forEach(([key, value]) => {
+        if (value && value.trim()) {
+          filter[`metadata.${key}`] = value;
+          attributeFiltersApplied[key] = value;
+        }
+      });
+    }
+    
+    // Sort options
+    let sortOption = { createdAt: -1 };
+    switch (sort) {
+      case 'price-low':
+        sortOption = { price: 1 };
+        break;
+      case 'price-high':
+        sortOption = { price: -1 };
+        break;
+      case 'name-az':
+        sortOption = { name: 1 };
+        break;
+      case 'name-za':
+        sortOption = { name: -1 };
+        break;
+    }
+    
+    // Get total count for pagination
+    const totalProducts = await Product.countDocuments(filter);
+    const totalPages = Math.ceil(totalProducts / limit);
+    
+    // Fetch products
+    const products = await Product.find(filter)
+      .populate('category', 'name slug')
+      .sort(sortOption)
+      .skip(skip)
+      .limit(limit);
+    
+    // Get price range for filters
+    const priceRange = await Product.aggregate([
+      { $match: { brand: brand._id, isActive: true } },
+      { $group: { _id: null, minPrice: { $min: '$price' }, maxPrice: { $max: '$price' } } }
+    ]);
+    
+    // Get all categories that have products under this brand for dynamic filtering
+    const brandProducts = await Product.find({ brand: brand._id, isActive: true }, 'category metadata').lean();
+    const categoryIds = [...new Set(brandProducts.map(p => p.category?.toString()).filter(Boolean))];
+    
+    // Build attribute filters from products' metadata
+    const attributeMap = new Map();
+    brandProducts.forEach(p => {
+      if (p.metadata) {
+        Object.entries(p.metadata).forEach(([key, value]) => {
+          if (!attributeMap.has(key)) {
+            attributeMap.set(key, new Set());
+          }
+          if (value) {
+            attributeMap.get(key).add(value);
+          }
+        });
+      }
+    });
+    
+    const attributeFilters = Array.from(attributeMap.entries()).map(([key, values]) => ({
+      key,
+      label: key.charAt(0).toUpperCase() + key.slice(1).replace(/_/g, ' '),
+      fieldType: 'select',
+      availableValues: Array.from(values).sort()
+    })).filter(attr => attr.availableValues.length > 0);
+    
+    const categories = await Category.getCategoryTree();
+    const nestedCategories = await Category.getNestedCategoryTree();
+    const announcements = await Announcement.getActiveAnnouncements();
+    
+    const seo = await PageContent.getPageSeo('brand');
+    const getText = (key, fallback = '') => getContentText(seo.onPageContent, key, fallback);
+    
+    res.render('shop/brand', {
+      title: brand.name,
+      brand,
+      products,
+      categories,
+      nestedCategories,
+      announcements,
+      seo,
+      getText,
+      attributeFilters,
+      breadcrumbs: [
+        { name: 'Home', url: '/' },
+        { name: 'Brands', url: '/shop/brands' },
+        { name: brand.name, url: null }
+      ],
+      pagination: {
+        currentPage: parseInt(page),
+        totalPages,
+        totalProducts,
+        hasNext: parseInt(page) < totalPages,
+        hasPrev: parseInt(page) > 1
+      },
+      filters: {
+        sort,
+        minPrice: minPrice || '',
+        maxPrice: maxPrice || '',
+        priceRange: priceRange[0] || { minPrice: 0, maxPrice: 1000 },
+        attributes: attributeFiltersApplied
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching brand page:', error);
+    res.status(500).render('error', { message: 'Error loading brand page' });
   }
 };

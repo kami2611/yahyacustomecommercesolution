@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %> | E-Commerce Admin</title>
+  <link rel="stylesheet" href="/css/theme.css">
+  <link rel="stylesheet" href="/css/admin.css">
+  <script src="/js/theme.js"></script>
+</head>
+<body>
+  <nav class="admin-nav">
+    <div class="nav-brand">
+      <a href="/admin">Admin Panel</a>
+    </div>
+    <ul class="nav-links">
+      <li><a href="/admin/homepage">Homepage</a></li>
+      <li><a href="/admin/categories">Categories</a></li>
+      <li><a href="/admin/products">Products</a></li>
+      <li><a href="/admin/brands" class="active">Brands</a></li>
+      <li><a href="/admin/orders">Orders</a></li>
+      <li><a href="/admin/announcements">Announcements</a></li>
+      <li><a href="/admin/newsletters">Newsletters</a></li>
+      <li><a href="/" target="_blank">View Shop</a></li>
+      <li><a href="/admin/logout" class="logout-link">Logout</a></li>
+      <li><button class="theme-toggle admin-theme-toggle" title="Toggle theme" aria-label="Toggle theme"><span class="theme-icon">💻</span></button></li>
+    </ul>
+  </nav>
+  
+  <main class="admin-content">
+    <% if (typeof error !== 'undefined' && error) { %>
+      <div class="alert alert-error">
+        <%= error %>
+      </div>
+    <% } %>
+    
+    <div class="page-header">
+      <h1>Create Brand</h1>
+      <a href="/admin/brands" class="btn btn-secondary">Back</a>
+    </div>
+    
+    <div class="card">
+      <form action="/admin/brands" method="POST" enctype="multipart/form-data">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="name">Brand Name *</label>
+            <input type="text" id="name" name="name" required class="form-control" 
+                   value="<%= brand ? brand.name : '' %>">
+          </div>
+          
+          <div class="form-group">
+            <label for="slug">Slug (auto-generated if empty)</label>
+            <input type="text" id="slug" name="slug" class="form-control"
+                   value="<%= brand ? brand.slug : '' %>">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="description">Description</label>
+          <textarea id="description" name="description" class="form-control" rows="3"><%= brand ? brand.description : '' %></textarea>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="displayOrder">Display Order</label>
+            <input type="number" id="displayOrder" name="displayOrder" class="form-control" 
+                   min="0" value="<%= brand ? brand.displayOrder : '0' %>">
+            <small class="help-text">Lower numbers appear first on the homepage brands section</small>
+          </div>
+          
+          <div class="form-group">
+            <label>Status</label>
+            <div class="checkbox-group">
+              <label class="checkbox-label">
+                <input type="checkbox" name="isActive" value="true" <%= !brand || brand.isActive !== false ? 'checked' : '' %>>
+                Active (visible on shop)
+              </label>
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="backgroundImage">Background Image *</label>
+          <input type="file" id="backgroundImage" name="backgroundImage" class="form-control"
+                 accept="image/*">
+          <small class="help-text">Upload a brand image (recommended: 400x200px or similar aspect ratio)</small>
+        </div>
+        
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Create Brand</button>
+        </div>
+      </form>
+    </div>
+  </main>
+  
+  <script src="/js/admin.js"></script>
+</body>
+</html>

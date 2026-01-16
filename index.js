@@ -145,6 +145,7 @@ const shopRoutes = require('./routes/shop');
 const apiRoutes = require('./routes/api');
 const adminCategoryRoutes = require('./routes/admin/categories');
 const adminProductRoutes = require('./routes/admin/products');
+const adminBrandRoutes = require('./routes/admin/brands');
 const adminHomepageRoutes = require('./routes/admin/homepage');
 const adminAnnouncementRoutes = require('./routes/admin/announcements');
 const adminOrderRoutes = require('./routes/admin/orders');
@@ -162,6 +163,7 @@ app.use('/api', apiRoutes);
 // Apply auth middleware to all admin routes
 app.use('/admin/categories', requireAuth, adminCategoryRoutes);
 app.use('/admin/products', requireAuth, adminProductRoutes);
+app.use('/admin/brands', requireAuth, adminBrandRoutes);
 app.use('/admin/homepage', requireAuth, adminHomepageRoutes);
 app.use('/admin/announcements', requireAuth, adminAnnouncementRoutes);
 app.use('/admin/orders', requireAuth, adminOrderRoutes);

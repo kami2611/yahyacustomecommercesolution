@@ -226,6 +226,38 @@
     </section>
   <% } %>
   
+  <!-- Shop by Brands Section -->
+  <% if (typeof brands !== 'undefined' && brands && brands.length > 0) { %>
+    <section class="brands-section">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title"><%= getText('section_brands_heading', 'Shop by Brands') %></h2>
+          <a href="/shop/brands" class="show-more-link">Browse All Brands →</a>
+        </div>
+        <div class="brands-grid-home">
+          <% brands.forEach(brand => { %>
+            <a href="/shop/brand/<%= brand.slug %>" class="brand-tile">
+              <% if (brand.backgroundImage) { %>
+                <img src="<%= brand.backgroundImage %>" alt="<%= brand.name %>" class="brand-tile-image"
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                <div class="brand-tile-placeholder" style="display: none;">
+                  <%= brand.name.charAt(0).toUpperCase() %>
+                </div>
+              <% } else { %>
+                <div class="brand-tile-placeholder">
+                  <%= brand.name.charAt(0).toUpperCase() %>
+                </div>
+              <% } %>
+              <div class="brand-tile-overlay">
+                <span class="brand-tile-name"><%= brand.name %></span>
+              </div>
+            </a>
+          <% }) %>
+        </div>
+      </div>
+    </section>
+  <% } %>
+  
   <!-- Trust Pilot Section -->
   <section class="trustpilot-section">
     <div class="container">

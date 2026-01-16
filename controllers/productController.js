@@ -1,5 +1,6 @@
 const Product = require('../models/Product');
 const Category = require('../models/Category');
+const Brand = require('../models/Brand');
 const { deleteImage, getPublicIdFromUrl } = require('../config/cloudinary');
 
 // Render admin product list page
@@ -84,9 +85,11 @@ function getDescendantCategoryIds(parentId, allCategories) {
 exports.create = async (req, res) => {
   try {
     const categories = await Category.getCategoryTree();
+    const brands = await Brand.find({ isActive: true }).sort({ name: 1 });
     res.render('admin/products/create', { 
       title: 'Create Product',
       categories,
+      brands,
       product: null
     });
   } catch (error) {
@@ -98,7 +101,7 @@ exports.create = async (req, res) => {
 // Handle product creation with dynamic metadata
 exports.store = async (req, res) => {
   try {
-    const { name, slug, description, price, originalPrice, stock, category, metadata, 
+    const { name, slug, description, price, originalPrice, stock, category, brand, metadata, 
             isNewOffer, isBestOffer, isFeatured } = req.body;
     
     // Convert metadata object to Map
@@ -123,6 +126,7 @@ exports.store = async (req, res) => {
       originalPrice: originalPrice ? parseFloat(originalPrice) : null,
       stock: parseInt(stock) || 0,
       category,
+      brand: brand || null,
       metadata: metadataMap,
       images: productImages,
       isNewOffer: isNewOffer === 'true',
@@ -136,9 +140,11 @@ exports.store = async (req, res) => {
   } catch (error) {
     console.error('Error creating product:', error);
     const categories = await Category.getCategoryTree();
+    const brands = await Brand.find({ isActive: true }).sort({ name: 1 });
     res.status(400).render('admin/products/create', {
       title: 'Create Product',
       categories,
+      brands,
       product: req.body,
       error: error.message
     });
@@ -154,6 +160,7 @@ exports.edit = async (req, res) => {
     }
     
     const categories = await Category.getCategoryTree();
+    const brands = await Brand.find({ isActive: true }).sort({ name: 1 });
     
     // Get attributes for the product's category
     let attributes = [];
@@ -165,6 +172,7 @@ exports.edit = async (req, res) => {
       title: 'Edit Product',
       product,
       categories,
+      brands,
       attributes
     });
   } catch (error) {
@@ -176,7 +184,7 @@ exports.edit = async (req, res) => {
 // Handle product update
 exports.update = async (req, res) => {
   try {
-    const { name, slug, description, price, originalPrice, stock, category, metadata,
+    const { name, slug, description, price, originalPrice, stock, category, brand, metadata,
             isNewOffer, isBestOffer, isFeatured, existingImages } = req.body;
     
     // Convert metadata object to Map
@@ -221,6 +229,7 @@ exports.update = async (req, res) => {
       originalPrice: originalPrice ? parseFloat(originalPrice) : null,
       stock: parseInt(stock) || 0,
       category,
+      brand: brand || null,
       metadata: metadataMap,
       images: images,
       isNewOffer: isNewOffer === 'true',
