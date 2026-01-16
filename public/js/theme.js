@@ -116,44 +116,31 @@ const ThemeManager = (function() {
   }
   
   /**
-   * Update all theme toggle buttons with the current state
+   * Update all theme select dropdowns with the current state
    */
-  function updateToggleButtons(preference) {
-    const toggles = document.querySelectorAll('.theme-toggle');
-    const icon = ICONS[preference];
-    const effectiveTheme = getEffectiveTheme(preference);
+  function updateThemeSelects(preference) {
+    const selects = document.querySelectorAll('.theme-select');
     
-    toggles.forEach(toggle => {
-      const iconElement = toggle.querySelector('.theme-icon');
-      if (iconElement) {
-        iconElement.textContent = icon;
-      }
-      toggle.setAttribute('title', `Theme: ${preference}${preference === 'system' ? ` (${effectiveTheme})` : ''}`);
-      toggle.setAttribute('aria-label', `Current theme: ${preference}. Click to switch.`);
+    selects.forEach(select => {
+      select.value = preference;
     });
   }
   
   /**
-   * Initialize theme toggle buttons
+   * Initialize theme select dropdowns
    */
-  function initToggleButtons() {
-    const toggles = document.querySelectorAll('.theme-toggle');
+  function initThemeSelects() {
+    const selects = document.querySelectorAll('.theme-select');
     
-    toggles.forEach(toggle => {
-      toggle.addEventListener('click', function(e) {
-        e.preventDefault();
-        const currentPreference = getStoredPreference();
-        const nextTheme = getNextTheme(currentPreference);
+    selects.forEach(select => {
+      select.addEventListener('change', function(e) {
+        const newTheme = this.value;
         
-        savePreference(nextTheme);
-        applyTheme(nextTheme);
-        updateToggleButtons(nextTheme);
-        
-        // Add a subtle animation
-        this.style.transform = 'scale(1.2)';
-        setTimeout(() => {
-          this.style.transform = '';
-        }, 150);
+        if (THEMES.includes(newTheme)) {
+          savePreference(newTheme);
+          applyTheme(newTheme);
+          updateThemeSelects(newTheme);
+        }
       });
     });
   }
@@ -189,8 +176,8 @@ const ThemeManager = (function() {
     // Wait for DOM to be ready
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', function() {
-        initToggleButtons();
-        updateToggleButtons(preference);
+        initThemeSelects();
+        updateThemeSelects(preference);
         listenForSystemChanges();
         
         // Re-enable transitions after a brief delay
@@ -199,8 +186,8 @@ const ThemeManager = (function() {
         }, 100);
       });
     } else {
-      initToggleButtons();
-      updateToggleButtons(preference);
+      initThemeSelects();
+      updateThemeSelects(preference);
       listenForSystemChanges();
       
       setTimeout(function() {

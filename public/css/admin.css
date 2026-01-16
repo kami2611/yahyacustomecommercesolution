@@ -470,6 +470,55 @@ input[type="file"].form-control {
 .nav-links .logout-link:hover {
   color: #ef4444;
 }
+/* Admin Theme Select Dropdown */
+.admin-theme-select {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #d1d5db;
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.admin-theme-select:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.admin-theme-select:focus {
+  outline: none;
+  background-color: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.admin-theme-select option {
+  background: #1e1e1e;
+  color: #d1d5db;
+}
+
+[data-theme="light"] .admin-theme-select option {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+[data-theme="dark"] .admin-theme-select {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #e5e7eb;
+}
+
+[data-theme="dark"] .admin-theme-select:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+[data-theme="dark"] .admin-theme-select option {
+  background: #1f2937;
+  color: #e5e7eb;
+}
+
 /* Admin Theme Toggle */
 .admin-theme-toggle {
   background: none;
