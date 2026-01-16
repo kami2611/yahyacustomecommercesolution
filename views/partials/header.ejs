@@ -9,11 +9,6 @@
       <span class="logo-text" style="display: none;">E-Commerce Store</span>
     </a>
     <div class="header-actions-mobile">
-      <select class="theme-select" id="theme-select-mobile" title="Select theme" aria-label="Select theme">
-        <option value="light">☀️ Light</option>
-        <option value="dark">🌙 Dark</option>
-        <option value="system">💻 System</option>
-      </select>
       <a href="/cart" class="icon-btn cart-icon-link">
         <span class="cart-icon">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -203,6 +198,17 @@
           </svg>
         </span> Track Order
       </a>
+      
+      <div class="mobile-nav-divider"></div>
+      
+      <div class="mobile-nav-section">
+        <span class="mobile-nav-section-title">Theme</span>
+        <select class="theme-select" id="theme-select-mobile" title="Select theme" aria-label="Select theme">
+          <option value="light">☀️ Light</option>
+          <option value="dark">🌙 Dark</option>
+          <option value="system">💻 System</option>
+        </select>
+      </div>
     </nav>
   </div>
 </div>
@@ -302,6 +308,24 @@
   text-transform: uppercase;
   color: #035751;
   letter-spacing: 1px;
+}
+
+.mobile-nav-section .theme-select {
+  width: 100%;
+  margin-top: 10px;
+  padding: 8px 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: white;
+  color: #333;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.mobile-nav-section .theme-select:focus {
+  outline: none;
+  border-color: #035751;
+  box-shadow: 0 0 0 2px rgba(3, 87, 81, 0.1);
 }
 
 .mobile-nav-divider {
