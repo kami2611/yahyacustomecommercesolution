@@ -3,6 +3,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const methodOverride = require('method-override');
 const session = require('express-session');
+const { MongoStore } = require('connect-mongo');
 const rateLimit = require('express-rate-limit');
 const path = require('path');
 
@@ -34,6 +35,10 @@ app.use(session({
   secret: process.env.SESSION_SECRET || 'your-secret-key-change-in-production',
   resave: false,
   saveUninitialized: false,
+  store: new MongoStore({
+    mongoUrl: MONGODB_URI,
+    ttl: 24 * 60 * 60 // 24 hours
+  }),
   cookie: {
     secure: process.env.NODE_ENV === 'production',
     httpOnly: true,
