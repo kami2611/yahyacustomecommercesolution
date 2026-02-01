@@ -9,24 +9,50 @@ const { getContentText } = require('../middleware/seoHelper');
 // Shop homepage - list all products
 exports.index = async (req, res) => {
   try {
-    const { category: categorySlug } = req.query;
+    const { sort = 'newest', minPrice, maxPrice, page = 1 } = req.query;
+    const limit = 12;
+    const skip = (parseInt(page) - 1) * limit;
     
     let filter = { isActive: true };
-    let currentCategory = null;
     
-    if (categorySlug) {
-      currentCategory = await Category.findOne({ slug: categorySlug });
-      if (currentCategory) {
-        filter.category = currentCategory._id;
-      }
+    // Price filter
+    if (minPrice || maxPrice) {
+      filter.price = {};
+      if (minPrice) filter.price.$gte = parseFloat(minPrice);
+      if (maxPrice) filter.price.$lte = parseFloat(maxPrice);
     }
+    
+    // Sort options
+    let sortOption = { createdAt: -1 }; // default newest
+    switch (sort) {
+      case 'price-low':
+        sortOption = { price: 1 };
+        break;
+      case 'price-high':
+        sortOption = { price: -1 };
+        break;
+      case 'name-az':
+        sortOption = { name: 1 };
+        break;
+      case 'name-za':
+        sortOption = { name: -1 };
+        break;
+      case 'newest':
+      default:
+        sortOption = { createdAt: -1 };
+    }
+    
+    const totalProducts = await Product.countDocuments(filter);
+    const totalPages = Math.ceil(totalProducts / limit);
     
     const products = await Product.find(filter)
       .populate('category', 'name slug')
-      .sort('-createdAt')
-      .limit(50);
+      .sort(sortOption)
+      .skip(skip)
+      .limit(limit);
     
     const categories = await Category.getCategoryTree();
+    const nestedCategories = await Category.getNestedCategoryTree();
     const announcements = await Announcement.getActiveAnnouncements();
     
     // Fetch SEO data
@@ -35,14 +61,33 @@ exports.index = async (req, res) => {
     // Helper function to get content text from SEO
     const getText = (key, fallback = '') => getContentText(seo.onPageContent, key, fallback);
     
+    // Build breadcrumbs
+    const breadcrumbs = [
+      { name: 'Home', url: '/' },
+      { name: 'Shop All Products', url: null }
+    ];
+    
     res.render('shop/index', { 
-      title: 'Shop',
+      title: 'Shop All Products',
       products,
       categories,
-      currentCategory,
+      nestedCategories,
       announcements,
+      breadcrumbs,
       seo,
-      getText
+      getText,
+      pagination: {
+        currentPage: parseInt(page),
+        totalPages,
+        totalProducts,
+        hasNext: parseInt(page) < totalPages,
+        hasPrev: parseInt(page) > 1
+      },
+      filters: {
+        sort,
+        minPrice: minPrice || '',
+        maxPrice: maxPrice || ''
+      }
     });
   } catch (error) {
     console.error('Error fetching shop products:', error);

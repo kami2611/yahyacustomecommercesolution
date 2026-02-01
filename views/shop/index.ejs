@@ -5,77 +5,149 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <%- include('../partials/seo-head') %>
   <link rel="stylesheet" href="/css/theme.css">
-  <link rel="stylesheet" href="/css/shop.css">
+  <link rel="stylesheet" href="/css/home.css">
+  <link rel="stylesheet" href="/css/category.css">
   <script src="/js/theme.js"></script>
 </head>
 <body>
-  <header class="shop-header">
-    <div class="container">
-      <a href="/" class="logo">E-Commerce Store</a>
-      <nav class="shop-nav">
-        <a href="/">All Products</a>
-        <a href="/admin">Admin</a>
-      </nav>
-    </div>
-  </header>
+  <%- include('../partials/header') %>
   
-  <main class="shop-content">
+  <%- include('../partials/mega-nav') %>
+  
+  <main class="category-page">
     <div class="container">
-      <div class="shop-layout">
-        <!-- Sidebar with Categories -->
-        <aside class="shop-sidebar">
-          <h3>Categories</h3>
-          <ul class="category-list">
-            <li>
-              <a href="/" class="<%= !currentCategory ? 'active' : '' %>">All Products</a>
-            </li>
-            <% categories.forEach(cat => { %>
-              <li style="margin-left: <%= cat.level * 15 %>px;">
-                <a href="/category/<%= cat.slug %>" 
-                   class="<%= currentCategory && currentCategory.slug === cat.slug ? 'active' : '' %>">
-                  <%= cat.name %>
-                </a>
-              </li>
-            <% }) %>
-          </ul>
-        </aside>
-        
-        <!-- Product Grid -->
-        <div class="shop-main">
-          <div class="page-header">
-            <h1><%= currentCategory ? currentCategory.name : 'All Products' %></h1>
-            <p><%= products.length %> product<%= products.length !== 1 ? 's' : '' %> found</p>
+      <!-- Breadcrumbs -->
+      <%- include('../partials/breadcrumbs', { breadcrumbs: breadcrumbs }) %>
+      
+      <!-- Page Header -->
+      <div class="category-header">
+        <h1><%= title %></h1>
+        <p class="category-description">
+          Browse our complete collection of products.
+        </p>
+      </div>
+      
+      <div class="category-layout">
+        <!-- Filter Sidebar -->
+        <aside class="filter-sidebar">
+          <div class="filter-header-mobile">
+            <button class="filter-toggle" id="filter-toggle">
+              <span>Filters</span>
+              <span class="filter-icon">☰</span>
+            </button>
           </div>
           
-          <% if (products.length === 0) { %>
-            <div class="empty-state">
-              <p>No products found in this category.</p>
-              <a href="/" class="btn btn-primary">View All Products</a>
+          <div class="filter-content" id="filter-content">
+            <form action="/shop" method="GET" id="filter-form">
+              <input type="hidden" name="sort" value="<%= filters.sort %>">
+              
+              <!-- Price Filter -->
+              <div class="filter-section">
+                <h3>Price</h3>
+                <div class="price-inputs">
+                  <input type="number" name="minPrice" placeholder="Min" 
+                         value="<%= filters.minPrice %>" min="0" class="price-input">
+                  <span>-</span>
+                  <input type="number" name="maxPrice" placeholder="Max" 
+                         value="<%= filters.maxPrice %>" min="0" class="price-input">
+                </div>
+                <button type="submit" class="btn-apply-filter">Apply</button>
+              </div>              
+            </form>
+          </div>
+        </aside>
+        
+        <!-- Products Main -->
+        <div class="products-main">
+          <!-- Sort & Results -->
+          <div class="products-toolbar">
+            <div class="results-count">
+              <%= pagination.totalProducts %> product<%= pagination.totalProducts !== 1 ? 's' : '' %> found
             </div>
-          <% } else { %>
-            <div class="product-grid">
+            
+            <div class="sort-options">
+              <label for="sort-select">Sort by:</label>
+              <select id="sort-select" onchange="updateSort(this.value)">
+                <option value="newest" <%= filters.sort === 'newest' ? 'selected' : '' %>>Newest First</option>
+                <option value="price-low" <%= filters.sort === 'price-low' ? 'selected' : '' %>>Price: Low to High</option>
+                <option value="price-high" <%= filters.sort === 'price-high' ? 'selected' : '' %>>Price: High to Low</option>
+                <option value="name-az" <%= filters.sort === 'name-az' ? 'selected' : '' %>>Name: A to Z</option>
+                <option value="name-za" <%= filters.sort === 'name-za' ? 'selected' : '' %>>Name: Z to A</option>
+              </select>
+            </div>
+          </div>
+          
+          <!-- Products Grid -->
+          <% if (products && products.length > 0) { %>
+            <div class="products-grid">
               <% products.forEach(product => { %>
                 <div class="product-card">
                   <div class="product-image">
-                    <img src="/images/placeholder.png" alt="<%= product.name %>">
+                    <a href="/product/<%= product.slug %>">
+                      <img src="<%= product.images && product.images.length > 0 ? product.images[0] : '/images/placeholder.png' %>" 
+                           alt="<%= product.name %>"
+                           onerror="this.src='/images/placeholder.png'">
+                    </a>
+                    <% if (product.originalPrice && product.originalPrice > product.price) { %>
+                      <span class="discount-badge">
+                        <%= Math.round((1 - product.price / product.originalPrice) * 100) %>% OFF
+                      </span>
+                    <% } %>
                   </div>
-                  <div class="product-info">
+                  <div class="product-details">
                     <h3 class="product-name">
                       <a href="/product/<%= product.slug %>"><%= product.name %></a>
                     </h3>
-                    <% if (product.category) { %>
-                      <span class="product-category"><%= product.category.name %></span>
-                    <% } %>
-                    <div class="product-price">$<%= product.price.toFixed(2) %></div>
-                    <% if (product.stock > 0) { %>
-                      <span class="stock-badge in-stock">In Stock</span>
-                    <% } else { %>
-                      <span class="stock-badge out-of-stock">Out of Stock</span>
-                    <% } %>
+                    <div class="product-pricing">
+                      <span class="current-price">Rs <%= product.price.toLocaleString() %></span>
+                      <% if (product.originalPrice && product.originalPrice > product.price) { %>
+                        <span class="original-price"><%= product.originalPrice.toLocaleString() %></span>
+                      <% } %>
+                    </div>
+                    
+                    <button class="btn-add-to-cart" 
+                            data-product-id="<%= product._id %>"
+                            onclick="addToCart(this, '<%= product._id %>', '<%= product.name.replace(/'/g, "\\'") %>', <%= product.price %>, '<%= product.images && product.images.length > 0 ? product.images[0] : '/images/placeholder.png' %>')">
+                      Add to Basket
+                    </button>
                   </div>
-                  <a href="/product/<%= product.slug %>" class="btn btn-primary btn-block">View Details</a>
                 </div>
               <% }) %>
+            </div>
+            
+            <!-- Pagination -->
+            <% if (pagination.totalPages > 1) { %>
+              <div class="pagination">
+                <% if (pagination.hasPrev) { %>
+                  <a href="?page=<%= pagination.currentPage - 1 %>&sort=<%= filters.sort %>&minPrice=<%= filters.minPrice %>&maxPrice=<%= filters.maxPrice %>" class="page-link prev">
+                    ← Previous
+                  </a>
+                <% } %>
+                
+                <div class="page-numbers">
+                  <% for (let i = 1; i <= pagination.totalPages; i++) { %>
+                    <% if (i === pagination.currentPage) { %>
+                      <span class="page-link current"><%= i %></span>
+                    <% } else if (i === 1 || i === pagination.totalPages || (i >= pagination.currentPage - 2 && i <= pagination.currentPage + 2)) { %>
+                      <a href="?page=<%= i %>&sort=<%= filters.sort %>&minPrice=<%= filters.minPrice %>&maxPrice=<%= filters.maxPrice %>" class="page-link"><%= i %></a>
+                    <% } else if (i === pagination.currentPage - 3 || i === pagination.currentPage + 3) { %>
+                      <span class="page-ellipsis">...</span>
+                    <% } %>
+                  <% } %>
+                </div>
+                
+                <% if (pagination.hasNext) { %>
+                  <a href="?page=<%= pagination.currentPage + 1 %>&sort=<%= filters.sort %>&minPrice=<%= filters.minPrice %>&maxPrice=<%= filters.maxPrice %>" class="page-link next">
+                    Next →
+                  </a>
+                <% } %>
+              </div>
+            <% } %>
+            
+          <% } else { %>
+            <div class="no-products">
+              <p>No products found.</p>
+              <a href="/shop" class="btn btn-primary">View All Products</a>
             </div>
           <% } %>
         </div>
@@ -83,10 +155,65 @@
     </div>
   </main>
   
-  <footer class="shop-footer">
-    <div class="container">
-      <p>&copy; 2025 Inno Bricks. All rights reserved.</p>
-    </div>
-  </footer>
+  <%- include('../partials/footer') %>
+  
+  <script>
+    // Sort functionality
+    function updateSort(value) {
+      const url = new URL(window.location);
+      url.searchParams.set('sort', value);
+      url.searchParams.set('page', '1');
+      window.location = url;
+    }
+    
+    // Mobile filter toggle
+    document.addEventListener('DOMContentLoaded', function() {
+      const filterToggle = document.getElementById('filter-toggle');
+      const filterContent = document.getElementById('filter-content');
+      
+      if (filterToggle && filterContent) {
+        filterToggle.addEventListener('click', function() {
+          filterContent.classList.toggle('active');
+        });
+      }
+    });
+    
+    // Add to cart functionality
+    function addToCart(button, productId, productName, productPrice, productImage) {
+      // Get existing cart
+      let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      
+      // Check if product already exists in cart
+      const existingIndex = cart.findIndex(item => item.id === productId);
+      
+      if (existingIndex !== -1) {
+        // Increment quantity
+        cart[existingIndex].quantity += 1;
+      } else {
+        // Add new item
+        cart.push({
+          id: productId,
+          name: productName,
+          price: productPrice,
+          image: productImage,
+          quantity: 1
+        });
+      }
+      
+      // Save cart
+      localStorage.setItem('cart', JSON.stringify(cart));
+      
+      // Trigger cart update event
+      window.dispatchEvent(new Event('cartUpdated'));
+      
+      // Visual feedback
+      button.textContent = 'Added!';
+      button.style.background = '#2a7d2e';
+      setTimeout(() => {
+        button.textContent = 'Add to Basket';
+        button.style.background = '';
+      }, 1500);
+    }
+  </script>
 </body>
 </html>
