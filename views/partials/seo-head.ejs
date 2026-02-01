@@ -5,7 +5,7 @@
 <% 
   // Get SEO data from res.locals or use defaults
   const seo = typeof locals.seo !== 'undefined' ? locals.seo : {};
-  const siteName = 'E-Commerce Store';
+  const siteName = 'Inno BRICKS | Where KIDS are KINGS';
   
   // Build final values with fallbacks
   const pageTitle = seo.metaTitle || (typeof title !== 'undefined' ? title : siteName);
@@ -67,6 +67,7 @@
 <%- customHead %>
 <% } %>
 <!-- Favicon -->
-<link rel="shortcut icon" href="/images/logo.svg" type="image/svg+xml">
-<link rel="icon" href="/images/logo.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="/images/logo.svg">
+<link rel="icon" type="image/x-icon" href="/favicon/favicon.ico">
+<link rel="icon" type="image/svg+xml" href="/favicon/favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+<link rel="manifest" href="/favicons/manifest.webmanifest">

@@ -991,3 +991,52 @@ body {
     padding: 15px 20px;
   }
 }
+
+/* ============================================
+   DARK THEME
+   ============================================ */
+[data-theme="dark"] .show-more-link {
+  color: #fecc01;
+}
+
+[data-theme="dark"] .show-more-link:hover {
+  text-decoration: none;
+}
+
+[data-theme="dark"] .btn-show-more {
+  color: #fecc01;
+  border-color: #fecc01;
+}
+
+[data-theme="dark"] .btn-show-more:hover {
+  background: transparent;
+  color: #fecc01;
+  border-color: #fecc01;
+}
+
+[data-theme="dark"] .header-actions-mobile svg {
+  fill: #fff;
+}
+
+[data-theme="dark"] .mobile-nav-icon {
+  stroke: #fff;
+}
+
+[data-theme="dark"] .mobile-menu svg {
+  fill: #fff;
+  stroke: #fff;
+}
+
+[data-theme="dark"] .newsletter-input {
+  background-color: #2a2a2a;
+  color: #fff;
+}
+
+[data-theme="dark"] .newsletter-input::placeholder {
+  color: #aaa;
+}
+
+[data-theme="dark"] .btn-cart svg {
+  fill: #fff;
+}
+

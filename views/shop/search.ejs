@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-X89R61XJJ1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-X89R61XJJ1');
+</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <%- include('../partials/seo-head') %>
@@ -27,6 +36,10 @@
     .search-header .search-query {
       color: #035751;
       font-weight: 600;
+    }
+
+    [data-theme="dark"] .search-header .search-query {
+      color: #fecc01;
     }
     
     .search-header .results-count {
@@ -215,6 +228,16 @@
     
     .no-results .btn-primary:hover {
       background: #5a2550;
+    }
+
+    [data-theme="dark"] .no-results .btn-primary {
+      background: #fecc01;
+      color: #000;
+    }
+
+    [data-theme="dark"] .no-results .btn-primary:hover {
+      background: #e8b800;
+      color: #000;
     }
     
     /* Pagination */

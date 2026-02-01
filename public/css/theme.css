@@ -703,9 +703,7 @@ body {
 }
 
 /* Links in dark mode */
-[data-theme="dark"] a:hover {
-  color: black;
-}
+
 
 /* Header specific */
 [data-theme="dark"] .site-header {
